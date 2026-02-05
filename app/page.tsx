@@ -54,6 +54,7 @@ export default function Home() {
                 title: "NETRA MITRA",
                 desc: "Robotic navigation system for visually impaired using ultrasonic sensors & Computer Vision.",
                 tags: ["AI Robotics", "OpenCV", "IoT"],
+                image: "/netra.jpeg"
               },
               {
                 id: "03",
