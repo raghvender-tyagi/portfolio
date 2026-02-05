@@ -1,15 +1,52 @@
 "use client";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+
+const Typewriter = ({ text, delay = 0 }: { text: string; delay?: number }) => {
+  const [displayedText, setDisplayedText] = useState("");
+  const [complete, setComplete] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const interval = setInterval(() => {
+        setDisplayedText(text.slice(0, i + 1));
+        i++;
+        if (i === text.length) {
+          clearInterval(interval);
+          setComplete(true);
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }, delay * 1000);
+    return () => clearTimeout(timeout);
+  }, [text, delay]);
+
+  return (
+    <span className="relative">
+      {displayedText}
+      <motion.span
+        animate={{ opacity: [1, 0] }}
+        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+        className={`inline-block w-[2px] h-[1em] bg-white ml-1 align-middle ${complete ? 'hidden' : ''}`}
+      />
+    </span>
+  );
+};
 
 export default function Home() {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
 
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+
+  // Spotlight effect
+  const spotlightX = useTransform(mouseXSpring, [-0.5, 0.5], ["30%", "70%"]);
+  const spotlightY = useTransform(mouseYSpring, [-0.5, 0.5], ["30%", "70%"]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -29,22 +66,24 @@ export default function Home() {
     x.set(0);
     y.set(0);
   };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.1,
         delayChildren: 0.3,
       },
     },
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+  const charVariants = {
+    hidden: { opacity: 0, y: 50, filter: "blur(10px)" },
     visible: {
-      y: 0,
       opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
       transition: {
         duration: 0.8,
         ease: [0.16, 1, 0.3, 1] as any,
@@ -52,13 +91,52 @@ export default function Home() {
     },
   };
 
+  const itemVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 1,
+        ease: [0.16, 1, 0.3, 1] as any,
+      },
+    },
+  };
+
+  const bouncyVariants = {
+    hidden: { y: 100, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        delay: 1.5,
+      } as any,
+    },
+  };
+
+  const titleLines = ["RAGHVENDER", "TYAGI"];
+
   return (
-    <main className="relative min-h-screen bg-[#111111] overflow-hidden font-inter text-white selection:bg-white selection:text-black">
+    <main className="relative min-h-screen bg-[#0a0a0a] overflow-hidden font-inter text-white selection:bg-white selection:text-black">
+      {/* Interactive Spotlight Background */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none z-0 opacity-40"
+        style={{
+          background: useTransform(
+            [spotlightX, spotlightY],
+            ([sx, sy]) => `radial-gradient(600px circle at ${sx} ${sy}, rgba(255,255,255,0.05), transparent)`
+          )
+        }}
+      />
+
       {/* Hero Section */}
       <section
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative min-h-screen flex flex-col items-center justify-center px-10 pt-20"
+        className="relative min-h-screen flex flex-col items-center justify-center px-10 pt-20 z-10"
       >
         <motion.div
           style={{
@@ -75,57 +153,93 @@ export default function Home() {
             variants={itemVariants}
             className="text-[10px] md:text-sm font-bold tracking-[1em] uppercase text-white/30 mb-8"
           >
-            AI ENGINEER
+            <Typewriter text="AI ENGINEER" delay={1} />
           </motion.div>
 
-          <motion.h1
-            variants={itemVariants}
-            style={{ translateZ: "50px" }}
-            className="text-[10vw] md:text-[6rem] font-black leading-[0.85] tracking-tighter uppercase mb-12"
-          >
-            RAGHVENDER <br /> TYAGI
-          </motion.h1>
+          <div className="mb-12 overflow-hidden py-4">
+            {titleLines.map((line, lineIdx) => (
+              <h1 key={lineIdx} className="text-[10vw] md:text-[7rem] font-black leading-[0.8] tracking-tighter uppercase flex justify-center overflow-hidden">
+                {line.split("").map((char, charIdx) => (
+                  <motion.span
+                    key={charIdx}
+                    variants={charVariants}
+                    style={{ display: "inline-block", translateZ: "100px" }}
+                  >
+                    {char === " " ? "\u00A0" : char}
+                  </motion.span>
+                ))}
+              </h1>
+            ))}
+          </div>
 
           <motion.div
             variants={itemVariants}
-            className="flex flex-col items-center gap-10"
+            className="flex flex-col items-center gap-12"
           >
-            <p className="text-sm md:text-lg font-medium tracking-tight text-white/40 max-w-2xl leading-relaxed">
-              Building real-world AI systems <br />
-              with LangGraph, RAG, and modern web stacks.
+            <p className="text-sm md:text-xl font-light tracking-tight text-white/30 max-w-2xl leading-relaxed whitespace-pre-line">
+              Building real-world AI systems
+              {"\n"}with LangGraph, RAG, and modern web stacks.
             </p>
-            <div className="flex gap-10">
+
+            <motion.div
+              variants={bouncyVariants}
+              className="flex gap-10"
+            >
               <motion.a
                 href="https://github.com/raghvender-tyagi"
                 target="_blank"
-                whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="px-10 py-4 border border-white/10 hover:bg-white hover:text-black transition-all text-xs font-bold tracking-widest uppercase"
+                whileHover={{
+                  scale: 1.1,
+                  borderColor: "rgba(255,255,255,0.5)",
+                  boxShadow: "0 0 40px rgba(255,255,255,0.1)",
+                  backgroundColor: "rgba(255,255,255,0.05)"
+                }}
+                whileTap={{ scale: 0.9 }}
+                className="px-12 py-5 border border-white/10 text-white transition-all text-xs font-bold tracking-widest uppercase relative group overflow-hidden"
               >
-                GitHub
+                <span className="relative z-10">GitHub</span>
+                <motion.div className="absolute inset-0 bg-white/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               </motion.a>
               <motion.a
                 href="https://linkedin.com/in/raghvender-tyagi-05a881247"
                 target="_blank"
-                whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="px-10 py-4 border border-white/10 hover:bg-white hover:text-black transition-all text-xs font-bold tracking-widest uppercase"
+                whileHover={{
+                  scale: 1.1,
+                  borderColor: "rgba(255,255,255,0.5)",
+                  boxShadow: "0 0 40px rgba(255,255,255,0.1)",
+                  backgroundColor: "rgba(255,255,255,0.05)"
+                }}
+                whileTap={{ scale: 0.9 }}
+                className="px-12 py-5 border border-white/10 text-white transition-all text-xs font-bold tracking-widest uppercase relative group overflow-hidden"
               >
-                LinkedIn
+                <span className="relative z-10">LinkedIn</span>
+                <motion.div className="absolute inset-0 bg-white/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               </motion.a>
-            </div>
+            </motion.div>
           </motion.div>
         </motion.div>
 
-        {/* Scroll Indicator */}
+        {/* Enhanced Scroll Indicator */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2, duration: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
         >
-          <div className="w-[1px] h-20 bg-gradient-to-b from-white/20 to-transparent relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full bg-white/40 -translate-y-full animate-infinite-scroll" />
+          <span className="text-[8px] font-bold tracking-[0.5em] text-white/20 uppercase">Initiate Scroll</span>
+          <div className="w-[1px] h-24 bg-gradient-to-b from-white/20 via-white/40 to-transparent relative overflow-hidden">
+            <motion.div
+              animate={{
+                y: ["-100%", "100%"],
+                opacity: [0, 1, 0]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="absolute top-0 left-0 w-full h-1/2 bg-white"
+            />
           </div>
         </motion.div>
       </section>
