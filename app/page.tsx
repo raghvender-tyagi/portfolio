@@ -1,277 +1,193 @@
+"use client";
+
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-[#0d0d0d] selection:bg-[#10b981] selection:text-black">
-      {/* Background Elements */}
-      <div className="fixed inset-0 grid-bg pointer-events-none z-0" />
-
+    <main className="relative min-h-screen bg-[#111111] overflow-hidden font-inter text-white selection:bg-white selection:text-black">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-32 pb-20 px-6 z-10">
-        <div className="max-w-7xl w-full mx-auto">
-          <div className="flex items-center gap-4 mb-12">
-            <div className="h-[1px] w-16 bg-[#10b981]/50" />
-            <span className="text-sm font-mono text-[#10b981] tracking-[0.3em] uppercase">AI Engineer & Developer</span>
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-10 pt-20">
+        <div className="max-w-7xl w-full text-center">
+          <div className="text-[10px] md:text-sm font-bold tracking-[1em] uppercase text-white/30 mb-8">
+            AI ENGINEER
           </div>
-
-          <h1 className="text-6xl md:text-9xl lg:text-[11rem] font-black leading-[0.85] mb-12 tracking-tighter uppercase">
-            <div className="text-white">RAGHVENDER</div>
-            <div className="text-[#10b981]">TYAGI</div>
+          <h1 className="text-[10vw] md:text-[6rem] font-black leading-[0.85] tracking-tighter uppercase mb-12">
+            RAGHVENDER <br /> TYAGI
           </h1>
+          <div className="flex flex-col items-center gap-10">
+            <p className="text-sm md:text-lg font-medium tracking-tight text-white/40 max-w-2xl leading-relaxed">
+              Building <span className="text-white">multi-agent systems</span> with LangGraph & RAG. <br />
+              Production AI that actually works.
+            </p>
+            <div className="flex gap-10">
+              <a href="https://github.com/raghvender-tyagi" target="_blank" className="px-10 py-4 border border-white/10 hover:bg-white hover:text-black transition-all text-xs font-bold tracking-widest uppercase">GitHub</a>
+              <a href="https://linkedin.com/in/raghvender-tyagi-05a881247" target="_blank" className="px-10 py-4 border border-white/10 hover:bg-white hover:text-black transition-all text-xs font-bold tracking-widest uppercase">LinkedIn</a>
+            </div>
+          </div>
+        </div>
 
-          <p className="text-xl md:text-2xl lg:text-3xl text-gray-400 font-light max-w-4xl mb-16 leading-relaxed">
-            Building intelligent systems with LangGraph, RAG architectures, and agentic AI workflows.
-            Specializing in multi-agent systems and production-grade ML applications.
-          </p>
-
-          <div className="flex flex-wrap gap-6">
-            <a href="https://github.com/raghvender-tyagi" target="_blank" className="px-12 py-5 bg-[#10b981] text-black font-black text-xl hover:bg-[#10b981]/90 transition-all">
-              GitHub →
-            </a>
-            <a href="https://linkedin.com/in/raghvender-tyagi-05a881247" target="_blank" className="px-12 py-5 border-2 border-[#10b981] text-[#10b981] font-black text-xl hover:bg-[#10b981] hover:text-black transition-all">
-              LinkedIn
-            </a>
-            <a href="#contact" className="px-12 py-5 border-2 border-white/20 text-white font-black text-xl hover:border-white transition-all">
-              Contact
-            </a>
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
+          <div className="w-[1px] h-20 bg-gradient-to-b from-white/20 to-transparent relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-white/40 -translate-y-full animate-infinite-scroll" />
           </div>
         </div>
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="relative py-32 px-6 z-10">
+      <section id="projects" className="relative py-40 px-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-8 mb-24">
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase whitespace-nowrap">Projects</h2>
-            <div className="h-[1px] w-full bg-white/10" />
+          <div className="flex justify-between items-end mb-32 border-b border-white/5 pb-10">
+            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Selected <br />Works</h2>
+            <div className="text-[10px] font-bold tracking-[0.5em] text-white/20 uppercase">PRJ // 2025</div>
           </div>
 
-          <div className="flex flex-col gap-16">
-            {/* Project 1 */}
-            <div className="group relative border-b border-white/5 pb-16 last:border-0">
-              <div className="relative z-10">
-                <div className="flex justify-between items-start flex-wrap gap-8 mb-10">
-                  <div className="max-w-4xl">
-                    <div className="text-[#10b981] font-mono text-sm mb-4 tracking-widest uppercase">01 — MULTI-AGENT SYSTEM</div>
-                    <h3 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-8 group-hover:text-[#10b981] transition-colors">PaperlyAI</h3>
-                    <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed mb-10">
-                      Research paper writing agent powered by a 6-agent LangGraph system. Generates 2,500+ word academic papers
-                      from topic inputs using RAG-based reasoning with arXiv integration.
-                    </p>
-                    <div className="flex flex-wrap gap-4 mb-10">
-                      {["LangGraph", "GPT-4o-mini", "RAG", "arXiv API", "Django"].map(tech => (
-                        <span key={tech} className="px-4 py-2 bg-white/5 border border-white/10 text-white/60 font-mono text-xs uppercase tracking-wider">
-                          {tech}
-                        </span>
+          <div className="space-y-60">
+            {[
+              {
+                id: "01",
+                title: "PaperlyAI",
+                desc: "6-agent LangGraph system generating 2,500+ word academic papers with RAG-based reasoning.",
+                tags: ["LLM Agents", "LangGraph", "RAG"],
+                image: "/paperly_ai.png" // User will add this to public/
+              },
+              {
+                id: "02",
+                title: "NETRA MITRA",
+                desc: "Robotic navigation system for visually impaired using ultrasonic sensors & Computer Vision.",
+                tags: ["AI Robotics", "OpenCV", "IoT"],
+              },
+              {
+                id: "03",
+                title: "Smart Pesticide",
+                desc: "Pixel-level crop analysis for precision pesticide application with 30% chemical reduction.",
+                tags: ["AgriTech", "CV", "ML"],
+              }
+            ].map((prj) => (
+              <div key={prj.title} className="group relative border-t border-white/5 pt-20 first:border-0 first:pt-0">
+                <div className="flex flex-col lg:flex-row gap-20 items-start">
+                  <div className="w-full lg:w-1/2">
+                    <div className="text-[10px] font-bold tracking-[0.5em] text-white/20 uppercase mb-8">{prj.id} // SYSTEM_MANIFEST</div>
+                    <h3 className="text-5xl md:text-6xl font-black uppercase tracking-tighter mb-10 group-hover:translate-x-4 transition-transform duration-500">{prj.title}</h3>
+                    <p className="text-xl text-white/40 leading-relaxed font-light mb-12 max-w-xl">{prj.desc}</p>
+                    <div className="flex flex-wrap gap-4">
+                      {prj.tags.map(tag => (
+                        <span key={tag} className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/30 border border-white/10 px-6 py-2 rounded-full">{tag}</span>
                       ))}
                     </div>
                   </div>
-                  <a href="https://paperly-ai.onrender.com/" target="_blank" className="px-8 py-4 bg-white text-black text-sm font-black uppercase tracking-widest hover:bg-[#10b981] transition-all">
-                    Live Demo →
-                  </a>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-400">
-                  <div className="flex gap-4">
-                    <span className="text-[#10b981] font-bold">/</span>
-                    <span className="text-lg">6-agent orchestration with critic-generator loops</span>
-                  </div>
-                  <div className="flex gap-4">
-                    <span className="text-[#10b981] font-bold">/</span>
-                    <span className="text-lg">Top-5 arXiv retrieval for identifying research gaps</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Project 2 */}
-            <div className="group relative border-b border-white/5 pb-16 last:border-0">
-              <div className="relative z-10">
-                <div className="flex justify-between items-start flex-wrap gap-8 mb-10">
-                  <div className="max-w-4xl">
-                    <div className="flex items-center gap-4 mb-4">
-                      <span className="text-[#10b981] font-mono text-sm tracking-widest uppercase">02 — ROBOTICS + COMPUTER VISION</span>
-                      <span className="px-3 py-1 bg-[#fbbf24] text-black text-[10px] font-black uppercase">Patent Granted</span>
+                  <div className="w-full lg:w-1/2 aspect-video bg-[#1a1a1a] border border-white/5 overflow-hidden group-hover:border-white/20 transition-all relative shadow-2xl flex items-center justify-center">
+                    {/* Background Text (Behind Image) */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                      <div className="text-[10vw] font-black text-white/5 uppercase select-none tracking-tighter">{prj.title}</div>
                     </div>
-                    <h3 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-8 group-hover:text-[#10b981] transition-colors">NETRA MITRA</h3>
-                    <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed mb-10">
-                      AI-powered robotic navigation system for visually impaired individuals. Features autonomous path planning
-                      with 8 ultrasonic sensors and environment description via CV.
-                    </p>
-                    <div className="flex flex-wrap gap-4 mb-10">
-                      {["Decision Tree ML", "ESP32-CAM", "Raspberry Pi", "OpenCV", "Object Detection"].map(tech => (
-                        <span key={tech} className="px-4 py-2 bg-white/5 border border-white/10 text-white/60 font-mono text-xs uppercase tracking-wider">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
+
+                    {prj.image ? (
+                      <img
+                        src={prj.image}
+                        alt={prj.title}
+                        className="relative z-10 w-full h-full object-cover opacity-100 group-hover:scale-105 transition-transform duration-700 contrast-[1.1] brightness-[1.1]"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : null}
+
+                    {/* Subtle Overlay to ensure text legibility if needed, but keeping it minimal */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-40 transition-opacity z-20 pointer-events-none" />
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Project 3 */}
-            <div className="group relative border-b border-white/5 pb-16 last:border-0">
-              <div className="relative z-10">
-                <div className="text-[#10b981] font-mono text-sm mb-4 tracking-widest uppercase">03 — AGENTIC AI</div>
-                <h3 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-8 group-hover:text-[#10b981] transition-colors">AI Personal Assistant</h3>
-                <p className="text-xl md:text-2xl text-gray-400 font-light max-w-4xl mb-10 leading-relaxed">
-                  Advanced personal assistant with super memory capabilities. Maintains a centralized knowledge database
-                  for long-term contextual awareness and intelligent recall.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  {["LangChain", "Vector DB", "Memory Systems", "NLP"].map(tech => (
-                    <span key={tech} className="px-4 py-2 bg-white/5 border border-white/10 text-white/60 font-mono text-xs uppercase tracking-wider">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
+      {/* About Section */}
+      <section id="about" className="relative py-60 px-10 bg-[#0d0d0d]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20">
+            <div className="lg:col-span-7">
+              <div className="text-[10px] font-bold tracking-[1.2rem] text-white/20 uppercase mb-12">ORIGIN // DATA_CORE</div>
+              <h2 className="text-[10vw] lg:text-[7.5rem] font-black leading-[0.85] tracking-tighter uppercase mb-20 lg:mb-0">
+                The <br />
+                <span className="text-white">Architect</span>
+              </h2>
             </div>
-
-            {/* Project 4 */}
-            <div className="group relative border-b border-white/5 pb-16 last:border-0">
-              <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-4">
-                  <span className="text-[#10b981] font-mono text-sm tracking-widest uppercase">04 — COMPUTER VISION + IOT</span>
-                  <span className="px-3 py-1 bg-blue-500 text-white text-[10px] font-black uppercase">Patent Filed</span>
-                </div>
-                <h3 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-8 group-hover:text-[#10b981] transition-colors">Smart Pesticide System</h3>
-                <p className="text-xl md:text-2xl text-gray-400 font-light max-w-4xl mb-10 leading-relaxed">
-                  Precision agriculture system using pixel-level crop image analysis for targeted pesticide application.
-                  Reduces chemical usage by ~30% through intelligent detection.
+            <div className="lg:col-span-1" /> {/* Spacer Column */}
+            <div className="lg:col-span-4 flex flex-col justify-end lg:pt-20">
+              <div className="space-y-12 text-lg md:text-xl text-white/40 leading-[1.8] font-light">
+                <p>
+                  Specializing in the intersection of <span className="text-white font-medium border-b border-white/10 pb-1">Multi-Agent Orchestration</span> and <span className="text-white font-medium border-b border-white/10 pb-1">Autonomous Robotics</span>.
                 </p>
-                <div className="flex flex-wrap gap-4">
-                  {["Computer Vision", "Segmentation", "IoT", "OpenCV"].map(tech => (
-                    <span key={tech} className="px-4 py-2 bg-white/5 border border-white/10 text-white/60 font-mono text-xs uppercase tracking-wider">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+                <p>
+                  I build systems that don&apos;t just process data, but reason through complex workflows using advanced RAG and custom frameworks.
+                </p>
+                <p>
+                  With expertise spanning from high-level LLM reasoning to low-level hardware implementation, I bridge the gap between digital intelligence and physical reality.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Tech Stack Section */}
-      <section id="skills" className="relative py-32 px-6 bg-white/[0.02] z-10">
+      {/* Arsenal (Skills) Section */}
+      <section id="skills" className="relative py-40 px-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-8 mb-24">
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase whitespace-nowrap">Tech Stack</h2>
-            <div className="h-[1px] w-full bg-white/10" />
+          <div className="flex justify-between items-center mb-32">
+            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Arsenal</h2>
+            <div className="text-[10px] font-bold tracking-[0.5em] text-white/20 uppercase">SKILLS // TECH</div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-24">
-            <div className="space-y-12">
-              <h3 className="text-2xl font-black text-white uppercase tracking-widest border-l-4 border-[#10b981] pl-6">
-                AI & ML
-              </h3>
-              <ul className="space-y-6 text-gray-400 text-xl font-light">
-                {["LangGraph", "LangChain", "RAG Architecture", "FAISS", "Pgvector", "OpenAI Embeddings", "Transformer Models", "Prompt Engineering"].map(skill => (
-                  <li key={skill} className="flex items-center gap-4 hover:text-white transition-colors cursor-default">
-                    <span className="w-1.5 h-1.5 bg-[#10b981]" /> {skill}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="space-y-12">
-              <h3 className="text-2xl font-black text-white uppercase tracking-widest border-l-4 border-[#10b981] pl-6">
-                Backend
-              </h3>
-              <ul className="space-y-6 text-gray-400 text-xl font-light">
-                {["FastAPI", "Django", "n8n Automation", "Node.js", "Python", "REST APIs", "Vector Databases"].map(skill => (
-                  <li key={skill} className="flex items-center gap-4 hover:text-white transition-colors cursor-default">
-                    <span className="w-1.5 h-1.5 bg-[#10b981]" /> {skill}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="space-y-12">
-              <h3 className="text-2xl font-black text-white uppercase tracking-widest border-l-4 border-[#10b981] pl-6">
-                Vision & IOT
-              </h3>
-              <ul className="space-y-6 text-gray-400 text-xl font-light">
-                {["ESP32-CAM", "Raspberry Pi", "OpenCV", "Object Detection", "IoT Systems", "Edge Computing"].map(skill => (
-                  <li key={skill} className="flex items-center gap-4 hover:text-white transition-colors cursor-default">
-                    <span className="w-1.5 h-1.5 bg-[#10b981]" /> {skill}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Achievements Section */}
-      <section className="relative py-32 px-6 z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-8 mb-24">
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase whitespace-nowrap">Status</h2>
-            <div className="h-[1px] w-full bg-white/10" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/5">
-            <div className="p-12 md:p-20 bg-[#0d0d0d]">
-              <h3 className="text-3xl font-black mb-12 uppercase tracking-widest text-[#10b981]">Victories</h3>
-              <div className="space-y-12">
-                <div>
-                  <div className="text-white font-black text-2xl mb-2">INNOTECH WINNER</div>
-                  <div className="text-gray-500 font-mono uppercase tracking-wider">KIET Group · 2000+ Participants</div>
-                </div>
-                <div>
-                  <div className="text-white font-black text-2xl mb-2">OPENAI STATE FINALS</div>
-                  <div className="text-gray-500 font-mono uppercase tracking-wider">NIU · 8000+ Participants</div>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
+            {[
+              {
+                cat: "AI / ML",
+                skills: ["TensorFlow & PyTorch", "LangChain / LangGraph", "Computer Vision", "RAG Systems", "Agentic Workflows"]
+              },
+              {
+                cat: "BACKEND",
+                skills: ["Python (Django/FastAPI)", "PostgreSQL / Pinecone", "Docker & Kubernetes", "Redis", "Microservices"]
+              },
+              {
+                cat: "SYSTEMS",
+                skills: ["Raspberry Pi & ESP32", "IoT Protocols", "C++ / ROS", "Circuit Design", "Autonomous Nav"]
+              }
+            ].map((cat) => (
+              <div key={cat.cat} className="space-y-10">
+                <h3 className="text-xs font-bold tracking-[0.5em] uppercase text-white/20 border-b border-white/5 pb-10">{cat.cat}</h3>
+                <ul className="space-y-6">
+                  {cat.skills.map(skill => (
+                    <li key={skill} className="text-lg font-light text-white/60 hover:text-white transition-colors cursor-default">{skill}</li>
+                  ))}
+                </ul>
               </div>
-            </div>
-
-            <div className="p-12 md:p-20 bg-[#0d0d0d]">
-              <h3 className="text-3xl font-black mb-12 uppercase tracking-widest text-[#10b981]">Patents</h3>
-              <div className="space-y-12">
-                <div>
-                  <div className="text-white font-black text-2xl mb-2">NETRA MITRA</div>
-                  <div className="text-gray-500 font-mono uppercase tracking-wider">Patent Granted · Autonomous Navigation</div>
-                </div>
-                <div>
-                  <div className="text-white font-black text-2xl mb-2">SMART PESTICIDE</div>
-                  <div className="text-gray-500 font-mono uppercase tracking-wider">Patent Filed · IoT Agriculture</div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="relative py-48 px-6 z-10">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-6xl md:text-[10rem] font-black tracking-tighter uppercase mb-12 leading-none">
-            READY TO <br />
-            <span className="text-[#10b981]">INNOVATE?</span>
+      <section id="contact" className="relative py-60 px-10 bg-[#161616] text-center">
+        <div className="max-w-7xl mx-auto space-y-20">
+          <h2 className="text-6xl md:text-[8rem] font-black tracking-tighter uppercase leading-[0.8]">
+            THANKS FOR <br /> WATCHING!
           </h2>
-
-          <div className="flex flex-wrap justify-center gap-10 mt-20">
-            <a href="mailto:raghvendertyagi@gmail.com" className="text-2xl md:text-4xl font-black hover:text-[#10b981] transition-colors uppercase border-b-4 border-[#10b981] pb-2">
-              raghvendertyagi@gmail.com
-            </a>
-            <a href="tel:+917253020660" className="text-2xl md:text-4xl font-black hover:text-[#10b981] transition-colors uppercase border-b-4 border-[#10b981] pb-2">
-              +91 7253020660
-            </a>
+          <div className="flex flex-col md:flex-row justify-center gap-10 md:gap-32">
+            <div className="group">
+              <div className="text-[10px] font-bold tracking-[0.5em] text-white/20 uppercase mb-4">EMAIL</div>
+              <div className="text-2xl font-bold tracking-widest border-b border-white/10 group-hover:border-white transition-all pb-2">raghvendertyagi@gmail.com</div>
+            </div>
+            <div className="group">
+              <div className="text-[10px] font-bold tracking-[0.5em] text-white/20 uppercase mb-4">PHONE</div>
+              <div className="text-2xl font-bold tracking-widest border-b border-white/10 group-hover:border-white transition-all pb-2">+91 7253020660</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative py-20 px-6 border-t border-white/5 bg-[#0d0d0d] z-10">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-10">
-          <div className="text-gray-600 font-mono text-sm uppercase tracking-widest">
-            © 2025 Raghvender Tyagi / AI Engineering
-          </div>
-          <div className="flex gap-12 text-sm font-black tracking-[0.3em] uppercase text-gray-500">
-            <a href="https://github.com/raghvender-tyagi" target="_blank" className="hover:text-white transition-colors">GitHub</a>
-            <a href="https://linkedin.com/in/raghvender-tyagi-05a881247" target="_blank" className="hover:text-white transition-colors">LinkedIn</a>
-          </div>
+      <footer className="py-20 text-center border-t border-white/5">
+        <div className="text-[10px] font-bold tracking-[1em] text-white/10 uppercase">
+          © 2025 RAGHVENDER TYAGI // AI ENGINEER
         </div>
       </footer>
     </main>

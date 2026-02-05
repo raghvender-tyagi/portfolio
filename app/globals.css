@@ -1,49 +1,42 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
-  --background: 0 0% 4%;
-  --foreground: 0 0% 100%;
+  --background: #111111;
+  --foreground: #ffffff;
+  --muted: #666666;
+  --border: rgba(255, 255, 255, 0.1);
 }
 
 @layer base {
   body {
-    background-color: #0d0d0d;
-    color: #ffffff;
+    @apply bg-[#111111] text-white selection:bg-white selection:text-black;
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
   }
 }
 
 @layer utilities {
-  .grid-bg {
-    background-image:
-      linear-gradient(to right, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(16, 185, 129, 0.08) 1px, transparent 1px);
-    background-size: 60px 60px;
+  .matte-card {
+    background: #1a1a1a;
+    border: 1px solid var(--border);
   }
 
-  .text-emerald {
-    color: #10b981;
+  .text-muted {
+    color: var(--muted);
+  }
+
+  .animate-infinite-scroll {
+    animation: infinite-scroll 2s linear infinite;
   }
 }
 
-.custom-cursor {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: difference;
-  transition: transform 0.1s ease;
-}
+@keyframes infinite-scroll {
+  0% {
+    transform: translateY(-100%);
+  }
 
-@media (max-width: 1024px) {
-  .custom-cursor {
-    display: none;
+  100% {
+    transform: translateY(100%);
   }
 }
 
@@ -51,20 +44,21 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
+/* Minimalist Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #111;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #10b981;
-  border-radius: 5px;
+  background: #333;
+  border-radius: 10px;
+  border: 3px solid #111;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #059669;
+  background: #444;
 }
