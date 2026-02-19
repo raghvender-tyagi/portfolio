@@ -1,36 +1,47 @@
 "use client";
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 
-const Typewriter = ({ text, delay = 0 }: { text: string; delay?: number }) => {
-  const [displayedText, setDisplayedText] = useState("");
-  const [complete, setComplete] = useState(false);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      let i = 0;
-      const interval = setInterval(() => {
-        setDisplayedText(text.slice(0, i + 1));
-        i++;
-        if (i === text.length) {
-          clearInterval(interval);
-          setComplete(true);
-        }
-      }, 100);
-      return () => clearInterval(interval);
-    }, delay * 1000);
-    return () => clearTimeout(timeout);
-  }, [text, delay]);
+const Typewriter = ({ text, delay = 0, speed = 0.05 }: { text: string; delay?: number; speed?: number }) => {
+  const characters = useMemo(() => text.split(""), [text]);
 
   return (
-    <span className="relative">
-      {displayedText}
+    <motion.span
+      initial="hidden"
+      animate="visible"
+      className="inline-flex"
+    >
+      {characters.map((char, i) => (
+        <motion.span
+          key={i}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1 }
+          }}
+          transition={{
+            duration: 0.1,
+            delay: delay + (i * speed),
+            ease: "linear"
+          }}
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
       <motion.span
-        animate={{ opacity: [1, 0] }}
-        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-        className={`inline-block w-[2px] h-[1em] bg-white ml-1 align-middle ${complete ? 'hidden' : ''}`}
+        animate={{ opacity: [1, 1, 0, 0, 1] }}
+        transition={{ duration: 0.8, repeat: Infinity, times: [0, 0.5, 0.5, 1, 1] }}
+        className="inline-block w-[2px] h-[1em] bg-white ml-1 align-middle"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: { delay: delay + (characters.length * speed) }
+          }
+        }}
       />
-    </span>
+    </motion.span>
   );
 };
 
@@ -120,14 +131,16 @@ export default function Home() {
   const titleLines = ["RAGHVENDER", "TYAGI"];
 
   return (
-    <main className="relative min-h-screen bg-[#0a0a0a] overflow-hidden font-inter text-white selection:bg-white selection:text-black">
+    <main className="relative min-h-screen bg-[#0a0a0a] overflow-hidden text-white selection:bg-white selection:text-black">
+
+
       {/* Interactive Spotlight Background */}
       <motion.div
-        className="fixed inset-0 pointer-events-none z-0 opacity-40"
+        className="fixed inset-0 pointer-events-none z-10 opacity-30"
         style={{
           background: useTransform(
             [spotlightX, spotlightY],
-            ([sx, sy]) => `radial-gradient(600px circle at ${sx} ${sy}, rgba(255,255,255,0.05), transparent)`
+            ([sx, sy]) => `radial-gradient(800px circle at ${sx} ${sy}, rgba(255,255,255,0.08), transparent)`
           )
         }}
       />
@@ -144,7 +157,7 @@ export default function Home() {
             rotateY,
             transformStyle: "preserve-3d",
           }}
-          className="max-w-7xl w-full text-center"
+          className="max-w-7xl w-full text-center relative z-10"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -257,6 +270,7 @@ export default function Home() {
               {
                 id: "01",
                 title: "Paperly Ai (Research Agent)",
+                slug: "paperly-ai",
                 desc: "Built a 6-agent LangGraph system generating 2,500+ word academic papers using RAG-based reasoning. Implemented arXiv retrieval to identify research gaps with critic–generator loops for quality control.",
                 tags: ["LangGraph", "GPT-4o-mini", "arXiv API", "Django", "ReportLab"],
                 image: "/paperly_ai.png",
@@ -265,6 +279,7 @@ export default function Home() {
               {
                 id: "02",
                 title: "NETRA MITRA (AI-Powered Navigation)",
+                slug: "netra-mitra",
                 desc: "Built an AI-powered navigation robot using 8 ultrasonic sensors and a Decision Tree model for autonomous path planning. Integrated ESP32-CAM + Raspberry Pi for scene capture and environment description with object detection.",
                 tags: ["Decision Tree", "Raspberry Pi", "ESP32-CAM", "Ultrasonic Sensors", "Object Detection"],
                 image: "/netra.jpeg"
@@ -272,8 +287,10 @@ export default function Home() {
               {
                 id: "03",
                 title: "Smart Pesticide",
-                desc: "Pixel-level crop analysis for precision pesticide application with 30% chemical reduction.",
-                tags: ["AgriTech", "CV", "ML"],
+                slug: "smart-pesticide",
+                desc: "Pixel-level crop analysis for precision pesticide application with 30% chemical reduction. Created a deep learning computer vision model to identify specific plant diseases in real-time.",
+                tags: ["AgriTech", "Deep Learning", "PyTorch", "OpenCV"],
+                image: "/smart_pesticide.jpg"
               }
             ].map((prj) => (
               <div key={prj.title} className="group relative border-t border-white/5 pt-20 first:border-0 first:pt-0">
@@ -288,16 +305,24 @@ export default function Home() {
                           <span key={tag} className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/30 border border-white/10 px-6 py-2 rounded-full">{tag}</span>
                         ))}
                       </div>
-                      {prj.liveLink && (
-                        <a
-                          href={prj.liveLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-6 py-2 border border-white hover:bg-white hover:text-black transition-all text-[10px] font-bold tracking-[0.4em] uppercase ml-2 md:ml-6"
+                      <div className="flex gap-4 mt-4 w-full md:w-auto">
+                        <Link
+                          href={`/${prj.slug}`}
+                          className="px-6 py-2 border border-white/10 hover:border-white hover:bg-white hover:text-black transition-all text-[10px] font-bold tracking-[0.4em] uppercase"
                         >
-                          View Live ↗
-                        </a>
-                      )}
+                          Details ↗
+                        </Link>
+                        {prj.liveLink && (
+                          <a
+                            href={prj.liveLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-6 py-2 border border-white/10 hover:border-white hover:bg-white hover:text-black transition-all text-[10px] font-bold tracking-[0.4em] uppercase"
+                          >
+                            Live ↗
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="w-full lg:w-1/2 aspect-video bg-[#1a1a1a] border border-white/5 overflow-hidden group-hover:border-white/20 transition-all relative shadow-2xl flex items-center justify-center">
@@ -330,34 +355,39 @@ export default function Home() {
       {/* About Section */}
       <section id="about" className="relative py-60 px-10 md:px-20 bg-[#0d0d0d]">
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl">
-            <div className="text-[10px] font-bold tracking-[1.2rem] text-white/20 uppercase mb-8">ORIGIN // DATA_CORE</div>
-            <h2 className="text-4xl md:text-[5rem] font-black leading-tight tracking-tighter uppercase mb-16">
-              The Architect
-            </h2>
+          <div className="">
+            {/* Left Content */}
+            <div className="w-full max-w-4xl mx-auto text-center lg:text-left">
+              <div className="text-[10px] font-bold tracking-[1.2rem] text-white/20 uppercase mb-8">ORIGIN // DATA_CORE</div>
+              <h2 className="text-4xl md:text-[5rem] font-black leading-tight tracking-tighter uppercase mb-16">
+                The Architect
+              </h2>
 
-            <div className="space-y-4 text-lg md:text-xl text-white/40 leading-[1.6] font-light">
-              <p>
-                I work at the point where software has to make decisions — <span className="text-white">not just return outputs</span>.
-              </p>
-              <p>
-                Most of my work revolves around multi-agent AI systems and autonomous machines, where models don&apos;t operate in isolation but collaborate, critique, and adapt.
-              </p>
-              <div className="space-y-2">
-                <p className="text-white/60 font-medium text-[10px] tracking-[0.4em] uppercase">I&apos;ve built systems where agents:</p>
-                <ul className="space-y-1 list-none border-l border-white/10 pl-8">
-                  <li><span className="text-white">Retrieve and reason</span> over external knowledge (RAG).</li>
-                  <li><span className="text-white">Challenge</span> each other&apos;s outputs.</li>
-                  <li>Iterate until the result is <span className="text-white font-medium">actually usable</span> — not just fluent.</li>
-                </ul>
+              <div className="space-y-4 text-lg md:text-xl text-white/40 leading-[1.6] font-light">
+                <p>
+                  I work at the point where software has to make decisions — <span className="text-white">not just return outputs</span>.
+                </p>
+                <p>
+                  Most of my work revolves around multi-agent AI systems and autonomous machines, where models don&apos;t operate in isolation but collaborate, critique, and adapt.
+                </p>
+                <div className="space-y-2">
+                  <p className="text-white/60 font-medium text-[10px] tracking-[0.4em] uppercase">I&apos;ve built systems where agents:</p>
+                  <ul className="space-y-1 list-none border-l border-white/10 pl-8">
+                    <li><span className="text-white">Retrieve and reason</span> over external knowledge (RAG).</li>
+                    <li><span className="text-white">Challenge</span> each other&apos;s outputs.</li>
+                    <li>Iterate until the result is <span className="text-white font-medium">actually usable</span> — not just fluent.</li>
+                  </ul>
+                </div>
+                <p>
+                  On the robotics side, I enjoy going lower in the stack. From sensor data and control logic to vision pipelines, I work on systems that <span className="text-white">interact with the physical world</span>.
+                </p>
+                <p className="text-base text-white/20 italic max-w-2xl">
+                  What ties everything together for me is system design—balancing intelligence with reliability.
+                </p>
               </div>
-              <p>
-                On the robotics side, I enjoy going lower in the stack. From sensor data and control logic to vision pipelines, I work on systems that <span className="text-white">interact with the physical world</span>.
-              </p>
-              <p className="text-base text-white/20 italic max-w-2xl">
-                What ties everything together for me is system design—balancing intelligence with reliability.
-              </p>
             </div>
+
+
           </div>
         </div>
       </section>

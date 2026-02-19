@@ -1,3 +1,4 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,900,500,400&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -5,13 +6,25 @@
   --foreground: #ffffff;
   --muted: #666666;
   --border: rgba(255, 255, 255, 0.1);
+  --font-satoshi: 'Satoshi', sans-serif;
+  --font-inter: 'Inter', sans-serif;
 }
 
 @layer base {
   body {
     @apply bg-[#111111] text-white selection:bg-white selection:text-black;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-inter);
     overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-satoshi);
+    font-weight: 700;
   }
 }
 
