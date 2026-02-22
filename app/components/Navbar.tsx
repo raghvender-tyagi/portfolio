@@ -10,48 +10,51 @@ export default function Navbar() {
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        className="fixed top-0 left-0 w-full z-50 bg-[#0d0d0d]/80 backdrop-blur-md border-b border-white/5"
+        transition={{ duration: 0.1, ease: "linear", delay: 0.1 }}
+        className="fixed top-0 left-0 w-full z-50 bg-[#0a0a0a]/90 backdrop-blur-sm border-b border-[var(--neon-green)]/20"
       >
-        <div className="max-w-7xl mx-auto px-8 py-8 flex justify-center items-center relative">
-          {/* Logo removed as requested */}
+        <div className="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center relative">
+          <div className="font-pixel text-[var(--neon-green)] text-xs tracking-tighter">
+            [ RAGHVENDER ]
+          </div>
 
-          {/* Desktop Links - Centered */}
-          <div className="hidden md:flex gap-12 text-[10px] font-bold tracking-[0.4em] uppercase text-white/40">
+          {/* Desktop Links */}
+          <div className="hidden md:flex gap-10 text-[10px] font-pixel uppercase text-[var(--neon-green)]/60">
             {['about', 'projects', 'skills', 'contact'].map((item) => (
               <a
                 key={item}
                 href={`#${item}`}
-                className="group relative hover:text-white transition-colors py-2"
+                className="group relative hover:text-[var(--neon-green)] transition-none py-2 flex items-center gap-2"
               >
+                <span className="opacity-0 group-hover:opacity-100 transition-none">{'>'}</span>
                 {item}
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-[1px] bg-white opacity-0 group-hover:opacity-100 transition-all duration-300" />
               </a>
             ))}
           </div>
 
-          {/* Mobile Menu Toggle - Positioned Right */}
+          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden absolute right-8 flex flex-col gap-1.5 z-50 p-2"
+            className="md:hidden flex flex-col gap-1.5 z-50 p-2 border border-[var(--neon-green)]/40"
           >
-            <div className={`w-6 h-[1px] bg-white transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <div className={`w-6 h-[1px] bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
-            <div className={`w-6 h-[1px] bg-white transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            <div className={`w-5 h-[2px] bg-[var(--neon-green)] ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <div className={`w-5 h-[2px] bg-[var(--neon-green)] ${isOpen ? 'opacity-0' : ''}`} />
+            <div className={`w-5 h-[2px] bg-[var(--neon-green)] ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </button>
         </div>
       </motion.nav>
 
       {/* Mobile Menu Overlay */}
-      <div className={`fixed inset-0 z-40 bg-[#0d0d0d] transition-all duration-500 md:hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <div className="flex flex-col items-center justify-center h-full gap-16 text-3xl font-black tracking-[0.3em] uppercase">
+      <div className={`fixed inset-0 z-40 bg-[#0a0a0a] transition-none md:hidden ${isOpen ? 'block' : 'hidden'}`}>
+        <div className="flex flex-col items-center justify-center h-full gap-8 text-xl font-pixel uppercase">
           {['about', 'projects', 'skills', 'contact'].map((item) => (
             <a
               key={item}
               href={`#${item}`}
               onClick={() => setIsOpen(false)}
-              className="text-white/20 hover:text-white transition-all"
+              className="text-[var(--neon-green)]/40 hover:text-[var(--neon-green)] flex items-center gap-4"
             >
+              <span>{'>'}</span>
               {item}
             </a>
           ))}

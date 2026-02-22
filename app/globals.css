@@ -1,20 +1,44 @@
-@import url('https://api.fontshare.com/v2/css?f[]=satoshi@700,900,500,400&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #111111;
-  --foreground: #ffffff;
-  --muted: #666666;
-  --border: rgba(255, 255, 255, 0.1);
-  --font-satoshi: 'Satoshi', sans-serif;
-  --font-inter: 'Inter', sans-serif;
+  --background: #0a0a0a;
+  --foreground: #e0e0e0;
+  --neon-green: #39ff14;
+  --neon-glow: 0 0 8px #39ff14;
+  --card-bg: #111111;
+  --border-dim: #1a1a1a;
+  --font-pixel: var(--font-press-start), cursive;
+  --font-mono: var(--font-vt323), "Courier New", monospace;
 }
 
 @layer base {
+  * {
+    border-radius: 0 !important;
+  }
+
   body {
-    @apply bg-[#111111] text-white selection:bg-white selection:text-black;
-    font-family: var(--font-inter);
+    @apply bg-[#0a0a0a] text-[#e0e0e0] selection:bg-[#39ff14] selection:text-black;
+    font-family: var(--font-mono);
     overflow-x: hidden;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  /* CRT Scanline Overlay */
+  body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+      linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 9999;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.08;
   }
 
   h1,
@@ -23,33 +47,118 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-satoshi);
-    font-weight: 700;
+    font-family: var(--font-pixel);
+    text-transform: uppercase;
+    color: var(--neon-green);
+    text-shadow: var(--neon-glow);
+    letter-spacing: 0.05em;
   }
 }
 
 @layer utilities {
-  .matte-card {
-    background: #1a1a1a;
-    border: 1px solid var(--border);
+  .glitch-text {
+    position: relative;
+    animation: glitch 1s linear infinite;
   }
 
-  .text-muted {
-    color: var(--muted);
+  @keyframes glitch {
+
+    2%,
+    64% {
+      transform: translate(2px, 0) skew(0deg);
+    }
+
+    4%,
+    60% {
+      transform: translate(-2px, 0) skew(0deg);
+    }
+
+    62% {
+      transform: translate(0, 0) skew(5deg);
+    }
   }
 
-  .animate-infinite-scroll {
-    animation: infinite-scroll 2s linear infinite;
-  }
-}
-
-@keyframes infinite-scroll {
-  0% {
-    transform: translateY(-100%);
+  .scanline-wipe {
+    position: relative;
+    overflow: hidden;
   }
 
-  100% {
-    transform: translateY(100%);
+  .scanline-wipe::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(transparent 0%, var(--neon-green) 50%, transparent 100%);
+    background-size: 100% 4px;
+    animation: scan 3s linear infinite;
+    opacity: 0.1;
+  }
+
+  @keyframes scan {
+    0% {
+      transform: translateY(-100%);
+    }
+
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
+  .retro-card {
+    background: var(--card-bg);
+    border: 1px dashed var(--neon-green);
+    box-shadow: inset 0 0 10px rgba(57, 255, 20, 0.1);
+    position: relative;
+  }
+
+  .hard-blink {
+    animation: blink 1s steps(1, start) infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .pixel-btn {
+    @apply px-8 py-4 uppercase font-bold tracking-widest transition-all;
+    font-family: var(--font-pixel);
+    font-size: 0.7rem;
+    border: 2px solid var(--neon-green);
+    background: transparent;
+    color: var(--neon-green);
+  }
+
+  .pixel-btn:hover {
+    background: var(--neon-green);
+    color: black;
+    transform: translate(2px, 2px);
+    box-shadow: -2px -2px 0 black, -4px -4px 0 var(--neon-green);
+  }
+
+  .pixel-btn-primary {
+    background: var(--neon-green);
+    color: black;
+  }
+
+  .pixel-btn-primary:hover {
+    background: transparent;
+    color: var(--neon-green);
+  }
+
+  input,
+  textarea {
+    @apply bg-[#0a0a0a] border border-[var(--neon-green)]/40 p-3 text-[var(--neon-green)] font-mono outline-none transition-all;
+    caret-color: var(--neon-green);
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
   }
 }
 
@@ -57,21 +166,20 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Minimalist Scrollbar */
+/* Custom Pixel Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #111;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 10px;
-  border: 3px solid #111;
+  background: var(--neon-green);
+  border: 4px solid var(--background);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: #2ebd11;
 }
