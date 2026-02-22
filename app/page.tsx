@@ -1,6 +1,6 @@
 "use client";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 
 
@@ -345,7 +345,7 @@ export default function Home() {
                 </ul>
               </div>
               <p className="text-sm opacity-40 italic">
-                // WHAT TIES EVERYTHING TOGETHER IS SYSTEM DESIGN—BALANCING INTELLIGENCE WITH RELIABILITY.
+                {"// WHAT TIES EVERYTHING TOGETHER IS SYSTEM DESIGN—BALANCING INTELLIGENCE WITH RELIABILITY."}
               </p>
             </div>
           </div>
@@ -353,7 +353,7 @@ export default function Home() {
       </section>
 
       {/* Arsenal (Skills) Section */}
-      <section id="skills" className="relative py-40 px-10">
+      <section id="arsenal" className="relative py-40 px-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-32">
             <h2 className="text-5xl md:text-7xl">Arsenal</h2>
@@ -364,49 +364,30 @@ export default function Home() {
             {[
               {
                 cat: "AI / ML",
-                skills: [
-                  { name: "PyTorch", level: 90 },
-                  { name: "LangGraph", level: 95 },
-                  { name: "Computer Vision", level: 85 },
-                  { name: "RAG Systems", level: 90 }
-                ]
+                skills: ["PyTorch", "LangGraph", "Computer Vision", "RAG Systems", "LLM Orchestration"]
               },
               {
                 cat: "BACKEND",
-                skills: [
-                  { name: "Python", level: 95 },
-                  { name: "PostgreSQL", level: 85 },
-                  { name: "Docker", level: 80 },
-                  { name: "Microservices", level: 85 }
-                ]
+                skills: ["Python", "FastAPI", "PostgreSQL", "Docker", "Microservices"]
               },
               {
                 cat: "SYSTEMS",
-                skills: [
-                  { name: "Raspberry Pi", level: 90 },
-                  { name: "ESP32", level: 85 },
-                  { name: "C++", level: 75 },
-                  { name: "ROS", level: 80 }
-                ]
+                skills: ["Raspberry Pi", "ESP32", "C++", "ROS", "Embedded AI"]
               }
             ].map((cat) => (
               <div key={cat.cat} className="space-y-12">
-                <h3 className="text-xs font-pixel text-[var(--neon-green)]/40 border-b border-[var(--neon-green)]/20 pb-6">[ {cat.cat} ]</h3>
-                <div className="space-y-8">
-                  {cat.skills.map(skill => (
-                    <div key={skill.name} className="space-y-2">
-                      <div className="flex justify-between font-mono text-sm text-[var(--neon-green)]/60">
-                        <span>{skill.name}</span>
-                        <span>{skill.level}%</span>
-                      </div>
-                      <div className="flex gap-1">
-                        {Array.from({ length: 12 }).map((_, i) => (
-                          <div
-                            key={i}
-                            className={`h-4 w-full ${i < (skill.level / 100) * 12 ? 'bg-[var(--neon-green)]' : 'bg-[var(--neon-green)]/10'}`}
-                          />
-                        ))}
-                      </div>
+                <h3 className="text-xs font-pixel text-[var(--neon-green)]/40 border-b border-[var(--neon-green)]/20 pb-6 uppercase">
+                  [ {cat.cat} ]
+                </h3>
+                <div className="space-y-6">
+                  {cat.skills.map((skill) => (
+                    <div key={skill} className="group flex items-center gap-4 cursor-default">
+                      <span className="text-[var(--neon-green)] opacity-0 group-hover:opacity-100 transition-none font-pixel text-[10px]">
+                        {'>'}
+                      </span>
+                      <span className="font-mono text-xl text-[var(--neon-green)]/60 group-hover:text-[var(--neon-green)] group-hover:glow-sm transition-all duration-200">
+                        {skill}
+                      </span>
                     </div>
                   ))}
                 </div>

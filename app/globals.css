@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  * {
+  *:not(.sprite) {
     border-radius: 0 !important;
   }
 

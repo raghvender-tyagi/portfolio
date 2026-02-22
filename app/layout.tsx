@@ -1,6 +1,8 @@
 import "./globals.css";
+import "./sprites.css";
 import Navbar from "./components/Navbar";
 import { Inter, Press_Start_2P, VT323 } from "next/font/google";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +31,12 @@ export default function RootLayout({
       <body className="antialiased font-inter">
         <Navbar />
         {children}
+        <div id="game-layer" aria-hidden="true">
+          <div className="sprite sprite--pacman"></div>
+          <div className="sprite sprite--ghost"></div>
+          <div className="sprite sprite--invader"></div>
+        </div>
+        <Script src="/sprites.js" strategy="afterInteractive" />
       </body>
     </html>
   );
