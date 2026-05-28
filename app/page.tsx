@@ -121,7 +121,7 @@ export default function Home() {
     },
   };
 
-  const titleLines = ["RAGHVENDER", "TYAGI"];
+  const titleLines = ["RAGHVENDER", ""];
 
   return (
     <main className="relative min-h-screen bg-[#0a0a0a] overflow-hidden text-white selection:bg-white selection:text-black">
