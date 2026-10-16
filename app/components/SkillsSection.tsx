@@ -11,9 +11,10 @@ export default function SkillsSection() {
         {/* Section Header */}
         <div className="pb-12 border-b border-[#161616]/20 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="font-mono text-xs uppercase tracking-widest text-[#555555] mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 bg-[#161616]" />
-              <span>TECHNICAL CAPABILITIES // ARSENAL</span>
+            <div className="font-mono text-xs uppercase tracking-[0.08em] text-[#555555] mb-3 flex items-center gap-2">
+              <span className="text-[#3B4BFF] font-bold">04 / SKILLS</span>
+              <span>—</span>
+              <span>TECHNICAL CAPABILITIES & SYSTEMS</span>
             </div>
             <h2 className="font-headline font-light text-4xl md:text-6xl tracking-tight text-[#161616]">
               Skills & Systems Stack

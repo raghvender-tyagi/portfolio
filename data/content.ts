@@ -4,9 +4,10 @@ export interface Project {
   title: string;
   pitch: string;
   category: "All" | "Backend" | "GenAI & Agents" | "Robotics";
+  statusType: "shipped" | "repo";
   tags: string[];
   bullets: string[];
-  liveUrl?: string;
+  liveUrl?: string | null;
   githubUrl: string;
   hasArchitectureDiagram?: boolean;
   architecture?: {
@@ -114,6 +115,7 @@ export const portfolioContent = {
       pitch:
         "Distributed P2P compute marketplace where hardware providers monetize idle GPUs/CPUs and renters run untrusted workloads in sandboxed Docker.",
       category: "Backend",
+      statusType: "shipped",
       tags: [
         "Django",
         "Channels",
@@ -166,6 +168,7 @@ export const portfolioContent = {
       pitch:
         "Autonomous AI research engine orchestrating multi-agent LangGraph workflows to synthesize literature and generate academic papers.",
       category: "GenAI & Agents",
+      statusType: "shipped",
       tags: [
         "LangGraph",
         "Python",
@@ -211,12 +214,37 @@ export const portfolioContent = {
       },
     },
     {
-      id: "gh-impact-analyzer",
+      id: "campex",
       number: "03",
+      title: "CampEx",
+      pitch:
+        "Campus peer-to-peer exchange and student marketplace with verified college email authentication and contextual buyer-seller messaging.",
+      category: "Backend",
+      statusType: "repo",
+      tags: [
+        "Django",
+        "PostgreSQL",
+        "Cloudinary",
+        "Gunicorn",
+        "WhiteNoise",
+        "Bootstrap 5",
+      ],
+      bullets: [
+        "Constructed custom multi-tenant student auth resolving college email domains to institution profiles with automated UserProfile signal generation.",
+        "Engineered peer-to-peer campus marketplace supporting 4 transaction modes (Sell, Rent, Exchange, Free), condition grading, and relational wishlist indexing.",
+        "Implemented listing-linked asynchronous messaging channels with unread badge counters and real-time event notifications for transactions and saved items.",
+      ],
+      liveUrl: null, // TODO: Add live URL once deployed
+      githubUrl: "https://github.com/raghvender-tyagi/CampEx",
+    },
+    {
+      id: "gh-impact-analyzer",
+      number: "04",
       title: "GitHub Change Impact Analyzer",
       pitch:
         "Pull request static intelligence engine analyzing AST diff trees and module dependency graphs to predict downstream blast radius and risk.",
       category: "Backend",
+      statusType: "repo",
       tags: [
         "Python",
         "Static Analysis",
@@ -234,11 +262,12 @@ export const portfolioContent = {
     },
     {
       id: "netra-mitra",
-      number: "04",
+      number: "05",
       title: "NETRA MITRA",
       pitch:
         "AI robotic guidance system enabling safe autonomous navigation, obstacle avoidance, and audio scene perception for visually impaired people.",
       category: "Robotics",
+      statusType: "repo",
       tags: [
         "Raspberry Pi",
         "ESP32-CAM",
@@ -256,11 +285,12 @@ export const portfolioContent = {
     },
     {
       id: "smart-pesticide",
-      number: "05",
+      number: "06",
       title: "Smart Pesticide",
       pitch:
         "Edge-optimized PyTorch computer vision system for real-time crop disease detection and targeted precision chemical dispensing.",
       category: "Robotics",
+      statusType: "repo",
       tags: ["PyTorch", "Computer Vision", "Edge AI", "Raspberry Pi", "Agritech"],
       bullets: [
         "Trained convolutional vision models to identify crop diseases in real-time under variable outdoor field lighting.",

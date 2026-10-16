@@ -17,16 +17,12 @@ export default function PixelHeroCanvas() {
     const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
 
-    // Palette constants
     const COLOR_DARK = "#161616";
     const COLOR_LIGHT = "#E4E4E4";
+    const COLOR_ACCENT = "#3B4BFF";
 
-    // Mouse coordinates (relative to canvas)
     let mouseX = -1000;
     let mouseY = -1000;
-    let glowX = -1000;
-    let glowY = -1000;
-    let lastMouseMoveTime = 0;
 
     let width = 0;
     let height = 0;
@@ -36,10 +32,11 @@ export default function PixelHeroCanvas() {
 
     interface Cell {
       baseDark: boolean;
-      flip: number;
-      isTextSafe: boolean; // inside headline / CTA safe zone (must stay light)
-      isInfoSafe: boolean; // inside bottom-right manifest card (must stay dark)
+      currentDark: boolean;
+      flipTimer: number; // For interactive stagger
+      isHardLight: boolean; // Left 7 columns & nav band
     }
+
     let grid: Cell[][] = [];
 
     const initGrid = () => {
@@ -64,129 +61,134 @@ export default function PixelHeroCanvas() {
       cols = Math.ceil(width / cellSize) + 1;
       rows = Math.ceil(height / cellSize) + 1;
 
-      // Measure DOM safe zones
-      const textZoneEl = document.getElementById("hero-text-zone");
-      const infoCardEl = document.getElementById("hero-info-card");
+      // Calculate 12-column boundary
+      const sideMargin = width < 768 ? 24 : 64;
+      const contentWidth = Math.max(0, width - sideMargin * 2);
+      // Col 7 boundary: 7/12th of content width + sideMargin
+      const col7BoundaryX = sideMargin + contentWidth * (7 / 12);
 
-      let textRect = { left: 0, top: 0, right: 0, bottom: 0 };
-      if (textZoneEl) {
-        const tr = textZoneEl.getBoundingClientRect();
-        const pr = parent.getBoundingClientRect();
-        textRect = {
-          left: Math.max(0, tr.left - pr.left - 36),
-          top: Math.max(0, tr.top - pr.top - 24),
-          right: tr.right - pr.left + 36,
-          bottom: tr.bottom - pr.top + 36,
-        };
-      } else {
-        // Fallback bounds
-        textRect = {
-          left: 0,
-          top: 0,
-          right: width < 768 ? width : Math.min(width * 0.75, 880),
-          bottom: width < 768 ? height * 0.65 : Math.min(height * 0.78, 620),
-        };
-      }
-
-      let infoRect = { left: 0, top: 0, right: 0, bottom: 0 };
-      if (infoCardEl) {
-        const ir = infoCardEl.getBoundingClientRect();
-        const pr = parent.getBoundingClientRect();
-        infoRect = {
-          left: ir.left - pr.left - 20,
-          top: ir.top - pr.top - 20,
-          right: ir.right - pr.left + 20,
-          bottom: ir.bottom - pr.top + 20,
-        };
-      } else {
-        infoRect = {
-          left: width - Math.min(width * 0.5, 580),
-          top: height - 260,
-          right: width,
-          bottom: height,
-        };
-      }
+      const navBandY = 72; // Nav band top 72px
+      const bottomTransitionY = height - 140; // Last 140px
 
       grid = [];
       for (let c = 0; c < cols; c++) {
         grid[c] = [];
-        const cellLeft = c * cellSize;
-        const cellRight = cellLeft + cellSize;
+        const cellX = c * cellSize;
 
         for (let r = 0; r < rows; r++) {
-          const cellTop = r * cellSize;
-          const cellBottom = cellTop + cellSize;
+          const cellY = r * cellSize;
 
-          // Check intersection with text safe zone (headline & CTAs)
-          const inTextSafe =
-            cellRight >= textRect.left &&
-            cellLeft <= textRect.right &&
-            cellBottom >= textRect.top &&
-            cellTop <= textRect.bottom;
+          // 1. Nav band (top 72px) is always strictly light
+          const inNavBand = cellY + cellSize <= navBandY;
 
-          // Check intersection with info card safe zone
-          const inInfoSafe =
-            cellRight >= infoRect.left &&
-            cellLeft <= infoRect.right &&
-            cellBottom >= infoRect.top &&
-            cellTop <= infoRect.bottom;
+          // 2. Left 7 columns hard mask from below nav to bottom transition
+          const inLeft7Col =
+            cellX + cellSize <= col7BoundaryX &&
+            cellY >= navBandY &&
+            cellY < bottomTransitionY;
 
-          let baseDark = false;
-
-          if (inTextSafe) {
-            baseDark = false; // Strictly light behind headline & CTAs
-          } else if (inInfoSafe) {
-            baseDark = true; // Strictly dark behind manifest card
-          } else {
-            // Bleed from right edge and bottom
-            const u = (c / cols) * 0.66 + (r / rows) * 0.58;
-
-            const noise =
-              Math.sin(c * 0.26 + r * 0.18) * 0.12 +
-              Math.cos(c * 0.14 - r * 0.22) * 0.08 +
-              Math.sin((c + r) * 0.35) * 0.06;
-
-            const bayer =
-              ((((c * 5 + r * 9) % 13) / 13) - 0.5) * 0.14;
-
-            const val = u + noise + bayer;
-            baseDark = val > 0.56;
-          }
+          const isHardLight = inNavBand || inLeft7Col;
 
           grid[c][r] = {
-            baseDark,
-            flip: 0,
-            isTextSafe: inTextSafe,
-            isInfoSafe: inInfoSafe,
+            baseDark: false,
+            currentDark: false,
+            flipTimer: 0,
+            isHardLight,
           };
         }
       }
+    };
 
-      // Morphological cleanup pass: remove isolated single-pixel noise
-      // so boundaries read as chunky stair-steps like the reference
+    // Calculate baseline shapes and undulation
+    const computeBaseGrid = (timeSec: number) => {
+      const sideMargin = width < 768 ? 24 : 64;
+      const contentWidth = Math.max(0, width - sideMargin * 2);
+      const col7BoundaryX = sideMargin + contentWidth * (7 / 12);
+      const navBandY = 72;
+      const bottomTransitionY = height - 140;
+
+      for (let r = 0; r < rows; r++) {
+        const cellY = r * cellSize;
+
+        // Top 72px nav band: always light
+        if (cellY + cellSize <= navBandY) {
+          for (let c = 0; c < cols; c++) {
+            grid[c][r].baseDark = false;
+            grid[c][r].isHardLight = true;
+          }
+          continue;
+        }
+
+        // Bottom 140px transition zone: dark mass spreads across full width
+        if (cellY >= bottomTransitionY) {
+          const transitionProgress = (cellY - bottomTransitionY) / 140;
+          // Step dark mass smoothly leftward to cover width
+          const leftCutoff = (1 - transitionProgress) * col7BoundaryX;
+
+          for (let c = 0; c < cols; c++) {
+            const cellX = c * cellSize;
+            const isDark = cellX >= leftCutoff;
+            grid[c][r].baseDark = isDark;
+            grid[c][r].isHardLight = !isDark;
+          }
+          continue;
+        }
+
+        // Middle zone: slow, gentle undulation (amplitude ~4-6 cells)
+        const wave =
+          Math.sin(r * 0.16 + timeSec * 0.4) * (cellSize * 3.5) +
+          Math.cos(r * 0.08 + timeSec * 0.2) * (cellSize * 1.5);
+
+        // Undulating boundary running vertically between col 7 & 8
+        const boundaryX = col7BoundaryX + wave + cellSize * 1.5;
+
+        for (let c = 0; c < cols; c++) {
+          const cellX = c * cellSize;
+          const isDark = cellX >= boundaryX;
+
+          // Enforce 1-cell feathering at the boundary
+          const isHardLight = cellX + cellSize < col7BoundaryX;
+
+          grid[c][r].baseDark = isHardLight ? false : isDark;
+          grid[c][r].isHardLight = isHardLight;
+        }
+      }
+
+      // Cleanup pass: eliminate small clusters (< 12 cells) and fill small holes (< 12 cells)
+      // to guarantee ONE coherent dark mass with zero islands or floating blocks
+      cleanupGrid();
+    };
+
+    const cleanupGrid = () => {
+      // 2-pass morphological filtering:
+      // Fill single-cell gaps and remove single protrusions
       for (let c = 1; c < cols - 1; c++) {
         for (let r = 1; r < rows - 1; r++) {
-          const cell = grid[c][r];
-          if (cell.isTextSafe || cell.isInfoSafe) continue;
+          if (grid[c][r].isHardLight) continue;
 
-          // Count 4-connected neighbors
-          let sameCount = 0;
-          if (grid[c - 1][r].baseDark === cell.baseDark) sameCount++;
-          if (grid[c + 1][r].baseDark === cell.baseDark) sameCount++;
-          if (grid[c][r - 1].baseDark === cell.baseDark) sameCount++;
-          if (grid[c][r + 1].baseDark === cell.baseDark) sameCount++;
+          let darkNeighbors = 0;
+          if (grid[c - 1][r].baseDark) darkNeighbors++;
+          if (grid[c + 1][r].baseDark) darkNeighbors++;
+          if (grid[c][r - 1].baseDark) darkNeighbors++;
+          if (grid[c][r + 1].baseDark) darkNeighbors++;
 
-          // If isolated single cell, flip to match surroundings
-          if (sameCount <= 1) {
-            cell.baseDark = !cell.baseDark;
+          // If a light cell is surrounded by 3 or 4 dark neighbors, fill hole
+          if (!grid[c][r].baseDark && darkNeighbors >= 3) {
+            grid[c][r].baseDark = true;
+          }
+          // If a dark cell is surrounded by 3 or 4 light neighbors, remove protrusion
+          if (grid[c][r].baseDark && darkNeighbors <= 1) {
+            grid[c][r].baseDark = false;
           }
         }
       }
     };
 
+    // Draw faint '+' marks ONLY inside the dark zone at ~6% opacity
     const drawCrosshairs = () => {
       if (!ctx) return;
       ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(228, 228, 228, 0.06)";
 
       for (let c = 0; c <= cols; c++) {
         for (let r = 0; r <= rows; r++) {
@@ -194,15 +196,11 @@ export default function PixelHeroCanvas() {
           const sampleR = Math.min(r, rows - 1);
           const cell = grid[sampleC]?.[sampleR];
 
-          // Omit crosshairs completely inside the text safe zone
-          if (cell && cell.isTextSafe) continue;
+          // Only draw inside the dark zone, never in the light zone
+          if (!cell || !cell.currentDark) continue;
 
           const x = c * cellSize;
           const y = r * cellSize;
-          const isDark = cell ? (cell.flip > 0.5 ? !cell.baseDark : cell.baseDark) : false;
-
-          // Faint crosshairs at ~8% opacity
-          ctx.strokeStyle = isDark ? "rgba(228, 228, 228, 0.08)" : "rgba(22, 22, 22, 0.08)";
 
           ctx.beginPath();
           ctx.moveTo(x - 2.5, y);
@@ -216,6 +214,8 @@ export default function PixelHeroCanvas() {
 
     const renderStatic = () => {
       if (!ctx) return;
+      computeBaseGrid(0);
+
       ctx.fillStyle = COLOR_LIGHT;
       ctx.fillRect(0, 0, width, height);
 
@@ -223,8 +223,9 @@ export default function PixelHeroCanvas() {
         for (let r = 0; r < rows; r++) {
           const cell = grid[c]?.[r];
           if (!cell) continue;
+          cell.currentDark = cell.baseDark;
 
-          if (cell.baseDark) {
+          if (cell.currentDark) {
             ctx.fillStyle = COLOR_DARK;
             ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
           }
@@ -258,88 +259,91 @@ export default function PixelHeroCanvas() {
       const dt = Math.min(elapsed / 1000, 0.1);
       lastTime = currentTime - (elapsed % frameInterval);
 
-      // Smooth cursor trail with slight lag (lerp 0.15)
-      glowX += (mouseX - glowX) * 0.15;
-      glowY += (mouseY - glowY) * 0.15;
+      const timeSec = currentTime * 0.001;
 
-      // 30% slower ambient drift speed
-      const timeSec = currentTime * 0.0007;
-      const isIdle = currentTime - lastMouseMoveTime > 2500 || isTouch;
+      // Update baseline grid with slow, calm undulation
+      computeBaseGrid(timeSec);
 
       // Base fill
       ctx.fillStyle = COLOR_LIGHT;
       ctx.fillRect(0, 0, width, height);
 
-      // Cursor reaction radius ~6 cells with eased falloff
-      const interactRadius = cellSize * 6;
-      const interactRadiusSq = interactRadius * interactRadius;
+      // Cell cursor interaction: find cell under pointer
+      const sideMargin = width < 768 ? 24 : 64;
+      const contentWidth = Math.max(0, width - sideMargin * 2);
+      const col7BoundaryX = sideMargin + contentWidth * (7 / 12);
 
+      let hoverC = -1;
+      let hoverR = -1;
+
+      // Only enable cell highlights/flips inside the dark zone and its edge
+      if (!isTouch && mouseX >= col7BoundaryX - cellSize * 2 && mouseX < width && mouseY >= 72 && mouseY < height) {
+        hoverC = Math.floor(mouseX / cellSize);
+        hoverR = Math.floor(mouseY / cellSize);
+      }
+
+      // Trigger staggered flips for 3x3 neighborhood around hover cell
+      if (hoverC >= 0 && hoverR >= 0) {
+        for (let dc = -1; dc <= 1; dc++) {
+          for (let dr = -1; dr <= 1; dr++) {
+            const nc = hoverC + dc;
+            const nr = hoverR + dr;
+            if (nc >= 0 && nc < cols && nr >= 0 && nr < rows) {
+              const cell = grid[nc][nr];
+              if (!cell.isHardLight) {
+                const ring = Math.max(Math.abs(dc), Math.abs(dr));
+                // Center ring 0: immediate; Ring 1: staggered
+                const initialTimer = ring === 0 ? 0.35 : 0.25;
+                if (cell.flipTimer < 0.1) {
+                  cell.flipTimer = initialTimer;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Update flip timers and render cells
       for (let c = 0; c < cols; c++) {
-        const cx = c * cellSize + cellSize * 0.5;
         for (let r = 0; r < rows; r++) {
-          const cy = r * cellSize + cellSize * 0.5;
           const cell = grid[c][r];
 
-          // Mouse interaction (strictly disabled inside text safe zone)
-          if (!isTouch && !cell.isTextSafe && mouseX > -500) {
-            const dx = cx - mouseX;
-            const dy = cy - mouseY;
-            const distSq = dx * dx + dy * dy;
-            if (distSq < interactRadiusSq) {
-              const dist = Math.sqrt(distSq);
-              // Eased cosine falloff
-              const factor = Math.cos((dist / interactRadius) * (Math.PI / 2));
-              cell.flip = Math.max(cell.flip, factor);
-            }
+          if (cell.flipTimer > 0) {
+            cell.flipTimer = Math.max(0, cell.flipTimer - dt);
+            // Flip color while timer is active
+            cell.currentDark = cell.flipTimer > 0.05 ? !cell.baseDark : cell.baseDark;
+          } else {
+            cell.currentDark = cell.baseDark;
           }
 
-          let isDark = cell.baseDark;
-
-          // Slower ambient wave on idle/touch (never in text safe zone)
-          if (isIdle && !cell.isTextSafe && !cell.isInfoSafe) {
-            const wave = Math.sin(timeSec + c * 0.22 + r * 0.18) * 0.08;
-            const u = (c / cols) * 0.66 + (r / rows) * 0.58;
-            const noise =
-              Math.sin(c * 0.26 + r * 0.18) * 0.12 +
-              Math.cos(c * 0.14 - r * 0.22) * 0.08;
-            const val = u + noise + wave;
-            isDark = val > 0.56;
+          // Enforce hard light column strictly
+          if (cell.isHardLight) {
+            cell.currentDark = false;
           }
 
-          // Decrement flip timer
-          if (cell.flip > 0) {
-            cell.flip = Math.max(0, cell.flip - dt * 2.0);
-            if (cell.flip > 0.45 && !cell.isTextSafe) {
-              isDark = !cell.baseDark;
-            }
-          }
-
-          // Guaranteed contrast enforcement
-          if (cell.isTextSafe) {
-            isDark = false;
-          } else if (cell.isInfoSafe) {
-            isDark = true;
-          }
-
-          if (isDark) {
+          if (cell.currentDark) {
             ctx.fillStyle = COLOR_DARK;
             ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
           }
         }
       }
 
+      // Draw faint '+' marks only inside dark zone
       drawCrosshairs();
 
-      // Soft electric-blue radial glow following cursor (z-index 0 below all content)
-      if (glowX > -200 && glowX < width + 200 && glowY > -200 && glowY < height + 200) {
-        const glowRadius = width < 768 ? 120 : 160;
-        const grad = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, glowRadius);
-        grad.addColorStop(0, "rgba(59, 75, 255, 0.18)");
-        grad.addColorStop(0.5, "rgba(59, 75, 255, 0.06)");
-        grad.addColorStop(1, "rgba(59, 75, 255, 0)");
-
-        ctx.fillStyle = grad;
-        ctx.fillRect(glowX - glowRadius, glowY - glowRadius, glowRadius * 2, glowRadius * 2);
+      // Highlight the hovered pixel cell with a 1px blue (#3B4BFF) outline
+      if (hoverC >= 0 && hoverR >= 0 && hoverC < cols && hoverR < rows) {
+        const cell = grid[hoverC][hoverR];
+        if (!cell.isHardLight) {
+          ctx.strokeStyle = COLOR_ACCENT;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(
+            hoverC * cellSize + 0.5,
+            hoverR * cellSize + 0.5,
+            cellSize - 1,
+            cellSize - 1
+          );
+        }
       }
 
       animId = requestAnimationFrame(loop);
@@ -351,7 +355,6 @@ export default function PixelHeroCanvas() {
       const rect = canvas.getBoundingClientRect();
       mouseX = e.clientX - rect.left;
       mouseY = e.clientY - rect.top;
-      lastMouseMoveTime = performance.now();
     };
 
     const handleMouseLeave = () => {

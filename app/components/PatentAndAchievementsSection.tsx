@@ -13,9 +13,10 @@ export default function PatentAndAchievementsSection() {
         {/* Section Header */}
         <div className="pb-12 border-b border-[#2A2A2A] flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="font-mono text-xs uppercase tracking-widest text-[#3B4BFF] mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 bg-[#3B4BFF]" />
-              <span>IP, CERTIFICATIONS & COMPETITIONS</span>
+            <div className="font-mono text-xs uppercase tracking-[0.08em] text-[#8E8E8E] mb-3 flex items-center gap-2">
+              <span className="text-[#3B4BFF] font-bold">03 / ABOUT</span>
+              <span>—</span>
+              <span>PATENT, CREDENTIALS & EDUCATION</span>
             </div>
             <h2 className="font-headline font-light text-4xl md:text-6xl tracking-tight text-[#E4E4E4]">
               Patent & Credentials

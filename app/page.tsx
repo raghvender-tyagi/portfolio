@@ -1,9 +1,9 @@
 import HeroSection from "./components/HeroSection";
-import NowAndStats from "./components/NowAndStats";
 import ProjectsSection from "./components/ProjectsSection";
 import ExperienceSection from "./components/ExperienceSection";
-import SkillsSection from "./components/SkillsSection";
 import PatentAndAchievementsSection from "./components/PatentAndAchievementsSection";
+import NowAndStats from "./components/NowAndStats";
+import SkillsSection from "./components/SkillsSection";
 import BuildLogSection from "./components/BuildLogSection";
 import ContactSection from "./components/ContactSection";
 import PixelDivider from "./components/PixelDivider";
@@ -11,33 +11,29 @@ import PixelDivider from "./components/PixelDivider";
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#161616] text-[#E4E4E4]">
-      {/* Hero Section with Interactive Pixel Grid Canvas */}
+      {/* Hero Section (Hands off to Dark at bottom 140px) */}
       <HeroSection />
 
-      {/* "Now" Focus Strip & Verified Stats */}
-      <NowAndStats />
-
-      {/* Transition to Light: Work / Projects */}
-      <PixelDivider from="dark" to="light" />
+      {/* 01 / WORK (Begins on Dark with stepped pixel top edge) */}
       <ProjectsSection />
 
-      {/* Transition to Dark: Experience Timeline */}
-      <PixelDivider from="light" to="dark" />
+      {/* Transition to Light: 02 / EXPERIENCE */}
+      <PixelDivider from="dark" to="light" />
       <ExperienceSection />
 
-      {/* Transition to Light: Skills Taxonomy */}
-      <PixelDivider from="dark" to="light" />
-      <SkillsSection />
-
-      {/* Transition to Dark: Patent, Certifications, Achievements & Education */}
+      {/* Transition to Dark: 03 / ABOUT */}
       <PixelDivider from="light" to="dark" />
       <PatentAndAchievementsSection />
 
-      {/* Transition to Light: Build Log */}
+      {/* Active Focus & Stats Row (Dark) */}
+      <NowAndStats />
+
+      {/* Transition to Light: 04 / SKILLS & Build Log */}
       <PixelDivider from="dark" to="light" />
+      <SkillsSection />
       <BuildLogSection />
 
-      {/* Transition to Dark: Contact & Closing Footer */}
+      {/* Transition to Dark: 05 / CONTACT */}
       <PixelDivider from="light" to="dark" />
       <ContactSection />
     </main>

@@ -12,9 +12,10 @@ export default function ContactSection() {
         {/* Main Call to Action */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start pb-16 border-b border-[#2A2A2A]">
           <div className="lg:col-span-8">
-            <div className="font-mono text-xs uppercase tracking-widest text-[#3B4BFF] mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 bg-[#3B4BFF]" />
-              <span>COMMUNICATION CHANNEL // DIRECT DISPATCH</span>
+            <div className="font-mono text-xs uppercase tracking-[0.08em] text-[#8E8E8E] mb-4 flex items-center gap-2">
+              <span className="text-[#3B4BFF] font-bold">05 / CONTACT</span>
+              <span>—</span>
+              <span>DIRECT DISPATCH & CHANNELS</span>
             </div>
             <h2 className="font-headline font-light text-4xl sm:text-6xl md:text-7xl tracking-tight text-[#E4E4E4] leading-[1]">
               {contact.heading}
