@@ -33,7 +33,8 @@ export default function CustomCursor() {
     getPointerServerSnapshot
   );
 
-  const [pos, setPos] = useState<{ x: number; y: number }>({ x: -100, y: -100 });
+  const [cursorPos, setCursorPos] = useState<{ x: number; y: number }>({ x: -100, y: -100 });
+  const [glowPos, setGlowPos] = useState<{ x: number; y: number }>({ x: -100, y: -100 });
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -43,8 +44,10 @@ export default function CustomCursor() {
     let rafId: number;
     let targetX = -100;
     let targetY = -100;
-    let currentX = -100;
-    let currentY = -100;
+    let curX = -100;
+    let curY = -100;
+    let gX = -100;
+    let gY = -100;
 
     const onMouseMove = (e: MouseEvent) => {
       targetX = e.clientX;
@@ -65,10 +68,16 @@ export default function CustomCursor() {
     };
 
     const animate = () => {
-      // Smooth lerp
-      currentX += (targetX - currentX) * 0.35;
-      currentY += (targetY - currentY) * 0.35;
-      setPos({ x: currentX, y: currentY });
+      // Cursor fast lerp
+      curX += (targetX - curX) * 0.35;
+      curY += (targetY - curY) * 0.35;
+      setCursorPos({ x: curX, y: curY });
+
+      // Glow slight lag lerp 0.15
+      gX += (targetX - gX) * 0.15;
+      gY += (targetY - gY) * 0.15;
+      setGlowPos({ x: gX, y: gY });
+
       rafId = requestAnimationFrame(animate);
     };
 
@@ -86,36 +95,46 @@ export default function CustomCursor() {
   if (isTouch || !isVisible) return null;
 
   return (
-    <div
-      className="pointer-events-none fixed top-0 left-0 z-[9999]"
-      style={{
-        transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
-        transition: "opacity 0.15s ease",
-      }}
-      aria-hidden="true"
-    >
-      {/* Soft electric-blue glow */}
+    <>
+      {/* 1. Soft radial glow below content at z-[5] (never darkens or sits above text) */}
       <div
-        className="absolute -top-12 -left-12 w-24 h-24 rounded-full pointer-events-none"
+        className="pointer-events-none fixed top-0 left-0 z-[5]"
         style={{
-          background:
-            "radial-gradient(circle, rgba(59, 75, 255, 0.22) 0%, rgba(59, 75, 255, 0.05) 50%, transparent 70%)",
+          transform: `translate3d(${glowPos.x}px, ${glowPos.y}px, 0)`,
+          transition: "opacity 0.15s ease",
         }}
-      />
+        aria-hidden="true"
+      >
+        <div
+          className="absolute -top-20 -left-20 w-40 h-40 pointer-events-none rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(59, 75, 255, 0.18) 0%, rgba(59, 75, 255, 0.05) 50%, transparent 70%)",
+            filter: "blur(8px)",
+          }}
+        />
+      </div>
 
-      {/* Brutalist cursor square */}
+      {/* 2. Single small square cursor (10px) growing to 32px over links at z-[60] */}
       <div
-        className={`absolute -top-1.5 -left-1.5 border border-[#3B4BFF] transition-all duration-150 ease-out ${
-          isHovered
-            ? "w-8 h-8 -top-4 -left-4 bg-[#3B4BFF]/20 border-[#3B4BFF]"
-            : "w-3 h-3 bg-white/90"
-        }`}
+        className="pointer-events-none fixed top-0 left-0 z-[60]"
         style={{
-          boxShadow: isHovered
-            ? "0 0 12px rgba(59, 75, 255, 0.4)"
-            : "0 0 6px rgba(59, 75, 255, 0.3)",
+          transform: `translate3d(${cursorPos.x}px, ${cursorPos.y}px, 0)`,
+          transition: "opacity 0.15s ease",
         }}
-      />
-    </div>
+        aria-hidden="true"
+      >
+        <div
+          className={`absolute transition-all duration-150 ease-out border ${
+            isHovered
+              ? "w-8 h-8 -top-4 -left-4 border-[#3B4BFF] bg-[#3B4BFF]/15"
+              : "w-2.5 h-2.5 -top-[5px] -left-[5px] border-[#161616] bg-[#161616]"
+          }`}
+          style={{
+            boxShadow: isHovered ? "0 0 10px rgba(59, 75, 255, 0.35)" : "none",
+          }}
+        />
+      </div>
+    </>
   );
 }

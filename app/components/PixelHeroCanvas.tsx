@@ -34,12 +34,11 @@ export default function PixelHeroCanvas() {
     let cols = 0;
     let rows = 0;
 
-    // Grid cell states
     interface Cell {
       baseDark: boolean;
-      flip: number; // 0 (base) to 1 (inverted)
-      crossX: number;
-      crossY: number;
+      flip: number;
+      isTextSafe: boolean; // inside headline / CTA safe zone (must stay light)
+      isInfoSafe: boolean; // inside bottom-right manifest card (must stay dark)
     }
     let grid: Cell[][] = [];
 
@@ -60,38 +59,157 @@ export default function PixelHeroCanvas() {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
 
-      // Adaptive cell size
-      cellSize = width < 640 ? 16 : width < 1024 ? 20 : 22;
+      // Cell size: 20px desktop, 14px mobile
+      cellSize = width < 768 ? 14 : 20;
       cols = Math.ceil(width / cellSize) + 1;
       rows = Math.ceil(height / cellSize) + 1;
+
+      // Measure DOM safe zones
+      const textZoneEl = document.getElementById("hero-text-zone");
+      const infoCardEl = document.getElementById("hero-info-card");
+
+      let textRect = { left: 0, top: 0, right: 0, bottom: 0 };
+      if (textZoneEl) {
+        const tr = textZoneEl.getBoundingClientRect();
+        const pr = parent.getBoundingClientRect();
+        textRect = {
+          left: Math.max(0, tr.left - pr.left - 36),
+          top: Math.max(0, tr.top - pr.top - 24),
+          right: tr.right - pr.left + 36,
+          bottom: tr.bottom - pr.top + 36,
+        };
+      } else {
+        // Fallback bounds
+        textRect = {
+          left: 0,
+          top: 0,
+          right: width < 768 ? width : Math.min(width * 0.75, 880),
+          bottom: width < 768 ? height * 0.65 : Math.min(height * 0.78, 620),
+        };
+      }
+
+      let infoRect = { left: 0, top: 0, right: 0, bottom: 0 };
+      if (infoCardEl) {
+        const ir = infoCardEl.getBoundingClientRect();
+        const pr = parent.getBoundingClientRect();
+        infoRect = {
+          left: ir.left - pr.left - 20,
+          top: ir.top - pr.top - 20,
+          right: ir.right - pr.left + 20,
+          bottom: ir.bottom - pr.top + 20,
+        };
+      } else {
+        infoRect = {
+          left: width - Math.min(width * 0.5, 580),
+          top: height - 260,
+          right: width,
+          bottom: height,
+        };
+      }
 
       grid = [];
       for (let c = 0; c < cols; c++) {
         grid[c] = [];
+        const cellLeft = c * cellSize;
+        const cellRight = cellLeft + cellSize;
+
         for (let r = 0; r < rows; r++) {
-          // Cellular / Dithered bleed calculation
-          // Bottom-right quadrant is dark, bleeding into top-left light area
-          const u = (c / cols) * 0.62 + (r / rows) * 0.58;
+          const cellTop = r * cellSize;
+          const cellBottom = cellTop + cellSize;
 
-          // Organic harmonic frequencies for jagged dithered boundary
-          const noise =
-            Math.sin(c * 0.26 + r * 0.18) * 0.13 +
-            Math.cos(c * 0.14 - r * 0.22) * 0.09 +
-            Math.sin((c + r) * 0.38) * 0.07;
+          // Check intersection with text safe zone (headline & CTAs)
+          const inTextSafe =
+            cellRight >= textRect.left &&
+            cellLeft <= textRect.right &&
+            cellBottom >= textRect.top &&
+            cellTop <= textRect.bottom;
 
-          // Bayer 4x4 dither pseudo-matrix
-          const bayer =
-            ((((c * 5 + r * 9) % 13) / 13) - 0.5) * 0.14;
+          // Check intersection with info card safe zone
+          const inInfoSafe =
+            cellRight >= infoRect.left &&
+            cellLeft <= infoRect.right &&
+            cellBottom >= infoRect.top &&
+            cellTop <= infoRect.bottom;
 
-          const val = u + noise + bayer;
-          const baseDark = val > 0.56;
+          let baseDark = false;
+
+          if (inTextSafe) {
+            baseDark = false; // Strictly light behind headline & CTAs
+          } else if (inInfoSafe) {
+            baseDark = true; // Strictly dark behind manifest card
+          } else {
+            // Bleed from right edge and bottom
+            const u = (c / cols) * 0.66 + (r / rows) * 0.58;
+
+            const noise =
+              Math.sin(c * 0.26 + r * 0.18) * 0.12 +
+              Math.cos(c * 0.14 - r * 0.22) * 0.08 +
+              Math.sin((c + r) * 0.35) * 0.06;
+
+            const bayer =
+              ((((c * 5 + r * 9) % 13) / 13) - 0.5) * 0.14;
+
+            const val = u + noise + bayer;
+            baseDark = val > 0.56;
+          }
 
           grid[c][r] = {
             baseDark,
             flip: 0,
-            crossX: c * cellSize,
-            crossY: r * cellSize,
+            isTextSafe: inTextSafe,
+            isInfoSafe: inInfoSafe,
           };
+        }
+      }
+
+      // Morphological cleanup pass: remove isolated single-pixel noise
+      // so boundaries read as chunky stair-steps like the reference
+      for (let c = 1; c < cols - 1; c++) {
+        for (let r = 1; r < rows - 1; r++) {
+          const cell = grid[c][r];
+          if (cell.isTextSafe || cell.isInfoSafe) continue;
+
+          // Count 4-connected neighbors
+          let sameCount = 0;
+          if (grid[c - 1][r].baseDark === cell.baseDark) sameCount++;
+          if (grid[c + 1][r].baseDark === cell.baseDark) sameCount++;
+          if (grid[c][r - 1].baseDark === cell.baseDark) sameCount++;
+          if (grid[c][r + 1].baseDark === cell.baseDark) sameCount++;
+
+          // If isolated single cell, flip to match surroundings
+          if (sameCount <= 1) {
+            cell.baseDark = !cell.baseDark;
+          }
+        }
+      }
+    };
+
+    const drawCrosshairs = () => {
+      if (!ctx) return;
+      ctx.lineWidth = 1;
+
+      for (let c = 0; c <= cols; c++) {
+        for (let r = 0; r <= rows; r++) {
+          const sampleC = Math.min(c, cols - 1);
+          const sampleR = Math.min(r, rows - 1);
+          const cell = grid[sampleC]?.[sampleR];
+
+          // Omit crosshairs completely inside the text safe zone
+          if (cell && cell.isTextSafe) continue;
+
+          const x = c * cellSize;
+          const y = r * cellSize;
+          const isDark = cell ? (cell.flip > 0.5 ? !cell.baseDark : cell.baseDark) : false;
+
+          // Faint crosshairs at ~8% opacity
+          ctx.strokeStyle = isDark ? "rgba(228, 228, 228, 0.08)" : "rgba(22, 22, 22, 0.08)";
+
+          ctx.beginPath();
+          ctx.moveTo(x - 2.5, y);
+          ctx.lineTo(x + 2.5, y);
+          ctx.moveTo(x, y - 2.5);
+          ctx.lineTo(x, y + 2.5);
+          ctx.stroke();
         }
       }
     };
@@ -101,7 +219,6 @@ export default function PixelHeroCanvas() {
       ctx.fillStyle = COLOR_LIGHT;
       ctx.fillRect(0, 0, width, height);
 
-      // Draw cells
       for (let c = 0; c < cols; c++) {
         for (let r = 0; r < rows; r++) {
           const cell = grid[c]?.[r];
@@ -113,36 +230,7 @@ export default function PixelHeroCanvas() {
           }
         }
       }
-
-      // Draw faint crosshairs
       drawCrosshairs();
-    };
-
-    const drawCrosshairs = () => {
-      if (!ctx) return;
-      ctx.lineWidth = 1;
-
-      for (let c = 0; c <= cols; c++) {
-        for (let r = 0; r <= rows; r++) {
-          const x = c * cellSize;
-          const y = r * cellSize;
-          const sampleC = Math.min(c, cols - 1);
-          const sampleR = Math.min(r, rows - 1);
-          const cell = grid[sampleC]?.[sampleR];
-          const isDark = cell ? (cell.flip > 0.5 ? !cell.baseDark : cell.baseDark) : false;
-
-          ctx.strokeStyle = isDark ? "rgba(228, 228, 228, 0.08)" : "rgba(22, 22, 22, 0.08)";
-
-          ctx.beginPath();
-          // Horizontal line
-          ctx.moveTo(x - 2.5, y);
-          ctx.lineTo(x + 2.5, y);
-          // Vertical line
-          ctx.moveTo(x, y - 2.5);
-          ctx.lineTo(x, y + 2.5);
-          ctx.stroke();
-        }
-      }
     };
 
     initGrid();
@@ -170,57 +258,67 @@ export default function PixelHeroCanvas() {
       const dt = Math.min(elapsed / 1000, 0.1);
       lastTime = currentTime - (elapsed % frameInterval);
 
-      // Smooth cursor trail for blue glow
-      glowX += (mouseX - glowX) * 0.14;
-      glowY += (mouseY - glowY) * 0.14;
+      // Smooth cursor trail with slight lag (lerp 0.15)
+      glowX += (mouseX - glowX) * 0.15;
+      glowY += (mouseY - glowY) * 0.15;
 
-      const timeSec = currentTime * 0.001;
+      // 30% slower ambient drift speed
+      const timeSec = currentTime * 0.0007;
       const isIdle = currentTime - lastMouseMoveTime > 2500 || isTouch;
 
       // Base fill
       ctx.fillStyle = COLOR_LIGHT;
       ctx.fillRect(0, 0, width, height);
 
-      const interactRadius = 95;
+      // Cursor reaction radius ~6 cells with eased falloff
+      const interactRadius = cellSize * 6;
       const interactRadiusSq = interactRadius * interactRadius;
 
-      // Update and draw cells
       for (let c = 0; c < cols; c++) {
         const cx = c * cellSize + cellSize * 0.5;
         for (let r = 0; r < rows; r++) {
           const cy = r * cellSize + cellSize * 0.5;
           const cell = grid[c][r];
 
-          // Mouse interaction
-          if (!isTouch && mouseX > -500) {
+          // Mouse interaction (strictly disabled inside text safe zone)
+          if (!isTouch && !cell.isTextSafe && mouseX > -500) {
             const dx = cx - mouseX;
             const dy = cy - mouseY;
             const distSq = dx * dx + dy * dy;
             if (distSq < interactRadiusSq) {
-              const factor = 1 - Math.sqrt(distSq) / interactRadius;
+              const dist = Math.sqrt(distSq);
+              // Eased cosine falloff
+              const factor = Math.cos((dist / interactRadius) * (Math.PI / 2));
               cell.flip = Math.max(cell.flip, factor);
             }
           }
 
-          // Ambient subtle drift on touch or idle
           let isDark = cell.baseDark;
-          if (isIdle) {
-            const wave = Math.sin(timeSec * 0.9 + c * 0.22 + r * 0.18) * 0.08;
-            const u = (c / cols) * 0.62 + (r / rows) * 0.58;
+
+          // Slower ambient wave on idle/touch (never in text safe zone)
+          if (isIdle && !cell.isTextSafe && !cell.isInfoSafe) {
+            const wave = Math.sin(timeSec + c * 0.22 + r * 0.18) * 0.08;
+            const u = (c / cols) * 0.66 + (r / rows) * 0.58;
             const noise =
-              Math.sin(c * 0.26 + r * 0.18) * 0.13 +
-              Math.cos(c * 0.14 - r * 0.22) * 0.09;
+              Math.sin(c * 0.26 + r * 0.18) * 0.12 +
+              Math.cos(c * 0.14 - r * 0.22) * 0.08;
             const val = u + noise + wave;
-            if (val > 0.56) isDark = true;
-            else isDark = false;
+            isDark = val > 0.56;
           }
 
           // Decrement flip timer
           if (cell.flip > 0) {
-            cell.flip = Math.max(0, cell.flip - dt * 2.2);
-            if (cell.flip > 0.45) {
+            cell.flip = Math.max(0, cell.flip - dt * 2.0);
+            if (cell.flip > 0.45 && !cell.isTextSafe) {
               isDark = !cell.baseDark;
             }
+          }
+
+          // Guaranteed contrast enforcement
+          if (cell.isTextSafe) {
+            isDark = false;
+          } else if (cell.isInfoSafe) {
+            isDark = true;
           }
 
           if (isDark) {
@@ -230,15 +328,14 @@ export default function PixelHeroCanvas() {
         }
       }
 
-      // Draw faint crosshairs
       drawCrosshairs();
 
-      // Soft electric-blue glow trailing cursor
+      // Soft electric-blue radial glow following cursor (z-index 0 below all content)
       if (glowX > -200 && glowX < width + 200 && glowY > -200 && glowY < height + 200) {
-        const glowRadius = width < 640 ? 110 : 150;
+        const glowRadius = width < 768 ? 120 : 160;
         const grad = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, glowRadius);
-        grad.addColorStop(0, "rgba(59, 75, 255, 0.17)");
-        grad.addColorStop(0.45, "rgba(59, 75, 255, 0.06)");
+        grad.addColorStop(0, "rgba(59, 75, 255, 0.18)");
+        grad.addColorStop(0.5, "rgba(59, 75, 255, 0.06)");
         grad.addColorStop(1, "rgba(59, 75, 255, 0)");
 
         ctx.fillStyle = grad;
@@ -250,7 +347,6 @@ export default function PixelHeroCanvas() {
 
     animId = requestAnimationFrame(loop);
 
-    // Event handlers
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseX = e.clientX - rect.left;
@@ -270,12 +366,10 @@ export default function PixelHeroCanvas() {
       }
     };
 
-    // Pause when tab hidden
     const handleVisibilityChange = () => {
       isVisible = !document.hidden;
     };
 
-    // Pause when scrolled out of view
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -309,4 +403,3 @@ export default function PixelHeroCanvas() {
     />
   );
 }
-

@@ -59,8 +59,34 @@ export default function SkillsSection() {
             </div>
           ))}
         </div>
+
+        {/* Core Architecture Patterns (Relocated cleanly from Hero) */}
+        <div className="mt-12 p-6 md:p-8 border border-[#161616]/25 bg-[#D8D8D8]/70">
+          <div className="font-mono text-[11px] text-[#3B4BFF] uppercase tracking-widest font-semibold mb-3">
+            {"// SPECIALIZED SYSTEM ARCHITECTURES & PATTERNS"}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs text-[#222222]">
+            <div className="space-y-1">
+              <span className="font-bold text-[#161616] block">• LangGraph Multi-Agent Workflows</span>
+              <span className="text-[#555555] font-headline text-xs block leading-relaxed">
+                State graphs, deterministic query routing, sub-agent communication, and long-running job persistence.
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="font-bold text-[#161616] block">• Sandboxed Docker Compute</span>
+              <span className="text-[#555555] font-headline text-xs block leading-relaxed">
+                docker-py container isolation, hard cgroup CPU/RAM limits, and isolated veth bridge networks for untrusted execution.
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="font-bold text-[#161616] block">• Hardened Text-to-SQL AST</span>
+              <span className="text-[#555555] font-headline text-xs block leading-relaxed">
+                Dual-layer AST/regex validation (validate_sql_access), schema masking, and strict RBAC enforcement.
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
-
