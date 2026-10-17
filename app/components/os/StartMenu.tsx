@@ -32,7 +32,17 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
   const [activeNestedSubmenu, setActiveNestedSubmenu] = useState<string | null>(
     null
   );
+  const [openLeft, setOpenLeft] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const checkWidth = () => {
+      setOpenLeft(window.innerWidth < 1180);
+    };
+    checkWidth();
+    window.addEventListener("resize", checkWidth);
+    return () => window.removeEventListener("resize", checkWidth);
+  }, []);
 
   const handleClose = useCallback(() => {
     setActiveSubmenu(null);
@@ -97,8 +107,8 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
       ref={menuRef}
       role="menu"
       aria-label="Start Menu"
-      className="fixed bottom-[38px] left-[2px] z-[110] bg-[#C0C0C0] bevel-out p-1 flex select-none shadow-[4px_4px_0_rgba(0,0,0,0.4)]"
-      style={{ width: "230px" }}
+      className="fixed bottom-[42px] left-1/2 -translate-x-1/2 z-[110] bg-[#C0C0C0] bevel-out p-1 flex select-none shadow-[6px_6px_0_rgba(0,0,0,0.4)]"
+      style={{ width: "240px" }}
     >
       {/* Left Vertical Banner (Rotated text: RT-OS 95) */}
       <div
@@ -165,7 +175,11 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
 
                   {/* Nested Projects List */}
                   {activeNestedSubmenu === "projects" && (
-                    <div className="absolute left-[98%] top-0 bg-[#C0C0C0] bevel-out p-1 w-64 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[130] space-y-0.5">
+                    <div
+                      className={`absolute ${
+                        openLeft ? "right-[98%]" : "left-[98%]"
+                      } top-0 bg-[#C0C0C0] bevel-out p-1 w-64 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[130] space-y-0.5`}
+                    >
                       {portfolioContent.projects.map((prj) => (
                         <button
                           key={prj.id}
@@ -245,7 +259,11 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
 
                   {/* Nested Accessories */}
                   {activeNestedSubmenu === "accessories" && (
-                    <div className="absolute left-[98%] top-0 bg-[#C0C0C0] bevel-out p-1 w-52 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[130] space-y-0.5">
+                    <div
+                      className={`absolute ${
+                        openLeft ? "right-[98%]" : "left-[98%]"
+                      } top-0 bg-[#C0C0C0] bevel-out p-1 w-52 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[130] space-y-0.5`}
+                    >
                       <button
                         type="button"
                         onClick={() => handleLaunch("terminal")}
@@ -304,7 +322,11 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
 
                   {/* Nested Games */}
                   {activeNestedSubmenu === "games" && (
-                    <div className="absolute left-[98%] top-0 bg-[#C0C0C0] bevel-out p-1 w-48 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[130] space-y-0.5">
+                    <div
+                      className={`absolute ${
+                        openLeft ? "right-[98%]" : "left-[98%]"
+                      } top-0 bg-[#C0C0C0] bevel-out p-1 w-48 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[130] space-y-0.5`}
+                    >
                       <button
                         type="button"
                         onClick={() => handleLaunch("snake")}

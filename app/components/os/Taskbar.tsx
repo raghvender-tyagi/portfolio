@@ -9,7 +9,6 @@ import { useWindowStore, WindowInstance } from "@/lib/os/windowStore";
 import { soundManager } from "@/lib/os/sound";
 import {
   rtStartLogo16,
-  robotFaceSprites,
   msDos32,
   myComputer32,
   winFolder32,
@@ -43,8 +42,6 @@ export default function Taskbar() {
     closeWindow,
     soundEnabled,
     setSoundEnabled,
-    sidekickEnabled,
-    setSidekickEnabled,
     openWindow,
   } = useWindowStore();
 
@@ -181,8 +178,14 @@ export default function Taskbar() {
         aria-label="RT-OS 95 Taskbar"
         className="fixed bottom-0 left-0 right-0 h-[38px] bg-[#C0C0C0] bevel-out z-[100] flex items-center justify-between px-1 select-none"
       >
-        {/* Left Side: Start Button + Quick Launch */}
-        <div className="flex items-center gap-1.5 h-full py-0.5">
+        {/* Left Side: System indicator */}
+        <div className="hidden lg:flex items-center gap-1.5 px-2 h-[26px] bevel-in text-[10px] font-pixel text-neutral-700 bg-[#C0C0C0]">
+          <span className="w-2 h-2 bg-[#008080] border border-black inline-block"></span>
+          <span className="font-bold tracking-wider">RT-OS 95</span>
+        </div>
+
+        {/* Center: Windows 11 style centered Start button + Quick Launch + Open Task Buttons */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 h-full py-0.5 max-w-[calc(100vw-180px)] overflow-x-auto scrollbar-none">
           {/* Start Button */}
           <button
             id="start-button"
@@ -190,7 +193,7 @@ export default function Taskbar() {
             aria-haspopup="true"
             aria-expanded={isStartOpen}
             onClick={handleStartClick}
-            className={`h-[28px] px-2 flex items-center gap-1.5 font-pixel text-[11px] font-bold tracking-wider cursor-pointer select-none outline-none ${
+            className={`h-[28px] px-2.5 flex items-center gap-1.5 font-pixel text-[11px] font-bold tracking-wider cursor-pointer select-none outline-none ${
               isStartOpen ? "bevel-in bg-[#B8B8B8]" : "win95-btn"
             }`}
           >
@@ -239,7 +242,7 @@ export default function Taskbar() {
           <div className="hidden sm:block h-[24px] w-[2px] border-l border-[#808080] border-r border-r-white mx-0.5" />
 
           {/* Task Buttons Area */}
-          <div className="flex items-center gap-1 overflow-x-auto max-w-[calc(100vw-320px)] h-full py-0.5 scrollbar-none">
+          <div className="flex items-center gap-1 h-full py-0.5 overflow-x-auto scrollbar-none">
             {windows.map((win) => {
               const isActive = activeWindowId === win.id && !win.minimized;
               return (
@@ -249,7 +252,7 @@ export default function Taskbar() {
                   onClick={() => handleTaskButtonClick(win)}
                   onContextMenu={(e) => handleTaskButtonContextMenu(e, win)}
                   title={win.title}
-                  className={`h-[28px] min-w-[120px] max-w-[160px] px-2 flex items-center gap-1.5 font-pixel text-[10px] truncate cursor-pointer text-left select-none transition-none ${
+                  className={`h-[28px] min-w-[110px] max-w-[160px] px-2 flex items-center gap-1.5 font-pixel text-[10px] truncate cursor-pointer text-left select-none transition-none ${
                     isActive
                       ? "bevel-in bg-[#DFDFDF] font-bold text-black"
                       : "win95-btn bg-[#C0C0C0] text-black/90"
@@ -264,24 +267,7 @@ export default function Taskbar() {
         </div>
 
         {/* Right Side: System Tray */}
-        <div className="flex items-center gap-2 h-[26px] px-2 bevel-in bg-[#C0C0C0]">
-          {/* Sidekick Mascot Toggle */}
-          <button
-            type="button"
-            onClick={() => setSidekickEnabled(!sidekickEnabled)}
-            title={`Mascot: ${sidekickEnabled ? "ON" : "OFF"}`}
-            className="hover:bg-black/10 p-0.5 flex items-center"
-          >
-            <PixelSprite
-              sprite={
-                sidekickEnabled
-                  ? robotFaceSprites.happy
-                  : robotFaceSprites.blink
-              }
-              scale={0.8}
-            />
-          </button>
-
+        <div className="ml-auto flex items-center gap-2 h-[26px] px-2 bevel-in bg-[#C0C0C0]">
           {/* Sound Toggle Icon */}
           <button
             type="button"

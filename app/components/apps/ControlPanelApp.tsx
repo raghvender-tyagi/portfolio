@@ -13,8 +13,6 @@ export default function ControlPanelApp() {
     setThemeInverted,
     soundEnabled,
     setSoundEnabled,
-    sidekickEnabled,
-    setSidekickEnabled,
     screensaverEnabled,
     setScreensaverEnabled,
     resetDesktop,
@@ -146,23 +144,6 @@ export default function ControlPanelApp() {
       content: (
         <div className="space-y-3 text-xs font-mono select-none">
           <div className="bevel-in bg-white p-3 space-y-3">
-            {/* Mascot */}
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="font-bold text-black">Walking Robot Mascot:</span>
-                <span className="text-[10px] text-neutral-600 block">
-                  Stepped pixel mascot walking along desktop
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSidekickEnabled(!sidekickEnabled)}
-                className="win95-btn px-3 py-1 font-pixel text-[10px]"
-              >
-                {sidekickEnabled ? "ACTIVE" : "OFF"}
-              </button>
-            </div>
-
             {/* Screensaver */}
             <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
               <div>

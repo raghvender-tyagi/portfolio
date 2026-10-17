@@ -2,8 +2,9 @@
 
 @theme {
   --font-heading: var(--font-heading), system-ui, sans-serif;
-  --font-pixel: var(--font-pixel), monospace;
-  --font-mono: var(--font-mono), monospace;
+  --font-pixel: var(--font-pixel), "Segoe UI", Tahoma, "MS Sans Serif", system-ui, sans-serif;
+  --font-mono: var(--font-mono), "Consolas", "Courier New", monospace;
+  --font-win: "Segoe UI", Tahoma, "MS Sans Serif", system-ui, sans-serif;
 
   --color-desk: #008080;
   --color-face: #C0C0C0;
@@ -197,6 +198,17 @@
   .dotted-focus {
     outline: 1px dotted #000000;
     outline-offset: -1px;
+  }
+
+  /* Windows System UI Font Utility */
+  .font-win {
+    font-family: var(--font-win);
+  }
+
+  /* Enhanced readability for pixel typography */
+  .font-pixel {
+    letter-spacing: 0.02em;
+    text-rendering: geometricPrecision;
   }
 
   /* System 7 Dither Desktop Pattern for Mono Mode */

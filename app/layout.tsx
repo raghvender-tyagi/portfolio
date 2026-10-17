@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Baloo_2, Silkscreen, Space_Mono } from "next/font/google";
+import { Baloo_2, Pixelify_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { portfolioContent } from "@/data/content";
 
@@ -10,18 +10,18 @@ const baloo2 = Baloo_2({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const silkscreen = Silkscreen({
+const pixelFont = Pixelify_Sans({
   subsets: ["latin"],
   variable: "--font-pixel",
   display: "swap",
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const spaceMono = Space_Mono({
+const monoFont = IBM_Plex_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const viewport: Viewport = {
@@ -102,7 +102,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${baloo2.variable} ${silkscreen.variable} ${spaceMono.variable}`}
+      className={`${baloo2.variable} ${pixelFont.variable} ${monoFont.variable}`}
     >
       <head>
         <script

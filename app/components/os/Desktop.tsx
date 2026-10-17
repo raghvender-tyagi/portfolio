@@ -6,7 +6,6 @@ import DesktopIconGrid from "./DesktopIconGrid";
 import WindowFrame from "./WindowFrame";
 import SystemAlert from "./SystemAlert";
 import Screensaver from "./Screensaver";
-import WalkingSidekick from "../WalkingSidekick";
 import BootSequence from "../BootSequence";
 import ContextMenu, { ContextMenuItem } from "./ContextMenu";
 import PixelSprite from "../PixelSprite";
@@ -164,10 +163,7 @@ export default function Desktop() {
       {/* 1. First-Load Boot Sequence */}
       <BootSequence />
 
-      {/* 2. Ambient Walking Sidekick Mascot */}
-      <WalkingSidekick />
-
-      {/* 3. Desktop Workspace Area (Above 38px taskbar) */}
+      {/* 2. Desktop Workspace Area (Above 38px taskbar) */}
       <main
         role="application"
         aria-label="RT-OS 95 Desktop Workspace"
