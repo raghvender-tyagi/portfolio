@@ -26,49 +26,48 @@ export default function MailApp() {
 
   return (
     <div className="h-full bg-[#C0C0C0] text-black font-mono text-xs flex flex-col justify-between select-text">
-      {/* 1. Outlook Menu Bar */}
-      <div className="flex items-center gap-4 px-2 py-0.5 bg-[#C0C0C0] border-b border-[#808080] text-[11px] font-pixel text-black select-none">
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">File</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Edit</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">View</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Insert</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Format</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Help</span>
-      </div>
-
-      {/* 2. Outlook 3D Toolbar */}
-      <div className="flex items-center gap-1.5 p-1 bg-[#C0C0C0] border-b border-[#808080] select-none">
+      {/* 1. Outlook 3D Toolbar */}
+      <div className="flex items-center gap-2 p-1.5 bg-[#C0C0C0] border-b border-[#808080] select-none">
         <button
           type="button"
           onClick={handleSend}
-          className="win95-btn flex items-center gap-1.5 px-3 py-1 font-pixel text-[10px] font-bold"
+          className="win95-btn flex items-center gap-1.5 px-3 py-1.5 font-sans text-xs font-bold"
         >
           <PixelSprite sprite={mail32} scale={0.4} />
-          <span>Send</span>
+          <span>Send Mail</span>
         </button>
 
         <button
           type="button"
           onClick={handleCopy}
-          className="win95-btn px-2 py-1 font-pixel text-[10px]"
+          className="win95-btn px-3 py-1.5 font-sans text-xs font-bold"
         >
           {copied ? "Copied!" : "Copy Email"}
         </button>
       </div>
 
-      {/* 3. Form Header Fields */}
+      {/* 2. Form Header Fields */}
       <div className="p-3 space-y-2 bg-[#C0C0C0] border-b border-[#808080]">
         <div className="flex items-center gap-2">
-          <span className="font-pixel text-[10px] text-neutral-800 w-16 text-right">
+          <span className="font-sans text-xs font-bold text-neutral-800 w-16 text-right">
             To:
           </span>
-          <div className="flex-1 bevel-in bg-white px-2 py-0.5 font-mono text-xs font-bold text-black truncate">
+          <div className="flex-1 bevel-in bg-white px-2 py-1 font-mono text-xs font-bold text-black truncate select-text">
             {contact.email}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-pixel text-[10px] text-neutral-800 w-16 text-right">
+          <span className="font-sans text-xs font-bold text-neutral-800 w-16 text-right">
+            Phone:
+          </span>
+          <div className="flex-1 bevel-in bg-white px-2 py-1 font-mono text-xs text-black select-text">
+            {contact.phone}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="font-sans text-xs font-bold text-neutral-800 w-16 text-right">
             Subject:
           </span>
           <div className="flex-1 bevel-in bg-white px-2 py-0.5">
@@ -83,7 +82,7 @@ export default function MailApp() {
         </div>
       </div>
 
-      {/* 4. Message Body Container */}
+      {/* 3. Message Body Container */}
       <div className="flex-1 p-2 bg-[#C0C0C0]">
         <textarea
           rows={7}
@@ -92,16 +91,6 @@ export default function MailApp() {
           onChange={(e) => setBody(e.target.value)}
           className="w-full h-full bevel-in p-2.5 font-mono text-xs outline-none bg-white text-black resize-none"
         />
-      </div>
-
-      {/* 5. Status Bar */}
-      <div className="flex items-center justify-between px-2 py-0.5 bg-[#C0C0C0] border-t border-[#808080] text-[10px] font-mono select-none">
-        <div className="bevel-in px-2 py-0.5 text-neutral-700">
-          Phone: {contact.phone}
-        </div>
-        <div className="bevel-in px-2 py-0.5 text-neutral-700">
-          Ready
-        </div>
       </div>
     </div>
   );

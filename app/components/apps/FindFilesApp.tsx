@@ -177,12 +177,9 @@ export default function FindFilesApp() {
       </div>
 
       {/* Status Bar */}
-      <div className="px-2 py-0.5 bg-[#C0C0C0] border-t border-[#808080] text-[10px] font-mono flex items-center justify-between">
+      <div className="px-2 py-1 bg-[#C0C0C0] border-t border-[#808080] text-xs font-mono flex items-center">
         <div className="bevel-in px-2 py-0.5 text-neutral-800">
           {results.length} file(s) found
-        </div>
-        <div className="bevel-in px-2 py-0.5 text-neutral-800">
-          Ready
         </div>
       </div>
     </div>

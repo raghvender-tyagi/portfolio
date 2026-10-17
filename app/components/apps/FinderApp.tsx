@@ -68,30 +68,15 @@ export default function FinderApp({ folder = "projects" }: FinderAppProps) {
     [openWindow]
   );
 
-  const getObjectCount = () => {
-    if (currentFolder === "projects") return projects.length;
-    if (currentFolder === "achievements") return achievements.length;
-    return 3;
-  };
-
   return (
     <div className="flex flex-col h-full bg-[#C0C0C0] text-black font-mono select-none">
-      {/* 1. Explorer Menu Bar */}
-      <div className="flex items-center gap-4 px-2 py-0.5 bg-[#C0C0C0] border-b border-[#808080] text-[11px] font-pixel text-black">
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">File</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Edit</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">View</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Go</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Help</span>
-      </div>
-
-      {/* 2. 3D Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-1 bg-[#C0C0C0] border-b border-[#808080]">
+      {/* 1. 3D Toolbar with functional controls */}
+      <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-[#C0C0C0] border-b border-[#808080]">
         <button
           type="button"
           onClick={() => navigateToFolder("projects")}
           title="Up one level"
-          className="win95-btn px-2 py-0.5 font-pixel text-[10px] flex items-center gap-1"
+          className="win95-btn px-2.5 py-1 font-pixel text-xs flex items-center gap-1"
         >
           <span>⬆ Up</span>
         </button>
@@ -101,7 +86,7 @@ export default function FinderApp({ folder = "projects" }: FinderAppProps) {
         <button
           type="button"
           onClick={() => setViewStyle("large")}
-          className={`win95-btn px-2 py-0.5 font-pixel text-[10px] ${
+          className={`win95-btn px-3 py-1 font-pixel text-xs ${
             viewStyle === "large" ? "bevel-in bg-[#DFDFDF] font-bold" : ""
           }`}
         >
@@ -110,7 +95,7 @@ export default function FinderApp({ folder = "projects" }: FinderAppProps) {
         <button
           type="button"
           onClick={() => setViewStyle("list")}
-          className={`win95-btn px-2 py-0.5 font-pixel text-[10px] ${
+          className={`win95-btn px-3 py-1 font-pixel text-xs ${
             viewStyle === "list" ? "bevel-in bg-[#DFDFDF] font-bold" : ""
           }`}
         >
@@ -119,7 +104,7 @@ export default function FinderApp({ folder = "projects" }: FinderAppProps) {
         <button
           type="button"
           onClick={() => setViewStyle("details")}
-          className={`win95-btn px-2 py-0.5 font-pixel text-[10px] ${
+          className={`win95-btn px-3 py-1 font-pixel text-xs ${
             viewStyle === "details" ? "bevel-in bg-[#DFDFDF] font-bold" : ""
           }`}
         >
@@ -142,7 +127,7 @@ export default function FinderApp({ folder = "projects" }: FinderAppProps) {
                 });
               }
             }}
-            className="win95-btn px-2 py-0.5 font-pixel text-[10px] ml-auto font-bold"
+            className="win95-btn px-3 py-1 font-pixel text-xs ml-auto font-bold"
           >
             Properties
           </button>
@@ -412,19 +397,6 @@ export default function FinderApp({ folder = "projects" }: FinderAppProps) {
               ))}
             </div>
           )}
-        </div>
-      </div>
-
-      {/* 5. Explorer Status Bar */}
-      <div className="flex items-center gap-2 px-2 py-0.5 bg-[#C0C0C0] border-t border-[#808080] text-[10px] font-mono">
-        <div className="bevel-in px-2 py-0.5 text-neutral-800">
-          {getObjectCount()} object(s)
-        </div>
-        <div className="bevel-in px-2 py-0.5 text-neutral-800">
-          0 bytes selected
-        </div>
-        <div className="bevel-in px-2 py-0.5 text-neutral-800 ml-auto">
-          Local Intranet (C:)
         </div>
       </div>
     </div>

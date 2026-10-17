@@ -89,17 +89,7 @@ export default function PaintApp() {
 
   return (
     <div className="h-full bg-[#C0C0C0] text-black font-mono text-xs flex flex-col justify-between select-none">
-      {/* 1. Paint Menu Bar */}
-      <div className="flex items-center gap-4 px-2 py-0.5 bg-[#C0C0C0] border-b border-[#808080] text-[11px] font-pixel text-black">
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">File</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Edit</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">View</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Image</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Options</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Help</span>
-      </div>
-
-      {/* 2. Workspace Layout: Left Toolbox + Center Canvas */}
+      {/* Workspace Layout: Left Toolbox + Center Canvas */}
       <div className="flex-1 flex overflow-hidden p-1">
         {/* Left Toolbox */}
         <div className="w-14 bevel-out bg-[#C0C0C0] p-1 grid grid-cols-2 gap-1 content-start shrink-0 mr-1">
@@ -107,7 +97,7 @@ export default function PaintApp() {
             type="button"
             title="Pencil"
             onClick={() => setTool("pencil")}
-            className={`w-5 h-5 font-pixel text-[9px] flex items-center justify-center ${
+            className={`w-6 h-6 font-sans text-xs flex items-center justify-center ${
               tool === "pencil" ? "bevel-in bg-[#DFDFDF]" : "bevel-out bg-[#C0C0C0]"
             }`}
           >
@@ -117,7 +107,7 @@ export default function PaintApp() {
             type="button"
             title="Brush"
             onClick={() => setTool("brush")}
-            className={`w-5 h-5 font-pixel text-[9px] flex items-center justify-center ${
+            className={`w-6 h-6 font-sans text-xs flex items-center justify-center ${
               tool === "brush" ? "bevel-in bg-[#DFDFDF]" : "bevel-out bg-[#C0C0C0]"
             }`}
           >
@@ -127,7 +117,7 @@ export default function PaintApp() {
             type="button"
             title="Eraser"
             onClick={() => setTool("eraser")}
-            className={`w-5 h-5 font-pixel text-[9px] flex items-center justify-center ${
+            className={`w-6 h-6 font-sans text-xs flex items-center justify-center ${
               tool === "eraser" ? "bevel-in bg-[#DFDFDF]" : "bevel-out bg-[#C0C0C0]"
             }`}
           >
@@ -137,7 +127,7 @@ export default function PaintApp() {
             type="button"
             title="Clear Canvas"
             onClick={handleClear}
-            className="w-5 h-5 bevel-out bg-[#C0C0C0] font-pixel text-[9px] flex items-center justify-center active:bevel-in"
+            className="w-6 h-6 bevel-out bg-[#C0C0C0] font-sans text-xs flex items-center justify-center active:bevel-in"
           >
             🗑
           </button>
@@ -159,10 +149,10 @@ export default function PaintApp() {
       </div>
 
       {/* 3. Bottom Color Palette */}
-      <div className="p-1 bg-[#C0C0C0] border-t border-[#808080] flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
+      <div className="p-1.5 bg-[#C0C0C0] border-t border-[#808080] flex items-center justify-between">
+        <div className="flex items-center gap-2">
           {/* Active Color Preview */}
-          <div className="w-6 h-6 bevel-in p-0.5 bg-white">
+          <div className="w-7 h-7 bevel-in p-0.5 bg-white">
             <div
               className="w-full h-full border border-black"
               style={{ backgroundColor: selectedColor }}
@@ -176,7 +166,7 @@ export default function PaintApp() {
                 key={color}
                 type="button"
                 onClick={() => setSelectedColor(color)}
-                className={`w-3.5 h-3.5 border ${
+                className={`w-4 h-4 border ${
                   selectedColor === color ? "border-black scale-110 z-10" : "border-neutral-300"
                 }`}
                 style={{ backgroundColor: color }}
@@ -188,20 +178,10 @@ export default function PaintApp() {
         <button
           type="button"
           onClick={handleSave}
-          className="win95-btn px-3 py-1 font-pixel text-[10px]"
+          className="win95-btn px-3 py-1 font-sans text-xs font-bold"
         >
           {savedStatus ? "Saved Doodle!" : "Save"}
         </button>
-      </div>
-
-      {/* 4. Status Bar */}
-      <div className="px-2 py-0.5 bg-[#C0C0C0] border-t border-[#808080] text-[10px] font-mono flex items-center justify-between">
-        <div className="bevel-in px-2 py-0.5 text-neutral-800">
-          380 x 240 px
-        </div>
-        <div className="bevel-in px-2 py-0.5 text-neutral-800">
-          Tool: {tool.toUpperCase()}
-        </div>
       </div>
     </div>
   );

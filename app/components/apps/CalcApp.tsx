@@ -57,15 +57,8 @@ export default function CalcApp() {
 
   return (
     <div className="p-3 bg-[#C0C0C0] text-black font-mono text-xs flex flex-col justify-between h-full select-none space-y-3">
-      {/* Menu Bar */}
-      <div className="flex items-center gap-4 px-1 py-0.5 border-b border-[#808080] text-[11px] font-pixel text-black">
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Edit</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">View</span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Help</span>
-      </div>
-
       {/* LCD Display */}
-      <div className="bevel-in bg-white p-2 text-right font-mono text-xl font-bold text-black overflow-hidden truncate">
+      <div className="bevel-in bg-white p-2.5 text-right font-mono text-2xl font-bold text-black overflow-hidden truncate">
         {display}
       </div>
 
@@ -77,21 +70,21 @@ export default function CalcApp() {
             if (display.length > 1) setDisplay(display.slice(0, -1));
             else setDisplay("0");
           }}
-          className="win95-btn px-2.5 py-1 font-pixel text-[9px] text-[#800000] font-bold"
+          className="win95-btn px-3 py-1 font-sans text-xs text-[#800000] font-bold"
         >
           Backspace
         </button>
         <button
           type="button"
           onClick={() => setDisplay("0")}
-          className="win95-btn px-2.5 py-1 font-pixel text-[9px] text-[#800000] font-bold"
+          className="win95-btn px-3 py-1 font-sans text-xs text-[#800000] font-bold"
         >
           CE
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="win95-btn px-2.5 py-1 font-pixel text-[9px] text-[#800000] font-bold"
+          className="win95-btn px-3 py-1 font-sans text-xs text-[#800000] font-bold"
         >
           C
         </button>

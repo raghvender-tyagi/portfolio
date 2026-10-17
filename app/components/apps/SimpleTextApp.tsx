@@ -75,31 +75,24 @@ VERIFICATION: Verified Industry Workload Record (2026)`;
 
   return (
     <div className="h-full bg-white text-black font-mono text-xs flex flex-col justify-between select-text">
-      {/* 1. Notepad Menu Bar */}
-      <div className="flex items-center gap-4 px-2 py-0.5 bg-[#C0C0C0] border-b border-[#808080] text-[11px] font-pixel text-black select-none">
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">
-          File
-        </span>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">
-          Edit
-        </span>
+      {/* 1. Functional Notepad Toolbar */}
+      <div className="flex items-center gap-2 px-2 py-1 bg-[#C0C0C0] border-b border-[#808080] text-xs font-pixel select-none">
         <button
           type="button"
           onClick={() => setShowFind(!showFind)}
-          className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer"
+          className={`win95-btn px-2.5 py-0.5 text-xs font-bold ${
+            showFind ? "bevel-in bg-[#DFDFDF]" : ""
+          }`}
         >
-          Search
+          🔍 Find
         </button>
         <button
           type="button"
           onClick={() => setWordWrap(!wordWrap)}
-          className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer"
+          className="win95-btn px-2.5 py-0.5 text-xs"
         >
           Word Wrap: {wordWrap ? "ON" : "OFF"}
         </button>
-        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">
-          Help
-        </span>
       </div>
 
       {/* Find Dialog Bar */}
@@ -133,24 +126,11 @@ VERIFICATION: Verified Industry Workload Record (2026)`;
 
       {/* 2. Main Notepad Text Canvas */}
       <div
-        className={`flex-1 p-3 overflow-y-auto font-mono text-xs leading-relaxed select-text ${
+        className={`flex-1 p-3.5 overflow-y-auto font-mono text-sm leading-relaxed select-text ${
           wordWrap ? "whitespace-pre-wrap" : "whitespace-pre overflow-x-auto"
         }`}
       >
         {renderedContent}
-      </div>
-
-      {/* 3. Status Bar */}
-      <div className="flex items-center gap-2 px-2 py-0.5 bg-[#C0C0C0] border-t border-[#808080] text-[10px] font-mono select-none">
-        <div className="bevel-in px-2 py-0.5 text-neutral-800">
-          Line 1, Col 1
-        </div>
-        <div className="bevel-in px-2 py-0.5 text-neutral-800">
-          {rawText.split("\n").length} lines
-        </div>
-        <div className="bevel-in px-2 py-0.5 text-neutral-800 ml-auto">
-          ANSI
-        </div>
       </div>
     </div>
   );
