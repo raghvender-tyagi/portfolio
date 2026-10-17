@@ -83,9 +83,9 @@ export default function Window({
         </div>
       </div>
 
-      {/* Window Body (collapsible) */}
+      {/* Window Body (Stepped windowshade collapse) */}
       {!isCollapsed && (
-        <div className="p-4 md:p-6 text-black font-mono text-sm leading-relaxed">
+        <div className="p-4 md:p-6 text-black font-mono text-sm leading-relaxed animate-in fade-in duration-100">
           {children}
         </div>
       )}

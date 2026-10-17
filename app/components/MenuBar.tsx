@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+
+import { usePrefersReducedMotion } from "@/app/hooks/usePrefersReducedMotion";
 
 interface NavItem {
   label: string;
@@ -18,20 +20,60 @@ const navItems: NavItem[] = [
 
 export default function MenuBar() {
   const [activeSection, setActiveSection] = useState<string>("");
-  const [currentTime, setCurrentTime] = useState<string>("");
+  const [hours, setHours] = useState<string>("--");
+  const [minutes, setMinutes] = useState<string>("--");
+  const [ampm, setAmpm] = useState<string>("");
+  const [colonVisible, setColonVisible] = useState<boolean>(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [sidekickEnabled, setSidekickEnabled] = useState<boolean>(true);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  // Client-side hydration-safe live clock
+  // Load sidekick preference from localStorage
+  useEffect(() => {
+    if (typeof window === "undefined" || prefersReducedMotion) return;
+    const timer = setTimeout(() => {
+      try {
+        const stored = localStorage.getItem("sys7_sidekick");
+        if (stored !== null) {
+          setSidekickEnabled(stored === "true");
+        }
+      } catch {
+        // ignore
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [prefersReducedMotion]);
+
+  const toggleSidekick = useCallback(() => {
+    setSidekickEnabled((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("sys7_sidekick", String(next));
+      } catch {
+        // ignore
+      }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("sidekick-toggle", { detail: { enabled: next } })
+        );
+      }
+      return next;
+    });
+  }, []);
+
+  // Client-side hydration-safe live clock with blinking colon
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
-      );
+      let h = now.getHours();
+      const m = now.getMinutes().toString().padStart(2, "0");
+      const isPm = h >= 12;
+      h = h % 12 || 12;
+
+      setHours(h.toString());
+      setMinutes(m);
+      setAmpm(isPm ? "PM" : "AM");
+      setColonVisible((v) => !v);
     };
 
     updateTime();
@@ -75,7 +117,6 @@ export default function MenuBar() {
             className="flex items-center gap-1.5 px-2 h-full hover:bg-black hover:text-white transition-colors duration-75 border-r border-black/30 mr-1"
             title="System 7 Apple Menu"
           >
-            {/* Pixel RT Apple Glyph */}
             <span className="font-bold tracking-tighter text-xs bg-black text-white px-1 py-0.5 border border-black">
               RT
             </span>
@@ -115,8 +156,18 @@ export default function MenuBar() {
           </button>
         </div>
 
-        {/* Right: Resume button + Live Clock */}
+        {/* Right: Sidekick Toggle + Resume button + Live Clock */}
         <div className="flex items-center h-full gap-2">
+          {/* Mascot Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleSidekick}
+            title={`Desktop Mascot: ${sidekickEnabled ? "Enabled" : "Disabled"}`}
+            className="hidden sm:flex items-center h-6 px-2 bg-[#D9D9D9] hover:bg-black hover:text-white border-2 border-black text-[10px] uppercase font-bold tracking-wider transition-colors duration-75 cursor-pointer"
+          >
+            Sidekick: {sidekickEnabled ? "ON" : "OFF"}
+          </button>
+
           <a
             href="/resume.pdf"
             target="_blank"
@@ -126,9 +177,12 @@ export default function MenuBar() {
             Resume ↗
           </a>
 
-          {/* Clock: Render placeholder during SSR to prevent hydration mismatch */}
+          {/* Clock: Stepped Blinking Colon */}
           <div className="px-2 h-full flex items-center border-l border-black/30 text-[11px] font-mono font-bold tracking-tight">
-            {currentTime || "--:-- --"}
+            <span>{hours}</span>
+            <span className={colonVisible ? "opacity-100" : "opacity-0"}>:</span>
+            <span>{minutes}</span>
+            {ampm && <span className="ml-1 text-[10px]">{ampm}</span>}
           </div>
         </div>
       </header>
@@ -138,7 +192,7 @@ export default function MenuBar() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed top-8 left-2 w-48 z-50 bg-[#D9D9D9] border-2 border-black mac-shadow md:hidden animate-in fade-in duration-100"
+          className="fixed top-8 left-2 w-52 z-50 bg-[#D9D9D9] border-2 border-black mac-shadow md:hidden animate-in fade-in duration-100 select-none"
         >
           <div className="p-1 flex flex-col font-pixel text-xs">
             {navItems.map((item) => {
@@ -159,6 +213,14 @@ export default function MenuBar() {
               );
             })}
             <div className="border-t border-black my-1" />
+            <button
+              type="button"
+              onClick={toggleSidekick}
+              className="px-3 py-1.5 text-left uppercase tracking-wider hover:bg-black hover:text-white flex items-center justify-between cursor-pointer"
+            >
+              <span>Sidekick</span>
+              <span>[{sidekickEnabled ? "ON" : "OFF"}]</span>
+            </button>
             <a
               href="/resume.pdf"
               target="_blank"
@@ -175,4 +237,3 @@ export default function MenuBar() {
     </>
   );
 }
-

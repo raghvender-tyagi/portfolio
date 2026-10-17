@@ -7,60 +7,75 @@ import SkillsSection from "./components/SkillsSection";
 import PatentAndAchievementsSection from "./components/PatentAndAchievementsSection";
 import BuildLogSection from "./components/BuildLogSection";
 import ContactSection from "./components/ContactSection";
+import BootSequence from "./components/BootSequence";
+import DesktopIcons from "./components/DesktopIcons";
+import WalkingSidekick from "./components/WalkingSidekick";
+import FlyingChips from "./components/FlyingChips";
+import PixelDivider from "./components/PixelDivider";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-mac-dither text-black selection:bg-black selection:text-white pb-16">
-      {/* Centered Single Column Container max-w-960px */}
-      <div className="max-w-[960px] mx-auto px-4 sm:px-6 md:px-8 pt-8 md:pt-12 space-y-16 md:space-y-24">
-        {/* 1. Hero Window Section */}
-        <HeroSection />
+    <>
+      {/* 1. First-Load Boot Sequence Terminal (sessionStorage-guarded, skippable) */}
+      <BootSequence />
 
-        {/* 2. Quick Navigation Segmented Bar */}
-        <SegmentedBar />
+      {/* 2. Desktop Margins Elements (Desktop icons on >=1200px, Mascot, Flying Chips) */}
+      <DesktopIcons />
+      <WalkingSidekick />
+      <FlyingChips />
 
-        {/* Horizontal Rule Divider */}
-        <hr className="border-t-2 border-black" />
+      {/* 3. Main Single Column Container (max 960px centered) */}
+      <main className="min-h-screen bg-mac-dither text-black selection:bg-black selection:text-white pb-16 relative z-20">
+        <div className="max-w-[960px] mx-auto px-4 sm:px-6 md:px-8 pt-8 md:pt-12 space-y-16 md:space-y-24">
+          {/* Hero Window Section */}
+          <HeroSection />
 
-        {/* 3. Projects Section (projects.finder + 2-column cards) */}
-        <ProjectsSection />
+          {/* Quick Navigation Segmented Bar */}
+          <SegmentedBar />
 
-        {/* Horizontal Rule Divider */}
-        <hr className="border-t-2 border-black" />
+          {/* Pixel Divider (Stairsteps pattern) */}
+          <PixelDivider variant="stairsteps" />
 
-        {/* 4. Experience Section (experience.txt) */}
-        <ExperienceSection />
+          {/* Projects Section */}
+          <ProjectsSection />
 
-        {/* Horizontal Rule Divider */}
-        <hr className="border-t-2 border-black" />
+          {/* Pixel Divider (Server-rack skyline pattern) */}
+          <PixelDivider variant="server" />
 
-        {/* 5. About Section (readme.txt) */}
-        <AboutSection />
+          {/* Experience Section */}
+          <ExperienceSection />
 
-        {/* Horizontal Rule Divider */}
-        <hr className="border-t-2 border-black" />
+          {/* Pixel Divider (Circuit traces pattern) */}
+          <PixelDivider variant="circuits" />
 
-        {/* 6. Skills Section (system_info) */}
-        <SkillsSection />
+          {/* About Section */}
+          <AboutSection />
 
-        {/* Horizontal Rule Divider */}
-        <hr className="border-t-2 border-black" />
+          {/* Pixel Divider (Stairsteps pattern) */}
+          <PixelDivider variant="stairsteps" />
 
-        {/* 7. Achievements & Honors (achievements.finder) */}
-        <PatentAndAchievementsSection />
+          {/* Skills Section */}
+          <SkillsSection />
 
-        {/* Horizontal Rule Divider */}
-        <hr className="border-t-2 border-black" />
+          {/* Pixel Divider (Server-rack skyline pattern) */}
+          <PixelDivider variant="server" />
 
-        {/* 8. Writing / Build Log (Stacked Windows) */}
-        <BuildLogSection />
+          {/* Achievements & Honors */}
+          <PatentAndAchievementsSection />
 
-        {/* Horizontal Rule Divider */}
-        <hr className="border-t-2 border-black" />
+          {/* Pixel Divider (Circuit traces pattern) */}
+          <PixelDivider variant="circuits" />
 
-        {/* 9. Contact Dispatcher & Footer (mail.app + Shut Down) */}
-        <ContactSection />
-      </div>
-    </main>
+          {/* Writing / Build Log */}
+          <BuildLogSection />
+
+          {/* Pixel Divider (Stairsteps pattern) */}
+          <PixelDivider variant="stairsteps" />
+
+          {/* Contact Dispatcher & Footer */}
+          <ContactSection />
+        </div>
+      </main>
+    </>
   );
 }
