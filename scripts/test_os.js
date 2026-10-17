@@ -86,24 +86,24 @@ testWindowLogic();
 // 3. Test Desktop Icon Left-Column Snap & Geometry
 console.log("3. Testing Desktop Icon Left-Column Snap & Geometry...");
 function testIconGeometry() {
-  const gridW = 88;
-  const gridH = 88;
+  const gridW = 104;
+  const gridH = 104;
 
   function snap(rawX, rawY) {
-    const snappedX = Math.max(12, Math.round((rawX - 12) / gridW) * gridW + 12);
-    const snappedY = Math.max(12, Math.round((rawY - 12) / gridH) * gridH + 12);
+    const snappedX = Math.max(16, Math.round((rawX - 16) / gridW) * gridW + 16);
+    const snappedY = Math.max(16, Math.round((rawY - 16) / gridH) * gridH + 16);
     return { x: snappedX, y: snappedY };
   }
 
-  const p1 = snap(15, 14);
-  assert.strictEqual(p1.x, 12, "Should snap near x:12 to column 0");
-  assert.strictEqual(p1.y, 12, "Should snap near y:12 to row 0");
+  const p1 = snap(18, 17);
+  assert.strictEqual(p1.x, 16, "Should snap near x:16 to column 0");
+  assert.strictEqual(p1.y, 16, "Should snap near y:16 to row 0");
 
-  const p2 = snap(95, 102);
-  assert.strictEqual(p2.x, 100, "Should snap near x:100 to column 1");
-  assert.strictEqual(p2.y, 100, "Should snap near y:100 to row 1");
+  const p2 = snap(118, 122);
+  assert.strictEqual(p2.x, 120, "Should snap near x:120 to column 1");
+  assert.strictEqual(p2.y, 120, "Should snap near y:120 to row 1");
 
-  console.log("✓ Icon snap to 88x88 left-column grid passed.");
+  console.log("✓ Icon snap to 104x104 left-column grid passed.");
 }
 
 testIconGeometry();
@@ -113,13 +113,13 @@ console.log("4. Testing Centered Welcome Window calculation...");
 function testCenteredWelcome() {
   const viewportW = 1440;
   const viewportH = 900;
-  const w = 740;
-  const h = 480;
-  const x = Math.max(12, Math.floor((viewportW - w) / 2));
-  const y = Math.max(16, Math.floor((viewportH - 38 - h) / 2));
+  const w = 760;
+  const h = 500;
+  const x = Math.max(16, Math.floor((viewportW - w) / 2));
+  const y = Math.max(16, Math.floor((viewportH - 46 - h) / 2));
 
-  assert.strictEqual(x, 350, "x should be centered horizontally");
-  assert.strictEqual(y, 191, "y should be centered vertically above 38px taskbar");
+  assert.strictEqual(x, 340, "x should be centered horizontally");
+  assert.strictEqual(y, 177, "y should be centered vertically above 46px taskbar");
   console.log("✓ Centered Welcome window calculation passed.");
 }
 

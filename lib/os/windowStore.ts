@@ -96,32 +96,32 @@ interface WindowStoreState {
 
 const STORAGE_KEY = "rt_os_95_state_v1";
 
-// Fixed cell size: 80px width x 84px height.
-// Arranged in left column (x: 12), wrapping to next column (x: 100) when y gets tall.
+// Fixed cell size: 96px width x 100px height.
+// Arranged in left column (x: 16), wrapping to next column (x: 120).
 export const DEFAULT_DESKTOP_ICONS: DesktopIconPosition[] = [
-  // Column 1 (x: 12)
-  { id: "my-computer", label: "My Computer", appId: "aboutMac", x: 12, y: 12 },
-  { id: "network", label: "Network", appId: "chooser", x: 12, y: 100 },
-  { id: "projects", label: "Projects", appId: "finder", props: { folder: "projects" }, x: 12, y: 188 },
-  { id: "achievements", label: "Achievements", appId: "finder", props: { folder: "achievements" }, x: 12, y: 276 },
-  { id: "experience", label: "Experience.txt", appId: "simpleText", props: { file: "experience.txt" }, x: 12, y: 364 },
-  { id: "about", label: "About.txt", appId: "simpleText", props: { file: "about.txt" }, x: 12, y: 452 },
-  { id: "skills", label: "Skills", appId: "aboutMac", props: { tab: "skills" }, x: 12, y: 540 },
+  // Column 1 (x: 16)
+  { id: "my-computer", label: "My Computer", appId: "aboutMac", x: 16, y: 16 },
+  { id: "network", label: "Network", appId: "chooser", x: 16, y: 120 },
+  { id: "projects", label: "Projects", appId: "finder", props: { folder: "projects" }, x: 16, y: 224 },
+  { id: "achievements", label: "Achievements", appId: "finder", props: { folder: "achievements" }, x: 16, y: 328 },
+  { id: "experience", label: "Experience.txt", appId: "simpleText", props: { file: "experience.txt" }, x: 16, y: 432 },
+  { id: "about", label: "About.txt", appId: "simpleText", props: { file: "about.txt" }, x: 16, y: 536 },
+  { id: "skills", label: "Skills", appId: "aboutMac", props: { tab: "skills" }, x: 16, y: 640 },
 
-  // Column 2 (x: 100)
-  { id: "resume", label: "Resume.pdf", appId: "pdfViewer", x: 100, y: 12 },
-  { id: "mail", label: "Inbox", appId: "mail", x: 100, y: 100 },
-  { id: "terminal", label: "MS-DOS Prompt", appId: "terminal", x: 100, y: 188 },
-  { id: "trash", label: "Recycle Bin", appId: "trash", x: 100, y: 276 },
+  // Column 2 (x: 120)
+  { id: "resume", label: "Resume.pdf", appId: "pdfViewer", x: 120, y: 16 },
+  { id: "mail", label: "Inbox", appId: "mail", x: 120, y: 120 },
+  { id: "terminal", label: "MS-DOS Prompt", appId: "terminal", x: 120, y: 224 },
+  { id: "trash", label: "Recycle Bin", appId: "trash", x: 120, y: 328 },
 ];
 
 export function getCenteredWelcomeWindow(): WindowInstance {
   const viewportW = typeof window !== "undefined" ? window.innerWidth : 1200;
   const viewportH = typeof window !== "undefined" ? window.innerHeight : 800;
-  const w = Math.min(740, Math.max(340, viewportW - 40));
-  const h = Math.min(480, Math.max(320, viewportH - 80));
-  const x = Math.max(12, Math.floor((viewportW - w) / 2));
-  const y = Math.max(16, Math.floor((viewportH - 38 - h) / 2));
+  const w = Math.min(760, Math.max(360, viewportW - 40));
+  const h = Math.min(500, Math.max(340, viewportH - 90));
+  const x = Math.max(16, Math.floor((viewportW - w) / 2));
+  const y = Math.max(16, Math.floor((viewportH - 46 - h) / 2));
 
   return {
     id: "welcome-main",
@@ -513,7 +513,7 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
                 x: 0,
                 y: 0,
                 w: viewportW,
-                h: Math.max(240, viewportH - 38),
+                h: Math.max(240, viewportH - 46),
                 maximized: true,
                 restoreRect: currentRect,
               }
@@ -551,11 +551,11 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
   },
 
   moveDesktopIcon: (id, rawX, rawY) => {
-    // Snap to 88px horizontal x 88px vertical grid (fixed 80px cell + 8px margin)
-    const gridW = 88;
-    const gridH = 88;
-    const snappedX = Math.max(12, Math.round((rawX - 12) / gridW) * gridW + 12);
-    const snappedY = Math.max(12, Math.round((rawY - 12) / gridH) * gridH + 12);
+    // Snap to 104px horizontal x 104px vertical grid
+    const gridW = 104;
+    const gridH = 104;
+    const snappedX = Math.max(16, Math.round((rawX - 16) / gridW) * gridW + 16);
+    const snappedY = Math.max(16, Math.round((rawY - 16) / gridH) * gridH + 16);
 
     const updated = get().desktopIcons.map((icon) =>
       icon.id === id ? { ...icon, x: snappedX, y: snappedY } : icon

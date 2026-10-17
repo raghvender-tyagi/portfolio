@@ -163,17 +163,17 @@ export default function Desktop() {
       {/* 1. First-Load Boot Sequence */}
       <BootSequence />
 
-      {/* 2. Desktop Workspace Area (Above 38px taskbar) */}
+      {/* 2. Desktop Workspace Area (Above 46px taskbar) */}
       <main
         role="application"
         aria-label="RT-OS 95 Desktop Workspace"
-        className="absolute inset-0 pb-[38px] overflow-hidden"
+        className="absolute inset-0 pb-[46px] overflow-hidden"
       >
-        {/* Desktop Icons Layer (Fixed 80x84px grid) */}
+        {/* Desktop Icons Layer (Fixed 96x100px grid) */}
         <DesktopIconGrid />
 
         {/* Floating Windows Layer (Tablet & Desktop >= 768px) */}
-        <div className="hidden md:block absolute inset-0 pb-[38px] pointer-events-none">
+        <div className="hidden md:block absolute inset-0 pb-[46px] pointer-events-none">
           {windows.map((win) => {
             const appDef = appRegistry[win.appId];
             if (!appDef) return null;
@@ -190,7 +190,7 @@ export default function Desktop() {
         </div>
 
         {/* Mobile Full-Screen App Mode (< 768px) */}
-        <div className="md:hidden absolute inset-0 pb-[38px] z-30">
+        <div className="md:hidden absolute inset-0 pb-[46px] z-30">
           {activeWin ? (
             /* Open App Full Screen on Mobile */
             <div className="w-full h-full bg-[#C0C0C0] flex flex-col bevel-window">

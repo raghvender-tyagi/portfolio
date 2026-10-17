@@ -38,7 +38,7 @@ export default function ProjectDetailApp({ slug }: { slug?: string }) {
       {/* Title & Pitch Container */}
       <div className="bevel-out bg-[#DFDFDF] p-3 space-y-2">
         <div className="flex items-center justify-between border-b border-[#808080] pb-1">
-          <span className="font-pixel text-[10px] uppercase font-bold text-[#000080]">
+          <span className="font-pixel text-xs uppercase font-bold text-[#000080]">
             NUM #{project.number} • {project.category.toUpperCase()}
           </span>
           <button
@@ -53,29 +53,29 @@ export default function ProjectDetailApp({ slug }: { slug?: string }) {
                 comments: project.pitch,
               })
             }
-            className="win95-btn px-2 py-0.5 text-[9px] font-bold"
+            className="win95-btn px-2.5 py-1 text-xs font-bold"
           >
             Properties
           </button>
         </div>
 
-        <h2 className="font-pixel font-bold text-lg text-black">
+        <h2 className="font-pixel font-bold text-2xl text-black">
           {project.title}
         </h2>
-        <p className="font-mono text-xs text-neutral-800 leading-relaxed">
+        <p className="font-mono text-sm text-neutral-800 leading-relaxed">
           {project.pitch}
         </p>
       </div>
 
       {/* Technical Highlights */}
-      <div className="bevel-in bg-white p-3 space-y-1.5">
-        <h4 className="font-pixel text-[10px] font-bold uppercase text-[#000080]">
+      <div className="bevel-in bg-white p-3.5 space-y-2">
+        <h4 className="font-pixel text-xs font-bold uppercase text-[#000080]">
           Technical Highlights:
         </h4>
-        <ul className="space-y-1.5 text-xs font-mono text-neutral-900">
+        <ul className="space-y-2 text-sm font-mono text-neutral-900">
           {project.bullets.map((bullet, idx) => (
-            <li key={idx} className="flex items-start gap-2">
-              <span className="font-bold text-[#000080] select-none">▪</span>
+            <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
+              <span className="font-bold text-[#000080] select-none text-base">▪</span>
               <span>{bullet}</span>
             </li>
           ))}
@@ -84,17 +84,17 @@ export default function ProjectDetailApp({ slug }: { slug?: string }) {
 
       {/* Note / Disclaimer if any */}
       {project.note && (
-        <div className="bevel-in bg-[#FFFFE1] p-2 text-xs text-neutral-800">
+        <div className="bevel-in bg-[#FFFFE1] p-2.5 text-sm text-neutral-800">
           <strong>Note:</strong> {project.note}
         </div>
       )}
 
       {/* Tags */}
-      <div className="flex flex-wrap gap-1.5 pt-1">
+      <div className="flex flex-wrap gap-2 pt-1">
         {project.tags.map((tag) => (
           <span
             key={tag}
-            className="bevel-out bg-[#DFDFDF] text-black font-pixel text-[9px] px-2 py-0.5 uppercase tracking-wider"
+            className="bevel-out bg-[#DFDFDF] text-black font-pixel text-xs px-2.5 py-1 uppercase tracking-wider font-medium"
           >
             {tag}
           </span>
@@ -102,13 +102,13 @@ export default function ProjectDetailApp({ slug }: { slug?: string }) {
       </div>
 
       {/* Action Row */}
-      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#808080]">
+      <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-[#808080]">
         {project.liveUrl && (
           <a
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="win95-btn font-pixel text-[10px] font-bold px-3 py-1.5"
+            className="win95-btn font-pixel text-xs md:text-sm font-bold px-4 py-2"
           >
             Launch Live Demo ↗
           </a>
@@ -117,7 +117,7 @@ export default function ProjectDetailApp({ slug }: { slug?: string }) {
           href={project.githubUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="win95-btn font-pixel text-[10px] px-3 py-1.5"
+          className="win95-btn font-pixel text-xs md:text-sm font-bold px-4 py-2"
         >
           View Source Repository ↗
         </a>

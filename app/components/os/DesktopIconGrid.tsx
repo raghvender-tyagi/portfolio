@@ -20,24 +20,24 @@ import {
 
 function getSpriteForDesktopItem(id: string, appId: string) {
   if (id === "my-computer" || appId === "aboutMac")
-    return <PixelSprite sprite={myComputer32} scale={1} />;
+    return <PixelSprite sprite={myComputer32} scale={1.5} />;
   if (id === "network" || appId === "chooser")
-    return <PixelSprite sprite={networkNeighborhood32} scale={1} />;
+    return <PixelSprite sprite={networkNeighborhood32} scale={1.5} />;
   if (id === "resume" || appId === "pdfViewer")
-    return <PixelSprite sprite={acrobat32} scale={1} />;
+    return <PixelSprite sprite={acrobat32} scale={1.5} />;
   if (id === "mail" || appId === "mail")
-    return <PixelSprite sprite={mail32} scale={1} />;
+    return <PixelSprite sprite={mail32} scale={1.5} />;
   if (id === "trash")
-    return <PixelSprite sprite={recycleBinEmpty32} scale={1} />;
+    return <PixelSprite sprite={recycleBinEmpty32} scale={1.5} />;
   if (id === "achievements")
-    return <PixelSprite sprite={trophySprite} scale={2} />;
+    return <PixelSprite sprite={trophySprite} scale={3} />;
   if (id === "skills")
-    return <PixelSprite sprite={controlPanel32} scale={1} />;
+    return <PixelSprite sprite={controlPanel32} scale={1.5} />;
   if (appId === "terminal")
-    return <PixelSprite sprite={msDos32} scale={1} />;
+    return <PixelSprite sprite={msDos32} scale={1.5} />;
   if (appId === "simpleText")
-    return <PixelSprite sprite={winDoc32} scale={1} />;
-  return <PixelSprite sprite={winFolder32} scale={1} />;
+    return <PixelSprite sprite={winDoc32} scale={1.5} />;
+  return <PixelSprite sprite={winFolder32} scale={1.5} />;
 }
 
 export default function DesktopIconGrid() {
@@ -202,13 +202,13 @@ export default function DesktopIconGrid() {
               style={{
                 left: `${item.x}px`,
                 top: `${item.y}px`,
-                width: "80px",
-                height: "84px",
+                width: "96px",
+                height: "100px",
               }}
             >
-              {/* Centered 32x32 Icon */}
+              {/* Centered Large Icon */}
               <div
-                className={`w-9 h-9 flex items-center justify-center p-0.5 ${
+                className={`w-14 h-14 flex items-center justify-center p-0.5 ${
                   isSelected ? "brightness-90 contrast-125" : ""
                 }`}
               >
@@ -216,12 +216,12 @@ export default function DesktopIconGrid() {
               </div>
 
               {/* Label plate below icon, max 2 lines, word-wrapped, never clipped */}
-              <div className="mt-1 flex justify-center max-w-[78px]">
+              <div className="mt-1 flex justify-center max-w-[94px]">
                 <span
-                  className={`font-pixel text-[10px] text-center leading-[1.25] break-words select-none px-1 py-0.5 rounded-none ${
+                  className={`font-pixel text-[13px] text-center leading-[1.2] break-words select-none px-1.5 py-0.5 rounded-none font-medium ${
                     isSelected
                       ? "bg-[#000080] text-white dotted-focus shadow-sm"
-                      : "text-white text-shadow-[1px_1px_0_#000] group-hover:bg-[#000080]/80 group-hover:text-white"
+                      : "text-white text-shadow-[1px_1px_2px_rgba(0,0,0,0.9),0_0_2px_#000] group-hover:bg-[#000080]/85 group-hover:text-white"
                   }`}
                   style={{
                     wordBreak: "break-word",

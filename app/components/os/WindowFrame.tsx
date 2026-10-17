@@ -24,23 +24,23 @@ interface WindowFrameProps {
 }
 
 function getAppTitleIcon(appId: string) {
-  if (appId === "terminal") return <PixelSprite sprite={msDos32} scale={0.45} />;
-  if (appId === "aboutMac") return <PixelSprite sprite={myComputer32} scale={0.45} />;
-  if (appId === "finder") return <PixelSprite sprite={winFolder32} scale={0.45} />;
-  if (appId === "simpleText") return <PixelSprite sprite={winDoc32} scale={0.45} />;
-  if (appId === "pdfViewer") return <PixelSprite sprite={acrobat32} scale={0.45} />;
-  if (appId === "controlPanel") return <PixelSprite sprite={controlPanel32} scale={0.45} />;
-  if (appId === "paint") return <PixelSprite sprite={winPaint32} scale={0.45} />;
-  if (appId === "calc") return <PixelSprite sprite={winCalc32} scale={0.45} />;
+  if (appId === "terminal") return <PixelSprite sprite={msDos32} scale={0.65} />;
+  if (appId === "aboutMac") return <PixelSprite sprite={myComputer32} scale={0.65} />;
+  if (appId === "finder") return <PixelSprite sprite={winFolder32} scale={0.65} />;
+  if (appId === "simpleText") return <PixelSprite sprite={winDoc32} scale={0.65} />;
+  if (appId === "pdfViewer") return <PixelSprite sprite={acrobat32} scale={0.65} />;
+  if (appId === "controlPanel") return <PixelSprite sprite={controlPanel32} scale={0.65} />;
+  if (appId === "paint") return <PixelSprite sprite={winPaint32} scale={0.65} />;
+  if (appId === "calc") return <PixelSprite sprite={winCalc32} scale={0.65} />;
   if (appId === "snake" || appId === "bugSweeper")
-    return <PixelSprite sprite={bugSmileySprites.normal} scale={0.8} />;
-  return <PixelSprite sprite={winDoc32} scale={0.45} />;
+    return <PixelSprite sprite={bugSmileySprites.normal} scale={1} />;
+  return <PixelSprite sprite={winDoc32} scale={0.65} />;
 }
 
 export default function WindowFrame({
   window: win,
   children,
-  minSize = { w: 280, h: 180 },
+  minSize = { w: 320, h: 200 },
 }: WindowFrameProps) {
   const {
     activeWindowId,
@@ -242,22 +242,22 @@ export default function WindowFrame({
           onPointerUp={handleTitlePointerUp}
           onDoubleClick={() => maximizeWindow(win.id)}
           onContextMenu={handleTitleContextMenu}
-          className={`h-[22px] flex items-center justify-between px-1 select-none cursor-move ${
+          className={`h-[28px] flex items-center justify-between px-1.5 select-none cursor-move ${
             isActive ? "titlebar-active" : "titlebar-inactive"
           }`}
         >
-          {/* Left: 16x16 App Icon + Title */}
-          <div className="flex items-center gap-1.5 overflow-hidden pr-2">
+          {/* Left: App Icon + Title */}
+          <div className="flex items-center gap-2 overflow-hidden pr-2">
             <div className="shrink-0 flex items-center">
               {getAppTitleIcon(win.appId)}
             </div>
-            <span className="font-pixel text-[11px] font-bold truncate text-shadow-[1px_1px_0_rgba(0,0,0,0.6)]">
+            <span className="font-pixel text-[13px] md:text-[14px] font-bold truncate text-shadow-[1px_1px_0_rgba(0,0,0,0.6)]">
               {win.title}
             </span>
           </div>
 
           {/* Right: Window Controls (_, square, X) */}
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {/* Minimize */}
             <button
               type="button"
@@ -268,7 +268,7 @@ export default function WindowFrame({
                 soundManager.playClick(soundEnabled);
                 minimizeWindow(win.id);
               }}
-              className="titlebar-btn font-pixel text-[9px] -mt-[1px]"
+              className="titlebar-btn font-pixel text-[11px] -mt-[1px]"
             >
               _
             </button>
@@ -283,7 +283,7 @@ export default function WindowFrame({
                 soundManager.playClick(soundEnabled);
                 maximizeWindow(win.id);
               }}
-              className="titlebar-btn font-pixel text-[9px]"
+              className="titlebar-btn font-pixel text-[11px]"
             >
               {win.maximized ? "❐" : "□"}
             </button>
@@ -298,7 +298,7 @@ export default function WindowFrame({
                 soundManager.playWindowClose(soundEnabled);
                 closeWindow(win.id);
               }}
-              className="titlebar-btn font-pixel text-[9px]"
+              className="titlebar-btn font-pixel text-[11px]"
             >
               ✕
             </button>
@@ -309,7 +309,7 @@ export default function WindowFrame({
         {!win.collapsed && (
           <div
             className="w-full bg-[#FFFFFF] text-black font-mono overflow-y-auto select-text relative bevel-in mt-[2px]"
-            style={{ height: `${win.h - 32}px` }}
+            style={{ height: `${win.h - 38}px` }}
           >
             {children}
           </div>

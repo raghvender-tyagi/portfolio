@@ -107,18 +107,18 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
       ref={menuRef}
       role="menu"
       aria-label="Start Menu"
-      className="fixed bottom-[42px] left-1/2 -translate-x-1/2 z-[110] bg-[#C0C0C0] bevel-out p-1 flex select-none shadow-[6px_6px_0_rgba(0,0,0,0.4)]"
-      style={{ width: "240px" }}
+      className="fixed bottom-[50px] left-1/2 -translate-x-1/2 z-[110] bg-[#C0C0C0] bevel-out p-1 flex select-none shadow-[6px_6px_0_rgba(0,0,0,0.4)]"
+      style={{ width: "270px" }}
     >
       {/* Left Vertical Banner (Rotated text: RT-OS 95) */}
       <div
-        className="w-7 shrink-0 flex items-end justify-center pb-2 select-none"
+        className="w-8 shrink-0 flex items-end justify-center pb-3 select-none"
         style={{
           background: "linear-gradient(180deg, #1084D0 0%, #000080 100%)",
         }}
       >
         <span
-          className="font-pixel text-[13px] font-bold text-white tracking-widest uppercase origin-bottom-left -rotate-90 whitespace-nowrap block translate-x-4 -translate-y-2 text-shadow-[1px_1px_0_#000]"
+          className="font-pixel text-[15px] font-bold text-white tracking-widest uppercase origin-bottom-left -rotate-90 whitespace-nowrap block translate-x-4 -translate-y-2 text-shadow-[1px_1px_0_#000]"
         >
           RT-OS 95
         </span>
@@ -134,17 +134,17 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
           >
             <button
               type="button"
-              className={`w-full flex items-center justify-between px-2 py-1.5 font-pixel text-[11px] text-left ${
+              className={`w-full flex items-center justify-between px-2.5 py-2 font-pixel text-[13px] text-left ${
                 activeSubmenu === "programs"
                   ? "bg-[#000080] text-white"
                   : "text-black hover:bg-[#000080] hover:text-white"
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <PixelSprite sprite={winFolder32} scale={0.7} />
+              <div className="flex items-center gap-3">
+                <PixelSprite sprite={winFolder32} scale={0.8} />
                 <span className="font-bold underline decoration-1">P</span>rograms
               </div>
-              <span className="font-mono text-xs">►</span>
+              <span className="font-mono text-sm">►</span>
             </button>
 
             {/* Programs Submenu */}
@@ -357,35 +357,35 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
           >
             <button
               type="button"
-              className={`w-full flex items-center justify-between px-2 py-1.5 font-pixel text-[11px] text-left ${
+              className={`w-full flex items-center justify-between px-2.5 py-2 font-pixel text-[13px] text-left ${
                 activeSubmenu === "documents"
                   ? "bg-[#000080] text-white"
                   : "text-black hover:bg-[#000080] hover:text-white"
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <PixelSprite sprite={winDoc32} scale={0.7} />
+              <div className="flex items-center gap-3">
+                <PixelSprite sprite={winDoc32} scale={0.8} />
                 <span className="font-bold underline decoration-1">D</span>ocuments
               </div>
-              <span className="font-mono text-xs">►</span>
+              <span className="font-mono text-sm">►</span>
             </button>
 
             {activeSubmenu === "documents" && (
-              <div className="absolute left-[98%] top-0 bg-[#C0C0C0] bevel-out p-1 w-52 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[120] space-y-0.5">
+              <div className="absolute left-[98%] top-0 bg-[#C0C0C0] bevel-out p-1 w-60 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[120] space-y-0.5">
                 <button
                   type="button"
                   onClick={() => handleLaunch("pdfViewer")}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 font-pixel text-[10px] text-black hover:bg-[#000080] hover:text-white"
+                  className="w-full flex items-center gap-2.5 px-2.5 py-1.5 font-pixel text-[12px] text-black hover:bg-[#000080] hover:text-white"
                 >
-                  <PixelSprite sprite={acrobat32} scale={0.5} />
+                  <PixelSprite sprite={acrobat32} scale={0.65} />
                   <span>Resume.pdf</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleLaunch("simpleText", { file: "about.txt" })}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 font-pixel text-[10px] text-black hover:bg-[#000080] hover:text-white"
+                  className="w-full flex items-center gap-2.5 px-2.5 py-1.5 font-pixel text-[12px] text-black hover:bg-[#000080] hover:text-white"
                 >
-                  <PixelSprite sprite={winDoc32} scale={0.5} />
+                  <PixelSprite sprite={winDoc32} scale={0.65} />
                   <span>About.txt</span>
                 </button>
                 <button
@@ -393,9 +393,9 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
                   onClick={() =>
                     handleLaunch("simpleText", { file: "experience.txt" })
                   }
-                  className="w-full flex items-center gap-2 px-2 py-1.5 font-pixel text-[10px] text-black hover:bg-[#000080] hover:text-white"
+                  className="w-full flex items-center gap-2.5 px-2.5 py-1.5 font-pixel text-[12px] text-black hover:bg-[#000080] hover:text-white"
                 >
-                  <PixelSprite sprite={winDoc32} scale={0.5} />
+                  <PixelSprite sprite={winDoc32} scale={0.65} />
                   <span>Experience.txt</span>
                 </button>
               </div>
@@ -409,35 +409,35 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
           >
             <button
               type="button"
-              className={`w-full flex items-center justify-between px-2 py-1.5 font-pixel text-[11px] text-left ${
+              className={`w-full flex items-center justify-between px-2.5 py-2 font-pixel text-[13px] text-left ${
                 activeSubmenu === "settings"
                   ? "bg-[#000080] text-white"
                   : "text-black hover:bg-[#000080] hover:text-white"
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <PixelSprite sprite={controlPanel32} scale={0.7} />
+              <div className="flex items-center gap-3">
+                <PixelSprite sprite={controlPanel32} scale={0.8} />
                 <span className="font-bold underline decoration-1">S</span>ettings
               </div>
-              <span className="font-mono text-xs">►</span>
+              <span className="font-mono text-sm">►</span>
             </button>
 
             {activeSubmenu === "settings" && (
-              <div className="absolute left-[98%] top-0 bg-[#C0C0C0] bevel-out p-1 w-52 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[120] space-y-0.5">
+              <div className="absolute left-[98%] top-0 bg-[#C0C0C0] bevel-out p-1 w-60 shadow-[4px_4px_0_rgba(0,0,0,0.4)] z-[120] space-y-0.5">
                 <button
                   type="button"
                   onClick={() => handleLaunch("controlPanel")}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 font-pixel text-[10px] text-black hover:bg-[#000080] hover:text-white"
+                  className="w-full flex items-center gap-2.5 px-2.5 py-1.5 font-pixel text-[12px] text-black hover:bg-[#000080] hover:text-white"
                 >
-                  <PixelSprite sprite={controlPanel32} scale={0.5} />
+                  <PixelSprite sprite={controlPanel32} scale={0.65} />
                   <span>Control Panel</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleLaunch("dateTimeProperties")}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 font-pixel text-[10px] text-black hover:bg-[#000080] hover:text-white"
+                  className="w-full flex items-center gap-2.5 px-2.5 py-1.5 font-pixel text-[12px] text-black hover:bg-[#000080] hover:text-white"
                 >
-                  <PixelSprite sprite={controlPanel32} scale={0.5} />
+                  <PixelSprite sprite={controlPanel32} scale={0.65} />
                   <span>Taskbar and Clock...</span>
                 </button>
               </div>
@@ -449,13 +449,13 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
             type="button"
             onClick={() => handleLaunch("findFiles")}
             onMouseEnter={() => handleSubmenuHover(null)}
-            className="w-full flex items-center justify-between px-2 py-1.5 font-pixel text-[11px] text-left text-black hover:bg-[#000080] hover:text-white"
+            className="w-full flex items-center justify-between px-2.5 py-2 font-pixel text-[13px] text-left text-black hover:bg-[#000080] hover:text-white"
           >
-            <div className="flex items-center gap-2.5">
-              <PixelSprite sprite={winFolder32} scale={0.7} />
+            <div className="flex items-center gap-3">
+              <PixelSprite sprite={winFolder32} scale={0.8} />
               <span className="font-bold underline decoration-1">F</span>ind...
             </div>
-            <span className="font-mono text-[9px] opacity-75">Ctrl+K</span>
+            <span className="font-mono text-[10px] opacity-75">Ctrl+K</span>
           </button>
 
           {/* Help */}
@@ -463,9 +463,9 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
             type="button"
             onClick={() => handleLaunch("help")}
             onMouseEnter={() => handleSubmenuHover(null)}
-            className="w-full flex items-center gap-2.5 px-2 py-1.5 font-pixel text-[11px] text-left text-black hover:bg-[#000080] hover:text-white"
+            className="w-full flex items-center gap-3 px-2.5 py-2 font-pixel text-[13px] text-left text-black hover:bg-[#000080] hover:text-white"
           >
-            <PixelSprite sprite={dialogInfo32} scale={0.6} />
+            <PixelSprite sprite={dialogInfo32} scale={0.75} />
             <span className="font-bold underline decoration-1">H</span>elp
           </button>
 
@@ -474,9 +474,9 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
             type="button"
             onClick={() => handleLaunch("runDialog")}
             onMouseEnter={() => handleSubmenuHover(null)}
-            className="w-full flex items-center gap-2.5 px-2 py-1.5 font-pixel text-[11px] text-left text-black hover:bg-[#000080] hover:text-white"
+            className="w-full flex items-center gap-3 px-2.5 py-2 font-pixel text-[13px] text-left text-black hover:bg-[#000080] hover:text-white"
           >
-            <PixelSprite sprite={msDos32} scale={0.6} />
+            <PixelSprite sprite={msDos32} scale={0.75} />
             <span className="font-bold underline decoration-1">R</span>un...
           </button>
         </div>
@@ -491,9 +491,9 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
               onClose();
             }}
             onMouseEnter={() => handleSubmenuHover(null)}
-            className="w-full flex items-center gap-2.5 px-2 py-1.5 font-pixel text-[11px] text-left text-black hover:bg-[#000080] hover:text-white cursor-pointer"
+            className="w-full flex items-center gap-3 px-2.5 py-2 font-pixel text-[13px] text-left text-black hover:bg-[#000080] hover:text-white cursor-pointer"
           >
-            <PixelSprite sprite={dialogInfo32} scale={0.6} />
+            <PixelSprite sprite={dialogInfo32} scale={0.75} />
             <span className="font-bold underline decoration-1">S</span>hut Down...
           </button>
         </div>

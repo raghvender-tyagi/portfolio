@@ -20,16 +20,16 @@ import {
 } from "@/data/sprites";
 
 function getIconForWindow(appId: string) {
-  if (appId === "terminal") return <PixelSprite sprite={msDos32} scale={0.5} />;
-  if (appId === "aboutMac") return <PixelSprite sprite={myComputer32} scale={0.5} />;
-  if (appId === "finder") return <PixelSprite sprite={winFolder32} scale={0.5} />;
-  if (appId === "simpleText") return <PixelSprite sprite={winDoc32} scale={0.5} />;
-  if (appId === "pdfViewer") return <PixelSprite sprite={acrobat32} scale={0.5} />;
-  if (appId === "paint") return <PixelSprite sprite={winPaint32} scale={0.5} />;
-  if (appId === "calc") return <PixelSprite sprite={winCalc32} scale={0.5} />;
+  if (appId === "terminal") return <PixelSprite sprite={msDos32} scale={0.7} />;
+  if (appId === "aboutMac") return <PixelSprite sprite={myComputer32} scale={0.7} />;
+  if (appId === "finder") return <PixelSprite sprite={winFolder32} scale={0.7} />;
+  if (appId === "simpleText") return <PixelSprite sprite={winDoc32} scale={0.7} />;
+  if (appId === "pdfViewer") return <PixelSprite sprite={acrobat32} scale={0.7} />;
+  if (appId === "paint") return <PixelSprite sprite={winPaint32} scale={0.7} />;
+  if (appId === "calc") return <PixelSprite sprite={winCalc32} scale={0.7} />;
   if (appId === "snake" || appId === "bugSweeper")
-    return <PixelSprite sprite={bugSmileySprites.normal} scale={1} />;
-  return <PixelSprite sprite={winDoc32} scale={0.5} />;
+    return <PixelSprite sprite={bugSmileySprites.normal} scale={1.2} />;
+  return <PixelSprite sprite={winDoc32} scale={0.7} />;
 }
 
 export default function Taskbar() {
@@ -172,20 +172,20 @@ export default function Taskbar() {
       {/* Start Menu Layer */}
       <StartMenu isOpen={isStartOpen} onClose={() => setIsStartOpen(false)} />
 
-      {/* Taskbar Frame (38px) */}
+      {/* Taskbar Frame (46px) */}
       <header
         role="navigation"
         aria-label="RT-OS 95 Taskbar"
-        className="fixed bottom-0 left-0 right-0 h-[38px] bg-[#C0C0C0] bevel-out z-[100] flex items-center justify-between px-1 select-none"
+        className="fixed bottom-0 left-0 right-0 h-[46px] bg-[#C0C0C0] bevel-out z-[100] flex items-center justify-between px-2 select-none"
       >
         {/* Left Side: System indicator */}
-        <div className="hidden lg:flex items-center gap-1.5 px-2 h-[26px] bevel-in text-[10px] font-pixel text-neutral-700 bg-[#C0C0C0]">
-          <span className="w-2 h-2 bg-[#008080] border border-black inline-block"></span>
+        <div className="hidden lg:flex items-center gap-2 px-2.5 h-[32px] bevel-in text-[12px] font-pixel text-neutral-800 bg-[#C0C0C0]">
+          <span className="w-2.5 h-2.5 bg-[#008080] border border-black inline-block"></span>
           <span className="font-bold tracking-wider">RT-OS 95</span>
         </div>
 
         {/* Center: Windows 11 style centered Start button + Quick Launch + Open Task Buttons */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 h-full py-0.5 max-w-[calc(100vw-180px)] overflow-x-auto scrollbar-none">
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 h-full py-1 max-w-[calc(100vw-200px)] overflow-x-auto scrollbar-none">
           {/* Start Button */}
           <button
             id="start-button"
@@ -193,18 +193,18 @@ export default function Taskbar() {
             aria-haspopup="true"
             aria-expanded={isStartOpen}
             onClick={handleStartClick}
-            className={`h-[28px] px-2.5 flex items-center gap-1.5 font-pixel text-[11px] font-bold tracking-wider cursor-pointer select-none outline-none ${
+            className={`h-[34px] px-3.5 flex items-center gap-2 font-pixel text-[14px] font-bold tracking-wider cursor-pointer select-none outline-none ${
               isStartOpen ? "bevel-in bg-[#B8B8B8]" : "win95-btn"
             }`}
           >
             <div className="shrink-0 -ml-0.5">
-              <PixelSprite sprite={rtStartLogo16} scale={1} />
+              <PixelSprite sprite={rtStartLogo16} scale={1.5} />
             </div>
             <span>Start</span>
           </button>
 
           {/* Quick Launch Well */}
-          <div className="hidden sm:flex items-center gap-1 px-1 h-[26px] bevel-in">
+          <div className="hidden sm:flex items-center gap-1 px-1.5 h-[32px] bevel-in">
             {/* Show Desktop */}
             <button
               type="button"
@@ -212,7 +212,7 @@ export default function Taskbar() {
               title="Show Desktop"
               className="p-1 hover:bg-black/10 active:scale-95"
             >
-              <PixelSprite sprite={myComputer32} scale={0.45} />
+              <PixelSprite sprite={myComputer32} scale={0.7} />
             </button>
 
             {/* Terminal Quick Launch */}
@@ -225,7 +225,7 @@ export default function Taskbar() {
               title="MS-DOS Prompt"
               className="p-1 hover:bg-black/10 active:scale-95"
             >
-              <PixelSprite sprite={msDos32} scale={0.45} />
+              <PixelSprite sprite={msDos32} scale={0.7} />
             </button>
 
             {/* Classic View Link */}
@@ -234,15 +234,15 @@ export default function Taskbar() {
               title="Classic Recruiter View (Single Page)"
               className="p-1 hover:bg-black/10 active:scale-95 flex items-center"
             >
-              <PixelSprite sprite={winDoc32} scale={0.45} />
+              <PixelSprite sprite={winDoc32} scale={0.7} />
             </Link>
           </div>
 
           {/* Divider */}
-          <div className="hidden sm:block h-[24px] w-[2px] border-l border-[#808080] border-r border-r-white mx-0.5" />
+          <div className="hidden sm:block h-[28px] w-[2px] border-l border-[#808080] border-r border-r-white mx-0.5" />
 
           {/* Task Buttons Area */}
-          <div className="flex items-center gap-1 h-full py-0.5 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-1.5 h-full py-0.5 overflow-x-auto scrollbar-none">
             {windows.map((win) => {
               const isActive = activeWindowId === win.id && !win.minimized;
               return (
@@ -252,10 +252,10 @@ export default function Taskbar() {
                   onClick={() => handleTaskButtonClick(win)}
                   onContextMenu={(e) => handleTaskButtonContextMenu(e, win)}
                   title={win.title}
-                  className={`h-[28px] min-w-[110px] max-w-[160px] px-2 flex items-center gap-1.5 font-pixel text-[10px] truncate cursor-pointer text-left select-none transition-none ${
+                  className={`h-[34px] min-w-[130px] max-w-[200px] px-2.5 flex items-center gap-2 font-pixel text-[13px] truncate cursor-pointer text-left select-none transition-none ${
                     isActive
                       ? "bevel-in bg-[#DFDFDF] font-bold text-black"
-                      : "win95-btn bg-[#C0C0C0] text-black/90"
+                      : "win95-btn bg-[#C0C0C0] text-black/90 font-medium"
                   }`}
                 >
                   <div className="shrink-0">{getIconForWindow(win.appId)}</div>
@@ -267,7 +267,7 @@ export default function Taskbar() {
         </div>
 
         {/* Right Side: System Tray */}
-        <div className="ml-auto flex items-center gap-2 h-[26px] px-2 bevel-in bg-[#C0C0C0]">
+        <div className="ml-auto flex items-center gap-2.5 h-[32px] px-3 bevel-in bg-[#C0C0C0]">
           {/* Sound Toggle Icon */}
           <button
             type="button"
@@ -277,19 +277,19 @@ export default function Taskbar() {
               if (next) soundManager.playStartupChime(true);
             }}
             title={`Audio Sound: ${soundEnabled ? "ON" : "MUTED"}`}
-            className="hover:bg-black/10 p-0.5 flex items-center font-pixel text-[11px]"
+            className="hover:bg-black/10 p-1 flex items-center text-sm"
           >
             {soundEnabled ? "🔊" : "🔇"}
           </button>
 
           {/* Divider */}
-          <div className="h-[18px] w-[1px] bg-[#808080]" />
+          <div className="h-[20px] w-[1px] bg-[#808080]" />
 
           {/* Clock */}
           <div
             title={fullDate}
             onDoubleClick={() => openWindow("dateTimeProperties")}
-            className="font-pixel text-[11px] text-black tracking-wide cursor-pointer select-none px-1"
+            className="font-pixel text-[13px] font-bold text-black tracking-wide cursor-pointer select-none px-1"
           >
             {currentTime || "12:00 PM"}
           </div>
