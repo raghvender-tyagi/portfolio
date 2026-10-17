@@ -21,7 +21,7 @@ story = []
 # Header
 story.append(Paragraph('RAGHVENDER TYAGI', title_style))
 story.append(Paragraph('AI Systems & Distributed Backend Engineer | B.Tech CSE (AI), KIET \'27', subtitle_style))
-story.append(Paragraph('Email: raghvendertyagi@gmail.com | Phone: +91 7253020660 | Delhi NCR, India<br/>LinkedIn: linkedin.com/in/raghvender-tyagi-05a881247 | GitHub: github.com/raghvender-tyagi | LeetCode: leetcode.com/u/raghvendertyagi', contact_style))
+story.append(Paragraph('Email: raghvendertyagi@gmail.com | Phone: +91 7253020660 | Delhi NCR, India<br/>LinkedIn: linkedin.com/in/raghvender-tyagi-05a881247 | GitHub: github.com/raghvender-tyagi | LeetCode: leetcode.com/u/RaghvenderTyagi450', contact_style))
 story.append(Spacer(1, 6))
 story.append(HRFlowable(width='100%', thickness=1, color=colors.HexColor('#161616'), spaceAfter=6))
 

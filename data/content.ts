@@ -392,8 +392,8 @@ export const portfolioContent = {
       },
       {
         label: "LeetCode",
-        href: "https://leetcode.com/u/raghvendertyagi",
-        display: "leetcode.com/u/raghvendertyagi",
+        href: "https://leetcode.com/u/RaghvenderTyagi450/",
+        display: "leetcode.com/u/RaghvenderTyagi450",
       },
     ],
   },
