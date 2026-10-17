@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import BevelButton from "../BevelButton";
+import PixelSprite from "../PixelSprite";
 import { portfolioContent } from "@/data/content";
+import { mail32 } from "@/data/sprites";
 
 export default function MailApp() {
   const { contact } = portfolioContent;
@@ -12,7 +13,7 @@ export default function MailApp() {
 
   const handleSend = () => {
     const mailtoUrl = `mailto:${contact.email}?subject=${encodeURIComponent(
-      subject || "Inquiry from RT-OS Portfolio"
+      subject || "Inquiry from RT-OS 95 Portfolio"
     )}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
   };
@@ -24,62 +25,83 @@ export default function MailApp() {
   };
 
   return (
-    <div className="p-4 bg-white text-black font-mono text-xs flex flex-col h-full justify-between select-text space-y-3">
-      {/* Fields */}
-      <div className="space-y-2.5">
-        <div className="flex items-center gap-2 border-b border-black pb-1.5">
-          <span className="font-pixel text-[10px] font-bold uppercase w-16">
+    <div className="h-full bg-[#C0C0C0] text-black font-mono text-xs flex flex-col justify-between select-text">
+      {/* 1. Outlook Menu Bar */}
+      <div className="flex items-center gap-4 px-2 py-0.5 bg-[#C0C0C0] border-b border-[#808080] text-[11px] font-pixel text-black select-none">
+        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">File</span>
+        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Edit</span>
+        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">View</span>
+        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Insert</span>
+        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Format</span>
+        <span className="hover:bg-[#000080] hover:text-white px-1 cursor-pointer">Help</span>
+      </div>
+
+      {/* 2. Outlook 3D Toolbar */}
+      <div className="flex items-center gap-1.5 p-1 bg-[#C0C0C0] border-b border-[#808080] select-none">
+        <button
+          type="button"
+          onClick={handleSend}
+          className="win95-btn flex items-center gap-1.5 px-3 py-1 font-pixel text-[10px] font-bold"
+        >
+          <PixelSprite sprite={mail32} scale={0.4} />
+          <span>Send</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="win95-btn px-2 py-1 font-pixel text-[10px]"
+        >
+          {copied ? "Copied!" : "Copy Email"}
+        </button>
+      </div>
+
+      {/* 3. Form Header Fields */}
+      <div className="p-3 space-y-2 bg-[#C0C0C0] border-b border-[#808080]">
+        <div className="flex items-center gap-2">
+          <span className="font-pixel text-[10px] text-neutral-800 w-16 text-right">
             To:
           </span>
-          <span className="font-bold text-black flex-1 truncate">
+          <div className="flex-1 bevel-in bg-white px-2 py-0.5 font-mono text-xs font-bold text-black truncate">
             {contact.email}
-          </span>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="font-pixel text-[9px] uppercase px-1.5 py-0.5 border border-black bg-[#D9D9D9] hover:bg-black hover:text-white"
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 border-b border-black pb-1.5">
-          <label htmlFor="mail-subject" className="font-pixel text-[10px] font-bold uppercase w-16">
+        <div className="flex items-center gap-2">
+          <span className="font-pixel text-[10px] text-neutral-800 w-16 text-right">
             Subject:
-          </label>
-          <input
-            id="mail-subject"
-            type="text"
-            placeholder="Role discussion / Engineering collaboration"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            className="flex-1 font-mono text-xs outline-none bg-transparent"
-          />
-        </div>
-
-        <div className="flex flex-col space-y-1">
-          <label htmlFor="mail-body" className="font-pixel text-[10px] font-bold uppercase">
-            Message Body:
-          </label>
-          <textarea
-            id="mail-body"
-            rows={7}
-            placeholder="Write your note here..."
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            className="w-full border-2 border-black p-2 font-mono text-xs outline-none bg-white resize-none"
-          />
+          </span>
+          <div className="flex-1 bevel-in bg-white px-2 py-0.5">
+            <input
+              type="text"
+              placeholder="Engineering collaboration / Architecture discussion"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full bg-transparent outline-none font-mono text-xs text-black"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Action Row */}
-      <div className="flex items-center justify-between pt-2 border-t-2 border-black">
-        <span className="font-pixel text-[10px] text-black/60">
-          PHONE: {contact.phone}
-        </span>
-        <BevelButton onClick={handleSend} variant="inverted" size="sm">
-          Send Dispatch ✉
-        </BevelButton>
+      {/* 4. Message Body Container */}
+      <div className="flex-1 p-2 bg-[#C0C0C0]">
+        <textarea
+          rows={7}
+          placeholder="Type your message here..."
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          className="w-full h-full bevel-in p-2.5 font-mono text-xs outline-none bg-white text-black resize-none"
+        />
+      </div>
+
+      {/* 5. Status Bar */}
+      <div className="flex items-center justify-between px-2 py-0.5 bg-[#C0C0C0] border-t border-[#808080] text-[10px] font-mono select-none">
+        <div className="bevel-in px-2 py-0.5 text-neutral-700">
+          Phone: {contact.phone}
+        </div>
+        <div className="bevel-in px-2 py-0.5 text-neutral-700">
+          Ready
+        </div>
       </div>
     </div>
   );

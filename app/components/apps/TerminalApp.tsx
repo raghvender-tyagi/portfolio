@@ -13,14 +13,19 @@ interface TerminalLine {
 
 const COMMAND_LIST = [
   "help",
+  "dir",
   "ls",
   "cd",
   "pwd",
+  "type",
   "cat",
   "open",
   "whoami",
   "neofetch",
+  "cls",
   "clear",
+  "ver",
+  "mem",
   "echo",
   "date",
   "history",
@@ -35,36 +40,34 @@ export default function TerminalApp() {
   const { openWindow, closeWindow, setThemeInverted, showAlert } = useWindowStore();
   const vfs = useRef<Record<string, VirtualFile>>(buildVirtualFileSystem());
 
-  const [currentDir, setCurrentDir] = useState<string>("/");
+  const [currentDir, setCurrentDir] = useState<string>("C:\\");
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [inputVal, setInputVal] = useState<string>("");
   const [lines, setLines] = useState<TerminalLine[]>([
     {
-      id: "line-welcome",
+      id: "line-dos-ver",
       type: "system",
-      text: "Welcome to RT-OS 1.0. Type 'help' to begin.",
+      text: "RT-OS 95 [Version 4.00.950]\n(C) Copyright Raghvender Tyagi 2026. All rights reserved.\nType 'HELP' or 'DIR' for commands.",
     },
   ]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll to bottom on new output
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "instant" });
   }, [lines]);
 
-  // Focus input on click anywhere in terminal
   const handleTerminalClick = () => {
     inputRef.current?.focus();
   };
 
   const getDirContents = useCallback((path: string): Record<string, VirtualFile> | null => {
-    if (path === "/" || path === "") return vfs.current;
-    const cleanPath = path.replace(/^\//, "").replace(/\/$/, "");
-    const parts = cleanPath.split("/");
+    const clean = path.replace(/^C:\\?/i, "").replace(/\/+/g, "/").replace(/^\//, "").replace(/\/$/, "");
+    if (!clean) return vfs.current;
 
+    const parts = clean.split(/[\\/]/);
     let cur: VirtualFile | undefined = vfs.current[parts[0]];
     if (!cur || cur.type !== "dir" || !cur.children) return null;
 
@@ -85,11 +88,10 @@ export default function TerminalApp() {
       setHistory(newHistory);
       setHistoryIndex(-1);
 
-      // Add user input line
       const inputEntry: TerminalLine = {
         id: `input-${Date.now()}`,
         type: "input",
-        text: `${currentDir} $ ${trimmed}`,
+        text: `${currentDir}>${trimmed}`,
       };
 
       const args = trimmed.split(/\s+/);
@@ -102,25 +104,40 @@ export default function TerminalApp() {
       switch (cmd) {
         case "help":
           outputLines = [
-            "RT-OS 1.0 Virtual Terminal - Available commands:",
-            "  help              Show this help guide",
-            "  ls [path]         List directory contents",
-            "  cd <dir>          Change directory (e.g. cd projects, cd ..)",
-            "  pwd               Print working directory",
-            "  cat <file>        Read file contents (e.g. cat experience.txt)",
-            "  open <target>     Open window (projects, resume, contact, etc.)",
-            "  whoami            Print user and engineering identity",
-            "  neofetch          Display system architecture & ASCII specs",
-            "  clear             Clear the terminal screen",
-            "  echo <text>       Print text to standard output",
-            "  date              Print current system date and time",
-            "  history           Show command history",
-            "  theme invert      Toggle inverted monochrome mode",
-            "  theme normal      Restore standard monochrome theme",
-            "  sudo <cmd>        Run elevated privileges",
-            "  rm -rf            Attempt to delete filesystem",
-            "  konami            Trigger the chip overclock screensaver",
-            "  exit              Close the terminal window",
+            "RT-OS 95 MS-DOS Prompt - Supported Commands:",
+            "  DIR / LS          List directory files and folders",
+            "  CD <dir>          Change current directory (e.g. CD PROJECTS, CD ..)",
+            "  TYPE / CAT <file> Display contents of a text file",
+            "  OPEN <target>     Launch window (projects, resume, contact, github)",
+            "  WHOAMI            Display developer & systems identity",
+            "  NEOFETCH          Display system architecture & ASCII specs",
+            "  VER               Display operating system version",
+            "  MEM               Display system memory heap & allocations",
+            "  CLS / CLEAR       Clear screen",
+            "  ECHO <text>       Display messages on screen",
+            "  DATE              Display system date and time",
+            "  HISTORY           View previously executed commands",
+            "  THEME [INVERT]    Toggle retro themes",
+            "  EXIT              Close MS-DOS Prompt",
+          ];
+          break;
+
+        case "ver":
+          outputLines = ["RT-OS 95 [Version 4.00.950] (Raghvender Tyagi Edition)"];
+          break;
+
+        case "mem":
+          outputLines = [
+            "Memory Type        Total       Used       Free",
+            "----------------  --------   --------   --------",
+            "Conventional        640K        48K       592K",
+            "Upper                 0K         0K         0K",
+            "Reserved            384K       384K         0K",
+            "Extended (XMS)    64,512K     4,200K    60,312K",
+            "----------------  --------   --------   --------",
+            "Total memory      65,536K     4,632K    60,904K",
+            "",
+            "Agent State Memory: LangGraph Runtime Active",
           ];
           break;
 
@@ -128,62 +145,72 @@ export default function TerminalApp() {
           outputLines = [currentDir];
           break;
 
+        case "dir":
         case "ls": {
-          const targetDir = param1 ? (param1.startsWith("/") ? param1 : `${currentDir === "/" ? "" : currentDir}/${param1}`) : currentDir;
-          const contents = getDirContents(targetDir);
-          if (contents) {
-            outputLines = Object.values(contents).map(
-              (f) => `${f.name}${f.type === "dir" ? "/" : ""}`
-            );
+          const target = getDirContents(currentDir);
+          if (target) {
+            outputLines = [
+              ` Volume in drive C is RT-OS_95`,
+              ` Directory of ${currentDir}`,
+              "",
+            ];
+            const entries = Object.values(target);
+            entries.forEach((f) => {
+              const isD = f.type === "dir";
+              const date = "10-17-26  12:00p";
+              const size = isD ? "<DIR>        " : `${(f.content?.length || 1024).toString().padStart(8, " ")} `;
+              outputLines.push(`${f.name.padEnd(16, " ")} ${size} ${date}`);
+            });
+            outputLines.push("");
+            outputLines.push(`        ${entries.length} file(s)     1,048,576 bytes free`);
           } else {
-            outputLines = [`ls: cannot access '${param1}': No such file or directory`];
+            outputLines = [`Invalid directory`];
             isError = true;
           }
           break;
         }
 
         case "cd": {
-          if (!param1 || param1 === "/" || param1 === "~") {
-            setCurrentDir("/");
+          if (!param1 || param1 === "\\" || param1 === "/") {
+            setCurrentDir("C:\\");
           } else if (param1 === "..") {
-            if (currentDir !== "/") {
-              const parts = currentDir.split("/").filter(Boolean);
+            if (currentDir !== "C:\\") {
+              const parts = currentDir.replace(/^C:\\?/, "").split(/[\\/]/).filter(Boolean);
               parts.pop();
-              setCurrentDir(parts.length ? `/${parts.join("/")}` : "/");
+              setCurrentDir(parts.length ? `C:\\${parts.join("\\")}` : "C:\\");
             }
           } else {
-            const nextPath = param1.startsWith("/") ? param1 : `${currentDir === "/" ? "" : currentDir}/${param1}`;
-            const target = getDirContents(nextPath);
+            const candidate = currentDir === "C:\\" ? `C:\\${param1}` : `${currentDir}\\${param1}`;
+            const target = getDirContents(candidate);
             if (target) {
-              setCurrentDir(nextPath.replace(/\/+/g, "/"));
+              setCurrentDir(candidate);
             } else {
-              outputLines = [`cd: ${param1}: No such file or directory`];
+              outputLines = [`Invalid directory - ${param1}`];
               isError = true;
             }
           }
           break;
         }
 
+        case "type":
         case "cat": {
           if (!param1) {
-            outputLines = ["cat: missing file operand"];
+            outputLines = ["Required parameter missing"];
             isError = true;
             break;
           }
-
-          // Search current dir first
           const contents = getDirContents(currentDir);
           const target = contents ? contents[param1] : undefined;
 
           if (target) {
             if (target.type === "dir") {
-              outputLines = [`cat: ${param1}: Is a directory`];
+              outputLines = [`Access denied - ${param1} is a directory`];
               isError = true;
             } else {
               outputLines = (target.content || "").split("\n");
             }
           } else {
-            outputLines = [`cat: ${param1}: No such file or directory`];
+            outputLines = [`File not found - ${param1}`];
             isError = true;
           }
           break;
@@ -191,14 +218,14 @@ export default function TerminalApp() {
 
         case "open": {
           if (!param1) {
-            outputLines = ["open: specify target (projects, resume, contact, github, etc.)"];
+            outputLines = ["Specify target to open (e.g. open projects, open resume)"];
             isError = true;
             break;
           }
           const lower = param1.toLowerCase();
           if (lower === "projects") {
             openWindow("finder", { folder: "projects" });
-            outputLines = ["Opening Projects folder in Finder..."];
+            outputLines = ["Opening Projects folder..."];
           } else if (lower === "resume") {
             openWindow("pdfViewer");
             outputLines = ["Opening Resume viewer..."];
@@ -207,21 +234,20 @@ export default function TerminalApp() {
             outputLines = ["Opening Mail compose..."];
           } else if (lower === "github") {
             window.open("https://github.com/raghvender-tyagi", "_blank");
-            outputLines = ["Opening GitHub profile in new tab..."];
+            outputLines = ["Navigating to GitHub profile..."];
           } else if (lower === "linkedin") {
             window.open("https://linkedin.com/in/raghvender-tyagi-05a881247", "_blank");
-            outputLines = ["Opening LinkedIn profile in new tab..."];
+            outputLines = ["Navigating to LinkedIn profile..."];
           } else if (lower === "leetcode") {
             window.open("https://leetcode.com/u/RaghvenderTyagi450/", "_blank");
-            outputLines = ["Opening LeetCode profile in new tab..."];
+            outputLines = ["Navigating to LeetCode profile..."];
           } else {
-            // Check project slug
             const prj = portfolioContent.projects.find((p) => p.slug === lower);
             if (prj) {
-              openWindow("projectDetail", { slug: prj.slug, title: `${prj.slug}.project` });
-              outputLines = [`Opening project: ${prj.title}...`];
+              openWindow("projectDetail", { slug: prj.slug, title: prj.title });
+              outputLines = [`Launching ${prj.title}...`];
             } else {
-              outputLines = [`open: unknown target '${param1}'`];
+              outputLines = [`Bad command or file name: ${param1}`];
               isError = true;
             }
           }
@@ -239,19 +265,18 @@ export default function TerminalApp() {
 
         case "neofetch":
           outputLines = [
-            "   .########.      raghvender@rt-os",
-            "   #........#      ----------------",
-            " .###.####.###.    OS: RT-OS 1.0 (Mac System 7 Edition)",
-            " .#..........#.    Host: KIET Group of Institutions '27",
-            " .#.###..###.#.    Kernel: LangGraph Multi-Agent Engine",
-            " .#.#w#..#w#.#.    Uptime: 99.99% Production Reliability",
-            " .#..........#.    Shell: rtsh 1.0",
-            " .#.########.#.    CPU: Python 3.12 / Java 21 / Docker cgroups",
-            " .#..######..#.    Memory: 16MB Fast RAM / PostgreSQL pgvector",
-            " ..##########..    Architecture: Distributed P2P + Sandbox",
+            "   .rrrrrr...kkkkk.      raghvender@rt-os95",
+            "   .rrrrrr..kkkkkk.      ------------------",
+            "   .bbbb.yyyyyyyyy.      OS: RT-OS 95 [Version 4.00.950]",
+            "   .bbbbb.yyyyyyyy.      Host: KIET Group of Institutions '26",
+            "   ................      Kernel: LangGraph Multi-Agent Engine",
+            "   Processor: Python 3.12 / Java 21 / Docker Sandboxing",
+            "   Memory: 64MB RAM / PostgreSQL + pgvector",
+            "   Uptime: 99.99% Production Reliability",
           ];
           break;
 
+        case "cls":
         case "clear":
           setLines([]);
           return;
@@ -271,26 +296,28 @@ export default function TerminalApp() {
         case "theme":
           if (param1 === "invert") {
             setThemeInverted(true);
-            outputLines = ["Theme set to INVERTED monochrome."];
+            outputLines = ["Monochrome invert enabled."];
           } else {
             setThemeInverted(false);
-            outputLines = ["Theme set to STANDARD monochrome."];
+            outputLines = ["Default colors restored."];
           }
           break;
 
         case "sudo":
-          outputLines = ["nice try. All root operations are handled by deterministic supervisor agents."];
+          outputLines = ["Access denied. Root operations managed by deterministic supervisor agents."];
           break;
 
         case "rm":
-          if (trimmed.includes("-rf") || trimmed.includes("-r")) {
+          if (trimmed.includes("-rf") || trimmed.includes("/s")) {
             showAlert(
-              "Security Sandbox Violation",
-              "Nice try! Sandboxed Docker cgroup caps and read-only host filesystem prevented system deletion."
+              "Access Denied",
+              "Nice try! Sandboxed Docker container cgroup limits protect host system files from deletion.",
+              undefined,
+              "error"
             );
-            outputLines = ["rm: operation denied by security hypervisor."];
+            outputLines = ["Access denied."];
           } else {
-            outputLines = ["rm: missing operand"];
+            outputLines = ["Required parameter missing."];
           }
           break;
 
@@ -303,14 +330,12 @@ export default function TerminalApp() {
         }
 
         case "konami":
-          outputLines = ["Triggering Konami overclock screensaver..."];
-          window.dispatchEvent(
-            new KeyboardEvent("keydown", { key: "a" })
-          );
+          outputLines = ["Konami code activated. Overclocking chips..."];
+          window.dispatchEvent(new KeyboardEvent("keydown", { key: "a" }));
           break;
 
         default:
-          outputLines = [`command not found: ${cmd}. Try 'help' for documentation.`];
+          outputLines = [`Bad command or file name: ${cmd}`];
           isError = true;
       }
 
@@ -328,7 +353,6 @@ export default function TerminalApp() {
     [currentDir, history, getDirContents, openWindow, setThemeInverted, showAlert, closeWindow]
   );
 
-  // Keyboard navigation for history (Up/Down) & Tab autocompletion
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -352,31 +376,18 @@ export default function TerminalApp() {
       }
     } else if (e.key === "Tab") {
       e.preventDefault();
-      // Tab autocompletion
       const parts = inputVal.trim().split(/\s+/);
       if (parts.length === 1) {
-        // Complete command
         const match = COMMAND_LIST.find((c) => c.startsWith(parts[0].toLowerCase()));
         if (match) setInputVal(match);
-      } else if (parts.length === 2 && (parts[0] === "cat" || parts[0] === "cd" || parts[0] === "ls")) {
-        // Complete filename
-        const contents = getDirContents(currentDir);
-        if (contents) {
-          const files = Object.keys(contents);
-          const match = files.find((f) => f.startsWith(parts[1]));
-          if (match) setInputVal(`${parts[0]} ${match}`);
-        }
       }
-    } else if ((e.metaKey || e.ctrlKey) && e.key === "l") {
-      e.preventDefault();
-      setLines([]);
     }
   };
 
   return (
     <div
       onClick={handleTerminalClick}
-      className="h-full bg-black text-white font-mono text-xs p-3 overflow-y-auto flex flex-col justify-between cursor-text select-text"
+      className="h-full bg-black text-[#C0C0C0] font-mono text-xs p-3 overflow-y-auto flex flex-col justify-between cursor-text select-text"
     >
       <div
         role="region"
@@ -388,12 +399,12 @@ export default function TerminalApp() {
             key={line.id}
             className={`whitespace-pre-wrap ${
               line.type === "input"
-                ? "text-neutral-300 font-bold"
+                ? "text-white font-bold"
                 : line.type === "error"
                 ? "text-red-400"
                 : line.type === "system"
-                ? "text-neutral-400 border-b border-white/20 pb-1 mb-2"
-                : "text-white"
+                ? "text-[#C0C0C0] border-b border-[#808080] pb-1 mb-2"
+                : "text-[#C0C0C0]"
             }`}
           >
             {line.text}
@@ -403,8 +414,8 @@ export default function TerminalApp() {
       </div>
 
       {/* Input Prompt Line */}
-      <div className="flex items-center gap-1.5 pt-2 border-t border-white/20 font-mono text-xs text-white">
-        <span className="text-white/70">{currentDir} $</span>
+      <div className="flex items-center gap-1 pt-2 border-t border-[#808080] font-mono text-xs text-white">
+        <span className="text-white shrink-0">{currentDir}&gt;</span>
         <input
           ref={inputRef}
           type="text"
@@ -414,7 +425,7 @@ export default function TerminalApp() {
           autoFocus
           spellCheck={false}
           autoComplete="off"
-          aria-label="Terminal command prompt"
+          aria-label="MS-DOS command prompt"
           className="flex-1 bg-transparent text-white outline-none font-mono text-xs border-none p-0"
         />
         <span className="w-2 h-4 bg-white inline-block animate-pulse" />

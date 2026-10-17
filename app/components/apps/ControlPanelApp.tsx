@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import BevelButton from "../BevelButton";
+import TabbedDialog, { TabItem } from "../os/TabbedDialog";
 import { useWindowStore } from "@/lib/os/windowStore";
 import { soundManager } from "@/lib/os/sound";
 
@@ -21,151 +21,208 @@ export default function ControlPanelApp() {
     showAlert,
   } = useWindowStore();
 
-  const wallpapers: Array<"dither" | "checker" | "grid" | "solid"> = [
-    "dither",
-    "checker",
-    "grid",
-    "solid",
+  const wallpaperOptions: Array<{ id: "teal" | "dither" | "checker" | "solid"; label: string }> = [
+    { id: "teal", label: "Classic Teal (Win95)" },
+    { id: "dither", label: "1-Bit Dither (Mono)" },
+    { id: "checker", label: "Checker Mesh" },
+    { id: "solid", label: "Solid Neutral Grey" },
   ];
 
-  return (
-    <div className="p-4 bg-white text-black font-mono text-xs flex flex-col h-full justify-between select-none space-y-4">
-      <div className="space-y-4">
-        {/* Desktop Wallpaper Picker */}
-        <div className="border-2 border-black bg-[#D9D9D9] p-3 space-y-2">
-          <div className="flex items-center justify-between border-b border-black pb-1">
-            <span className="font-pixel text-[10px] font-bold uppercase">
-              Desktop Wallpaper Pattern
-            </span>
-            <span className="font-pixel text-[9px] uppercase text-black/70">
-              Active: {wallpaper}
-            </span>
+  const tabs: TabItem[] = [
+    {
+      id: "background",
+      label: "Background",
+      content: (
+        <div className="space-y-3 text-xs font-mono select-none">
+          {/* CRT Monitor Preview */}
+          <div className="flex justify-center p-2">
+            <div className="w-40 h-28 bevel-in bg-[#C0C0C0] p-1 flex flex-col items-center justify-center">
+              <div
+                className={`w-32 h-20 border border-black ${
+                  wallpaper === "teal"
+                    ? "bg-[#008080]"
+                    : wallpaper === "dither"
+                    ? "bg-mac-dither"
+                    : wallpaper === "checker"
+                    ? "bg-mac-checker"
+                    : "bg-[#808080]"
+                }`}
+              />
+              <div className="w-12 h-2 bg-[#808080] mt-1" />
+            </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 pt-1">
-            {wallpapers.map((wp) => {
-              const isSelected = wallpaper === wp;
-              return (
+          {/* Wallpaper Selection Box */}
+          <div className="space-y-1">
+            <span className="font-pixel text-[10px] font-bold text-black block">
+              Pattern / Wallpaper:
+            </span>
+            <div className="bevel-in bg-white p-1 max-h-28 overflow-y-auto space-y-0.5">
+              {wallpaperOptions.map((opt) => (
                 <button
-                  key={wp}
+                  key={opt.id}
                   type="button"
                   onClick={() => {
                     soundManager.playClick(soundEnabled);
-                    setWallpaper(wp);
+                    setWallpaper(opt.id);
                   }}
-                  className={`border-2 border-black p-2 flex flex-col items-center gap-1.5 cursor-pointer ${
-                    isSelected ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100"
+                  className={`w-full text-left px-2 py-1 font-pixel text-[10px] ${
+                    wallpaper === opt.id
+                      ? "bg-[#000080] text-white dotted-focus"
+                      : "hover:bg-neutral-100 text-black"
                   }`}
                 >
-                  <div
-                    className={`w-8 h-8 border border-black ${
-                      wp === "dither"
-                        ? "bg-mac-dither"
-                        : wp === "checker"
-                        ? "bg-mac-checker"
-                        : wp === "grid"
-                        ? "bg-[#D9D9D9]"
-                        : "bg-[#BFBFBF]"
-                    }`}
-                  />
-                  <span className="font-pixel text-[9px] uppercase">{wp}</span>
+                  {opt.label}
                 </button>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* System Toggles */}
-        <div className="border-2 border-black bg-white p-3 space-y-2.5">
-          <span className="font-pixel text-[10px] font-bold uppercase text-black/70 block border-b border-black pb-1">
-            System Preferences
-          </span>
-
-          {/* Sound Toggle */}
-          <div className="flex items-center justify-between text-xs">
+          {/* Mono Mode Option */}
+          <div className="pt-2 border-t border-[#808080] flex items-center justify-between">
             <div>
-              <span className="font-bold">Retro Sound Effects:</span>
-              <span className="text-[10px] text-black/60 block">WebAudio square-wave synthesis</span>
+              <span className="font-bold text-black">1-Bit Mono Theme:</span>
+              <span className="text-[10px] text-neutral-600 block">
+                Applies the monochrome high-contrast skin
+              </span>
             </div>
             <button
               type="button"
               onClick={() => {
-                const next = !soundEnabled;
-                setSoundEnabled(next);
-                if (next) soundManager.playAlertBeep(true);
+                const next = wallpaper !== "dither";
+                setWallpaper(next ? "dither" : "teal");
               }}
-              className="font-pixel text-[10px] px-2.5 py-1 border-2 border-black bg-[#D9D9D9] hover:bg-black hover:text-white uppercase font-bold"
+              className="win95-btn px-3 py-1 font-pixel text-[10px]"
             >
-              [{soundEnabled ? "ENABLED" : "MUTED"}]
-            </button>
-          </div>
-
-          {/* Sidekick Mascot Toggle */}
-          <div className="flex items-center justify-between text-xs">
-            <div>
-              <span className="font-bold">Walking Mascot:</span>
-              <span className="text-[10px] text-black/60 block">Animated robot assistant along menu</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSidekickEnabled(!sidekickEnabled)}
-              className="font-pixel text-[10px] px-2.5 py-1 border-2 border-black bg-[#D9D9D9] hover:bg-black hover:text-white uppercase font-bold"
-            >
-              [{sidekickEnabled ? "ACTIVE" : "OFF"}]
-            </button>
-          </div>
-
-          {/* 60s Screensaver Toggle */}
-          <div className="flex items-center justify-between text-xs">
-            <div>
-              <span className="font-bold">60s Screensaver:</span>
-              <span className="text-[10px] text-black/60 block">Flying winged chips on inactivity</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setScreensaverEnabled(!screensaverEnabled)}
-              className="font-pixel text-[10px] px-2.5 py-1 border-2 border-black bg-[#D9D9D9] hover:bg-black hover:text-white uppercase font-bold"
-            >
-              [{screensaverEnabled ? "ON" : "OFF"}]
-            </button>
-          </div>
-
-          {/* Invert Theme Toggle */}
-          <div className="flex items-center justify-between text-xs">
-            <div>
-              <span className="font-bold">Invert Palette:</span>
-              <span className="text-[10px] text-black/60 block">High-contrast dark monochrome</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setThemeInverted(!themeInverted)}
-              className="font-pixel text-[10px] px-2.5 py-1 border-2 border-black bg-[#D9D9D9] hover:bg-black hover:text-white uppercase font-bold"
-            >
-              [{themeInverted ? "INVERTED" : "STANDARD"}]
+              {wallpaper === "dither" ? "MONO: ON" : "MONO: OFF"}
             </button>
           </div>
         </div>
-      </div>
+      ),
+    },
+    {
+      id: "sounds",
+      label: "Sounds",
+      content: (
+        <div className="space-y-3 text-xs font-mono select-none">
+          <div className="space-y-2">
+            <span className="font-pixel text-[10px] font-bold text-black block">
+              Audio Scheme:
+            </span>
+            <div className="bevel-in bg-white p-3 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span>Synthesized WebAudio Sound:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !soundEnabled;
+                    setSoundEnabled(next);
+                    if (next) soundManager.playStartupChime(true);
+                  }}
+                  className="win95-btn px-3 py-1 font-pixel text-[10px] font-bold"
+                >
+                  {soundEnabled ? "ENABLED" : "MUTED"}
+                </button>
+              </div>
 
-      {/* Reset Desktop Section */}
-      <div className="pt-2 border-t-2 border-black flex items-center justify-between">
-        <span className="text-[10px] text-black/60">
-          CONTROL PANEL 7.1 • RT-OS
-        </span>
-        <BevelButton
-          onClick={() => {
-            showAlert(
-              "Reset Desktop Confirmation",
-              "Are you sure you want to reset all desktop windows and icon positions to factory defaults?",
-              () => resetDesktop()
-            );
-          }}
-          variant="default"
-          size="sm"
-        >
-          Reset Desktop Defaults
-        </BevelButton>
-      </div>
+              <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
+                <span>Audition Sound Event:</span>
+                <button
+                  type="button"
+                  onClick={() => soundManager.playStartupChime(true)}
+                  className="win95-btn px-2.5 py-1 font-pixel text-[10px]"
+                >
+                  ▶ Play Chime
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "system",
+      label: "Settings",
+      content: (
+        <div className="space-y-3 text-xs font-mono select-none">
+          <div className="bevel-in bg-white p-3 space-y-3">
+            {/* Mascot */}
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="font-bold text-black">Walking Robot Mascot:</span>
+                <span className="text-[10px] text-neutral-600 block">
+                  Stepped pixel mascot walking along desktop
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSidekickEnabled(!sidekickEnabled)}
+                className="win95-btn px-3 py-1 font-pixel text-[10px]"
+              >
+                {sidekickEnabled ? "ACTIVE" : "OFF"}
+              </button>
+            </div>
+
+            {/* Screensaver */}
+            <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
+              <div>
+                <span className="font-bold text-black">60s Flying Chips Screensaver:</span>
+                <span className="text-[10px] text-neutral-600 block">
+                  Triggers after 1 minute of inactivity
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setScreensaverEnabled(!screensaverEnabled)}
+                className="win95-btn px-3 py-1 font-pixel text-[10px]"
+              >
+                {screensaverEnabled ? "ENABLED" : "DISABLED"}
+              </button>
+            </div>
+
+            {/* Invert */}
+            <div className="flex items-center justify-between pt-2 border-t border-neutral-200">
+              <div>
+                <span className="font-bold text-black">Invert Palette:</span>
+                <span className="text-[10px] text-neutral-600 block">
+                  Night vision inverted mode
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setThemeInverted(!themeInverted)}
+                className="win95-btn px-3 py-1 font-pixel text-[10px]"
+              >
+                {themeInverted ? "INVERTED" : "NORMAL"}
+              </button>
+            </div>
+          </div>
+
+          {/* Reset Desktop */}
+          <div className="pt-2 border-t border-[#808080] flex justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                showAlert(
+                  "Reset Desktop",
+                  "Are you sure you want to restore factory default icons and centered Welcome window?",
+                  () => resetDesktop(),
+                  "warning"
+                );
+              }}
+              className="win95-btn px-4 py-1.5 font-bold font-pixel text-[10px]"
+            >
+              Reset to Factory Defaults
+            </button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="h-full bg-[#C0C0C0]">
+      <TabbedDialog tabs={tabs} />
     </div>
   );
 }

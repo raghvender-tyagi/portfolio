@@ -37,15 +37,17 @@ export interface SystemAlertState {
   open: boolean;
   title: string;
   message: string;
-  type?: "info" | "warning";
+  type?: "info" | "warning" | "error" | "question";
   onOk?: () => void;
+  onCancel?: () => void;
+  buttons?: "ok" | "okCancel" | "yesNo";
 }
 
 interface WindowStoreState {
   windows: WindowInstance[];
   activeWindowId: string | null;
   nextZ: number;
-  wallpaper: "dither" | "checker" | "grid" | "solid";
+  wallpaper: "teal" | "dither" | "checker" | "solid" | "grid";
   themeInverted: boolean;
   soundEnabled: boolean;
   sidekickEnabled: boolean;
@@ -71,7 +73,7 @@ interface WindowStoreState {
   minimizeWindow: (id: string) => void;
   toggleCollapse: (id: string) => void;
   maximizeWindow: (id: string) => void;
-  setWallpaper: (wp: "dither" | "checker" | "grid" | "solid") => void;
+  setWallpaper: (wp: "teal" | "dither" | "checker" | "solid" | "grid") => void;
   setThemeInverted: (val: boolean) => void;
   setSoundEnabled: (val: boolean) => void;
   setSidekickEnabled: (val: boolean) => void;
@@ -80,43 +82,61 @@ interface WindowStoreState {
   moveDesktopIcon: (id: string, x: number, y: number) => void;
   cleanUpDesktopIcons: () => void;
   resetDesktop: () => void;
-  showAlert: (title: string, message: string, onOk?: () => void) => void;
+  showAlert: (
+    title: string,
+    message: string,
+    onOk?: () => void,
+    type?: "info" | "warning" | "error" | "question"
+  ) => void;
   closeAlert: () => void;
   setShutDown: (val: boolean) => void;
   setRestarting: (val: boolean) => void;
   initFromStorage: () => void;
 }
 
-const STORAGE_KEY = "rt_os_state_v1";
+const STORAGE_KEY = "rt_os_95_state_v1";
 
-// Default desktop icon positions aligned on the right side
+// Fixed cell size: 80px width x 84px height.
+// Arranged in left column (x: 12), wrapping to next column (x: 100) when y gets tall.
 export const DEFAULT_DESKTOP_ICONS: DesktopIconPosition[] = [
-  { id: "mac-hd", label: "Macintosh HD", appId: "aboutMac", x: 24, y: 48 },
-  { id: "projects", label: "Projects", appId: "finder", props: { folder: "projects" }, x: 24, y: 112 },
-  { id: "experience", label: "Experience", appId: "simpleText", props: { file: "experience.txt" }, x: 24, y: 176 },
-  { id: "about", label: "About", appId: "simpleText", props: { file: "about.txt" }, x: 24, y: 240 },
-  { id: "skills", label: "Skills", appId: "aboutMac", props: { tab: "skills" }, x: 24, y: 304 },
-  { id: "achievements", label: "Achievements", appId: "finder", props: { folder: "achievements" }, x: 24, y: 368 },
-  { id: "resume", label: "Resume.pdf", appId: "pdfViewer", x: 24, y: 432 },
-  { id: "contact", label: "Contact", appId: "mail", x: 24, y: 496 },
-  { id: "terminal", label: "Terminal", appId: "terminal", x: 24, y: 560 },
-  { id: "trash", label: "Trash", appId: "trash", x: 24, y: 624 },
+  // Column 1 (x: 12)
+  { id: "my-computer", label: "My Computer", appId: "aboutMac", x: 12, y: 12 },
+  { id: "network", label: "Network", appId: "chooser", x: 12, y: 100 },
+  { id: "projects", label: "Projects", appId: "finder", props: { folder: "projects" }, x: 12, y: 188 },
+  { id: "achievements", label: "Achievements", appId: "finder", props: { folder: "achievements" }, x: 12, y: 276 },
+  { id: "experience", label: "Experience.txt", appId: "simpleText", props: { file: "experience.txt" }, x: 12, y: 364 },
+  { id: "about", label: "About.txt", appId: "simpleText", props: { file: "about.txt" }, x: 12, y: 452 },
+  { id: "skills", label: "Skills", appId: "aboutMac", props: { tab: "skills" }, x: 12, y: 540 },
+
+  // Column 2 (x: 100)
+  { id: "resume", label: "Resume.pdf", appId: "pdfViewer", x: 100, y: 12 },
+  { id: "mail", label: "Inbox", appId: "mail", x: 100, y: 100 },
+  { id: "terminal", label: "MS-DOS Prompt", appId: "terminal", x: 100, y: 188 },
+  { id: "trash", label: "Recycle Bin", appId: "trash", x: 100, y: 276 },
 ];
 
-// Default Welcome window geometry
-const DEFAULT_WELCOME_WINDOW: WindowInstance = {
-  id: "welcome-main",
-  appId: "welcome",
-  title: "welcome.app",
-  x: 48,
-  y: 56,
-  w: 780,
-  h: 520,
-  z: 10,
-  minimized: false,
-  collapsed: false,
-  maximized: false,
-};
+export function getCenteredWelcomeWindow(): WindowInstance {
+  const viewportW = typeof window !== "undefined" ? window.innerWidth : 1200;
+  const viewportH = typeof window !== "undefined" ? window.innerHeight : 800;
+  const w = Math.min(740, Math.max(340, viewportW - 40));
+  const h = Math.min(480, Math.max(320, viewportH - 80));
+  const x = Math.max(12, Math.floor((viewportW - w) / 2));
+  const y = Math.max(16, Math.floor((viewportH - 38 - h) / 2));
+
+  return {
+    id: "welcome-main",
+    appId: "welcome",
+    title: "Welcome to RT-OS 95",
+    x,
+    y,
+    w,
+    h,
+    z: 20,
+    minimized: false,
+    collapsed: false,
+    maximized: false,
+  };
+}
 
 function saveToLocalStorage(state: {
   windows: WindowInstance[];
@@ -138,17 +158,17 @@ function saveToLocalStorage(state: {
 }
 
 export const useWindowStore = create<WindowStoreState>((set, get) => ({
-  windows: [DEFAULT_WELCOME_WINDOW],
+  windows: [getCenteredWelcomeWindow()],
   activeWindowId: "welcome-main",
-  nextZ: 20,
-  wallpaper: "dither",
+  nextZ: 25,
+  wallpaper: "teal",
   themeInverted: false,
   soundEnabled: false,
   sidekickEnabled: true,
   screensaverEnabled: true,
   viewMode: "icon",
   desktopIcons: DEFAULT_DESKTOP_ICONS,
-  recentWindows: [{ title: "welcome.app", appId: "welcome" }],
+  recentWindows: [{ title: "Welcome to RT-OS 95", appId: "welcome" }],
   systemAlert: null,
   isShutDown: false,
   isRestarting: false,
@@ -156,86 +176,138 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
   openWindow: (appId, props, customTitle) => {
     const { windows, nextZ, recentWindows } = get();
 
-    // Check singleton apps: welcome, terminal, aboutMac, controlPanel
-    const isSingleton = ["welcome", "terminal", "aboutMac", "controlPanel", "chooser", "pdfViewer"].includes(appId);
+    // Check singleton apps
+    const isSingleton = [
+      "welcome",
+      "terminal",
+      "aboutMac",
+      "controlPanel",
+      "chooser",
+      "pdfViewer",
+      "calc",
+      "paint",
+      "snake",
+      "bugSweeper",
+      "findFiles",
+      "runDialog",
+      "dateTimeProperties",
+      "help",
+    ].includes(appId);
+
     if (isSingleton) {
       const existing = windows.find((w) => w.appId === appId);
       if (existing) {
         get().focusWindow(existing.id);
         if (existing.minimized) {
           set({
-            windows: windows.map((w) => (w.id === existing.id ? { ...w, minimized: false } : w)),
+            windows: windows.map((w) =>
+              w.id === existing.id ? { ...w, minimized: false } : w
+            ),
           });
         }
         return;
       }
     }
 
-    // Default sizes per app
+    // Default sizes and titles per app
     let w = 640;
     let h = 460;
-    let title = customTitle || `${appId}.app`;
+    let title = customTitle || `${appId}.exe`;
 
     if (appId === "welcome") {
-      w = 780;
-      h = 520;
-      title = "welcome.app";
+      w = 740;
+      h = 480;
+      title = "Welcome to RT-OS 95";
     } else if (appId === "finder") {
-      w = 680;
-      h = 440;
-      title = props?.folder === "achievements" ? "achievements.finder" : "projects.finder";
+      w = 700;
+      h = 460;
+      title =
+        props?.folder === "achievements"
+          ? "C:\\Achievements"
+          : "C:\\Projects";
     } else if (appId === "terminal") {
-      w = 620;
+      w = 640;
       h = 420;
-      title = "terminal.sys";
+      title = "MS-DOS Prompt";
     } else if (appId === "aboutMac") {
-      w = 580;
-      h = 460;
-      title = "About This Mac";
-    } else if (appId === "simpleText") {
       w = 560;
-      h = 440;
-      title = (props?.file as string) || "document.txt";
-    } else if (appId === "mail") {
-      w = 540;
       h = 460;
-      title = "mail.app";
+      title = "System Properties";
+    } else if (appId === "simpleText") {
+      w = 580;
+      h = 440;
+      title = (props?.file as string) || "Notepad - Untitled";
+    } else if (appId === "mail") {
+      w = 560;
+      h = 460;
+      title = "Outlook Express - New Message";
     } else if (appId === "pdfViewer") {
-      w = 660;
+      w = 680;
       h = 540;
-      title = "Raghvender_Tyagi_Resume.pdf";
+      title = "Acrobat Reader - Raghvender_Tyagi_Resume.pdf";
     } else if (appId === "controlPanel") {
-      w = 500;
+      w = 520;
       h = 420;
       title = "Control Panel";
     } else if (appId === "projectDetail") {
       w = 660;
       h = 500;
-      title = (props?.title as string) || "project.info";
+      title = (props?.title as string) || "Project Overview";
     } else if (appId === "getInfo") {
       w = 420;
       h = 460;
-      title = `Get Info: ${props?.name || "Item"}`;
+      title = `Properties: ${props?.name || "Item"}`;
     } else if (appId === "chooser") {
-      w = 480;
+      w = 500;
       h = 360;
-      title = "Chooser";
+      title = "Network Neighborhood";
+    } else if (appId === "paint") {
+      w = 600;
+      h = 460;
+      title = "Paint - Untitled";
+    } else if (appId === "snake") {
+      w = 460;
+      h = 440;
+      title = "Snake";
+    } else if (appId === "calc") {
+      w = 340;
+      h = 360;
+      title = "Calculator";
+    } else if (appId === "bugSweeper") {
+      w = 360;
+      h = 400;
+      title = "Bug Sweeper";
+    } else if (appId === "findFiles") {
+      w = 520;
+      h = 380;
+      title = "Find: All Files";
+    } else if (appId === "runDialog") {
+      w = 440;
+      h = 220;
+      title = "Run";
+    } else if (appId === "dateTimeProperties") {
+      w = 420;
+      h = 440;
+      title = "Date/Time Properties";
+    } else if (appId === "help") {
+      w = 580;
+      h = 440;
+      title = "RT-OS 95 Help & Support";
     }
 
-    // Cascade offset from last window or centered
     const viewportW = typeof window !== "undefined" ? window.innerWidth : 1200;
     const viewportH = typeof window !== "undefined" ? window.innerHeight : 800;
 
     // Responsive clamp for dimensions
     if (w > viewportW - 32) w = Math.max(320, viewportW - 32);
-    if (h > viewportH - 64) h = Math.max(260, viewportH - 64);
+    if (h > viewportH - 70) h = Math.max(240, viewportH - 70);
 
     let x = 60 + ((windows.length * 28) % 180);
-    let y = 60 + ((windows.length * 28) % 160);
+    let y = 40 + ((windows.length * 28) % 160);
 
-    // Clamp inside viewport
-    if (x + w > viewportW - 40) x = Math.max(16, viewportW - w - 40);
-    if (y + h > viewportH - 40) y = Math.max(40, viewportH - h - 40);
+    // Keep title bar and window inside viewport
+    if (x + w > viewportW - 20) x = Math.max(12, viewportW - w - 20);
+    if (y + h > viewportH - 50) y = Math.max(20, viewportH - h - 50);
 
     const newId = `${appId}-${Date.now()}`;
     const newWindow: WindowInstance = {
@@ -253,11 +325,16 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
       props,
     };
 
-    const newRecent = [{ title, appId, props }, ...recentWindows.filter((r) => r.title !== title)].slice(0, 3);
+    const newRecent = [
+      { title, appId, props },
+      ...recentWindows.filter((r) => r.title !== title),
+    ].slice(0, 5);
 
     // Reflect in URL hash
     if (typeof window !== "undefined") {
-      window.location.hash = `#/${appId}${props?.folder ? `/${props.folder}` : props?.file ? `/${props.file}` : ""}`;
+      window.location.hash = `#/${appId}${
+        props?.folder ? `/${props.folder}` : props?.file ? `/${props.file}` : ""
+      }`;
     }
 
     const updatedWindows = [...windows, newWindow];
@@ -347,8 +424,8 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
     const viewportW = typeof window !== "undefined" ? window.innerWidth : 1200;
     const viewportH = typeof window !== "undefined" ? window.innerHeight : 800;
 
-    // Ensure title bar is always reachable: top >= 32px (below menu bar), keep at least 64px inside horizontally
-    const clampedY = Math.max(32, Math.min(y, viewportH - 40));
+    // Ensure title bar is always reachable: top >= 0, keep at least 64px inside horizontally
+    const clampedY = Math.max(0, Math.min(y, viewportH - 70));
     const targetWin = get().windows.find((w) => w.id === id);
     const winW = targetWin ? targetWin.w : 400;
     const clampedX = Math.max(-(winW - 64), Math.min(x, viewportW - 64));
@@ -378,11 +455,18 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
   },
 
   minimizeWindow: (id) => {
-    set({
-      windows: get().windows.map((w) =>
-        w.id === id ? { ...w, minimized: !w.minimized } : w
-      ),
-    });
+    const { windows, activeWindowId } = get();
+    const updated = windows.map((w) =>
+      w.id === id ? { ...w, minimized: !w.minimized } : w
+    );
+    let nextActive = activeWindowId;
+    if (activeWindowId === id) {
+      const remainingVisible = updated
+        .filter((w) => !w.minimized)
+        .sort((a, b) => b.z - a.z);
+      nextActive = remainingVisible[0]?.id || null;
+    }
+    set({ windows: updated, activeWindowId: nextActive });
   },
 
   toggleCollapse: (id) => {
@@ -403,7 +487,7 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
 
     if (target.maximized) {
       // Restore
-      const prev = target.restoreRect || { x: 60, y: 60, w: 640, h: 440 };
+      const prev = target.restoreRect || { x: 40, y: 40, w: 640, h: 440 };
       set({
         windows: windows.map((w) =>
           w.id === id
@@ -419,17 +503,17 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
         ),
       });
     } else {
-      // Maximize
+      // Maximize (fills entire space above 38px taskbar)
       const currentRect = { x: target.x, y: target.y, w: target.w, h: target.h };
       set({
         windows: windows.map((w) =>
           w.id === id
             ? {
                 ...w,
-                x: 12,
-                y: 40,
-                w: viewportW - 24,
-                h: viewportH - 52,
+                x: 0,
+                y: 0,
+                w: viewportW,
+                h: Math.max(240, viewportH - 38),
                 maximized: true,
                 restoreRect: currentRect,
               }
@@ -467,13 +551,14 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
   },
 
   moveDesktopIcon: (id, rawX, rawY) => {
-    // Snap to 8px grid
-    const snapGrid = 8;
-    const x = Math.round(rawX / snapGrid) * snapGrid;
-    const y = Math.round(rawY / snapGrid) * snapGrid;
+    // Snap to 88px horizontal x 88px vertical grid (fixed 80px cell + 8px margin)
+    const gridW = 88;
+    const gridH = 88;
+    const snappedX = Math.max(12, Math.round((rawX - 12) / gridW) * gridW + 12);
+    const snappedY = Math.max(12, Math.round((rawY - 12) / gridH) * gridH + 12);
 
     const updated = get().desktopIcons.map((icon) =>
-      icon.id === id ? { ...icon, x, y } : icon
+      icon.id === id ? { ...icon, x: snappedX, y: snappedY } : icon
     );
     set({ desktopIcons: updated });
 
@@ -509,30 +594,32 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
         localStorage.removeItem(STORAGE_KEY);
       }
     } catch {}
+    const welcomeWin = getCenteredWelcomeWindow();
     set({
-      windows: [DEFAULT_WELCOME_WINDOW],
-      activeWindowId: "welcome-main",
-      nextZ: 20,
-      wallpaper: "dither",
+      windows: [welcomeWin],
+      activeWindowId: welcomeWin.id,
+      nextZ: 25,
+      wallpaper: "teal",
       themeInverted: false,
       soundEnabled: false,
       sidekickEnabled: true,
       screensaverEnabled: true,
       viewMode: "icon",
       desktopIcons: DEFAULT_DESKTOP_ICONS,
-      recentWindows: [{ title: "welcome.app", appId: "welcome" }],
+      recentWindows: [{ title: "Welcome to RT-OS 95", appId: "welcome" }],
       systemAlert: null,
       isShutDown: false,
       isRestarting: false,
     });
   },
 
-  showAlert: (title, message, onOk) => {
+  showAlert: (title, message, onOk, type = "info") => {
     set({
       systemAlert: {
         open: true,
         title,
         message,
+        type,
         onOk,
       },
     });
@@ -555,22 +642,39 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
       if (typeof window === "undefined") return;
 
       const stored = localStorage.getItem(STORAGE_KEY);
+      let loadedWindows: WindowInstance[] = [];
+
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && Array.isArray(parsed.windows) && parsed.windows.length > 0) {
+        if (parsed) {
+          if (Array.isArray(parsed.windows) && parsed.windows.length > 0) {
+            loadedWindows = parsed.windows;
+          }
           set({
-            windows: parsed.windows,
-            wallpaper: parsed.wallpaper || "dither",
+            wallpaper: parsed.wallpaper || "teal",
             themeInverted: !!parsed.themeInverted,
             soundEnabled: !!parsed.soundEnabled,
             sidekickEnabled: parsed.sidekickEnabled ?? true,
             screensaverEnabled: parsed.screensaverEnabled ?? true,
             viewMode: parsed.viewMode || "icon",
-            desktopIcons: parsed.desktopIcons || DEFAULT_DESKTOP_ICONS,
-            activeWindowId: parsed.windows[parsed.windows.length - 1]?.id || null,
+            desktopIcons:
+              parsed.desktopIcons && parsed.desktopIcons.length > 0
+                ? parsed.desktopIcons
+                : DEFAULT_DESKTOP_ICONS,
           });
         }
       }
+
+      // Bug #2 Fix: Welcome window MUST be open and centered if no windows exist!
+      if (loadedWindows.length === 0) {
+        const welcomeWin = getCenteredWelcomeWindow();
+        loadedWindows = [welcomeWin];
+      }
+
+      set({
+        windows: loadedWindows,
+        activeWindowId: loadedWindows[loadedWindows.length - 1]?.id || null,
+      });
 
       // Check URL hash for deep link
       const hash = window.location.hash.replace("#/", "");
@@ -588,7 +692,12 @@ export const useWindowStore = create<WindowStoreState>((set, get) => ({
         }
       }
     } catch {
-      // fallback to defaults on corrupted json
+      const welcomeWin = getCenteredWelcomeWindow();
+      set({
+        windows: [welcomeWin],
+        activeWindowId: welcomeWin.id,
+        desktopIcons: DEFAULT_DESKTOP_ICONS,
+      });
     }
   },
 }));

@@ -1,20 +1,47 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import MenuBarOS from "./MenuBarOS";
+import React, { useEffect, useState, useCallback } from "react";
+import Taskbar from "./Taskbar";
 import DesktopIconGrid from "./DesktopIconGrid";
 import WindowFrame from "./WindowFrame";
 import SystemAlert from "./SystemAlert";
 import Screensaver from "./Screensaver";
 import WalkingSidekick from "../WalkingSidekick";
-import FlyingChips from "../FlyingChips";
 import BootSequence from "../BootSequence";
+import ContextMenu, { ContextMenuItem } from "./ContextMenu";
 import PixelSprite from "../PixelSprite";
-import BevelButton from "../BevelButton";
 import { useWindowStore } from "@/lib/os/windowStore";
 import { appRegistry } from "@/lib/os/apps";
 import { soundManager } from "@/lib/os/sound";
-import { robotFaceSprites } from "@/data/sprites";
+import {
+  myComputer32,
+  networkNeighborhood32,
+  winFolder32,
+  winDoc32,
+  acrobat32,
+  mail32,
+  msDos32,
+  winPaint32,
+  controlPanel32,
+  winCalc32,
+  bugSmileySprites,
+} from "@/data/sprites";
+
+function getMobileIcon(id: string) {
+  if (id === "terminal") return <PixelSprite sprite={msDos32} scale={1} />;
+  if (id === "aboutMac") return <PixelSprite sprite={myComputer32} scale={1} />;
+  if (id === "finder") return <PixelSprite sprite={winFolder32} scale={1} />;
+  if (id === "simpleText") return <PixelSprite sprite={winDoc32} scale={1} />;
+  if (id === "pdfViewer") return <PixelSprite sprite={acrobat32} scale={1} />;
+  if (id === "mail") return <PixelSprite sprite={mail32} scale={1} />;
+  if (id === "chooser") return <PixelSprite sprite={networkNeighborhood32} scale={1} />;
+  if (id === "controlPanel") return <PixelSprite sprite={controlPanel32} scale={1} />;
+  if (id === "paint") return <PixelSprite sprite={winPaint32} scale={1} />;
+  if (id === "calc") return <PixelSprite sprite={winCalc32} scale={1} />;
+  if (id === "snake" || id === "bugSweeper")
+    return <PixelSprite sprite={bugSmileySprites.normal} scale={1.5} />;
+  return <PixelSprite sprite={winFolder32} scale={1} />;
+}
 
 export default function Desktop() {
   const {
@@ -28,9 +55,16 @@ export default function Desktop() {
     initFromStorage,
     soundEnabled,
     closeWindow,
+    cleanUpDesktopIcons,
+    openWindow,
   } = useWindowStore();
 
   const [mounted, setMounted] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [desktopContextMenu, setDesktopContextMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   // Initialize store from localStorage & hash deep link
   useEffect(() => {
@@ -41,27 +75,87 @@ export default function Desktop() {
     return () => clearTimeout(timer);
   }, [initFromStorage]);
 
-  const activeWin = windows.find((w) => w.id === activeWindowId);
+  const activeWin = windows.find((w) => w.id === activeWindowId && !w.minimized);
 
-  // Wallpaper CSS class
-  const wallpaperClass =
-    wallpaper === "checker"
-      ? "bg-mac-checker"
-      : wallpaper === "grid"
-      ? "bg-[#D9D9D9]"
-      : wallpaper === "solid"
-      ? "bg-[#BFBFBF]"
-      : "bg-mac-dither";
+  // Desktop right-click context menu
+  const handleDesktopContextMenu = useCallback((e: React.MouseEvent) => {
+    // Only trigger if clicking directly on the desktop background
+    if ((e.target as HTMLElement).closest("[role='region'], [role='button'], header, [role='menu']")) {
+      return;
+    }
+    e.preventDefault();
+    setDesktopContextMenu({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setTimeout(() => setIsRefreshing(false), 120);
+  }, []);
+
+  const desktopMenuItems: ContextMenuItem[] = [
+    {
+      label: "Arrange Icons",
+      submenu: [
+        {
+          label: "by Name",
+          onClick: cleanUpDesktopIcons,
+        },
+        {
+          label: "by Type",
+          onClick: cleanUpDesktopIcons,
+        },
+        {
+          label: "Auto Arrange",
+          onClick: cleanUpDesktopIcons,
+        },
+      ],
+    },
+    {
+      label: "Line Up Icons",
+      onClick: cleanUpDesktopIcons,
+    },
+    {
+      label: "Refresh",
+      onClick: handleRefresh,
+    },
+    { isDivider: true },
+    {
+      label: "New",
+      submenu: [
+        {
+          label: "Text Document",
+          onClick: () => openWindow("simpleText", { file: "New Text Document.txt" }),
+        },
+        {
+          label: "Folder",
+          onClick: () => openWindow("finder", { folder: "projects" }),
+        },
+      ],
+    },
+    { isDivider: true },
+    {
+      label: "Properties",
+      onClick: () => openWindow("controlPanel"),
+    },
+  ];
+
+  // Wallpaper CSS styling
+  let wallpaperBg = "bg-[#008080]"; // Classic Win95 Teal default
+  if (wallpaper === "dither") wallpaperBg = "bg-mac-dither";
+  if (wallpaper === "checker") wallpaperBg = "bg-mac-checker";
+  if (wallpaper === "solid") wallpaperBg = "bg-[#808080]";
+  if (wallpaper === "grid") wallpaperBg = "bg-[#008080]";
 
   if (!mounted) {
-    return <div className="fixed inset-0 bg-[#D9D9D9]" />;
+    return <div className="fixed inset-0 bg-[#008080]" />;
   }
 
   return (
     <div
-      className={`fixed inset-0 select-none overflow-hidden ${wallpaperClass} ${
+      onContextMenu={handleDesktopContextMenu}
+      className={`fixed inset-0 select-none overflow-hidden ${wallpaperBg} ${
         themeInverted ? "invert" : ""
-      }`}
+      } ${isRefreshing ? "opacity-60" : "opacity-100"}`}
       style={{
         height: "100dvh",
         width: "100vw",
@@ -70,26 +164,20 @@ export default function Desktop() {
       {/* 1. First-Load Boot Sequence */}
       <BootSequence />
 
-      {/* 2. Top System 7 MenuBar */}
-      <MenuBarOS />
-
-      {/* 3. Ambient Walking Sidekick Mascot */}
+      {/* 2. Ambient Walking Sidekick Mascot */}
       <WalkingSidekick />
 
-      {/* 4. Ambient Flying Winged Chips (Margins) */}
-      <FlyingChips />
-
-      {/* 5. Desktop Workspace */}
+      {/* 3. Desktop Workspace Area (Above 38px taskbar) */}
       <main
         role="application"
-        aria-label="RT-OS Desktop Workspace"
-        className="absolute inset-0 pt-8 overflow-hidden"
+        aria-label="RT-OS 95 Desktop Workspace"
+        className="absolute inset-0 pb-[38px] overflow-hidden"
       >
-        {/* Desktop Icons Layer */}
+        {/* Desktop Icons Layer (Fixed 80x84px grid) */}
         <DesktopIconGrid />
 
-        {/* Desktop Floating Windows Layer (Tablet & Desktop >= 768px) */}
-        <div className="hidden md:block absolute inset-0 pt-8 pointer-events-none">
+        {/* Floating Windows Layer (Tablet & Desktop >= 768px) */}
+        <div className="hidden md:block absolute inset-0 pb-[38px] pointer-events-none">
           {windows.map((win) => {
             const appDef = appRegistry[win.appId];
             if (!appDef) return null;
@@ -106,30 +194,36 @@ export default function Desktop() {
         </div>
 
         {/* Mobile Full-Screen App Mode (< 768px) */}
-        <div className="md:hidden absolute inset-0 pt-8 z-30">
+        <div className="md:hidden absolute inset-0 pb-[38px] z-30">
           {activeWin ? (
             /* Open App Full Screen on Mobile */
-            <div className="w-full h-full bg-white flex flex-col border-t-2 border-black">
+            <div className="w-full h-full bg-[#C0C0C0] flex flex-col bevel-window">
               {/* Mobile App Header with Back Button */}
-              <div className="h-8 bg-[#BFBFBF] border-b-2 border-black flex items-center justify-between px-2 text-xs select-none">
+              <div className="h-7 titlebar-active flex items-center justify-between px-2 text-xs select-none">
                 <button
                   type="button"
                   onClick={() => {
                     soundManager.playClick(soundEnabled);
                     closeWindow(activeWin.id);
                   }}
-                  className="font-pixel text-[10px] font-bold uppercase px-2 py-0.5 border border-black bg-white hover:bg-black hover:text-white"
+                  className="font-pixel text-[9px] font-bold px-1.5 py-0.5 win95-btn"
                 >
                   ← Desktop
                 </button>
-                <span className="font-pixel text-[11px] font-bold uppercase truncate max-w-[50%]">
+                <span className="font-pixel text-[10px] font-bold truncate max-w-[50%] text-white">
                   {activeWin.title}
                 </span>
-                <div className="w-6" />
+                <button
+                  type="button"
+                  onClick={() => closeWindow(activeWin.id)}
+                  className="titlebar-btn text-[10px]"
+                >
+                  ✕
+                </button>
               </div>
 
-              {/* Full Screen Content */}
-              <div className="flex-1 overflow-y-auto">
+              {/* Full Screen Content with Bevel In */}
+              <div className="flex-1 overflow-y-auto bg-white bevel-in m-1 p-1">
                 {(() => {
                   const appDef = appRegistry[activeWin.appId];
                   if (!appDef) return null;
@@ -149,11 +243,11 @@ export default function Desktop() {
                     soundManager.playWindowOpen(soundEnabled);
                     useWindowStore.getState().openWindow(app.id);
                   }}
-                  className="flex flex-col items-center gap-1.5 p-2 border border-black/20 bg-white/70 active:bg-black active:text-white"
+                  className="flex flex-col items-center gap-1.5 p-2 bg-[#C0C0C0]/90 bevel-out active:bevel-in"
                 >
-                  <PixelSprite sprite={robotFaceSprites.idle} scale={2} />
-                  <span className="font-pixel text-[9px] uppercase tracking-wider truncate w-full">
-                    {app.title.replace(/\.(app|sys|finder|game)$/, "")}
+                  {getMobileIcon(app.id)}
+                  <span className="font-pixel text-[9px] font-bold uppercase tracking-wider truncate w-full text-black">
+                    {app.title.replace(/\.(app|sys|finder|game|exe)$/, "")}
                   </span>
                 </button>
               ))}
@@ -162,37 +256,53 @@ export default function Desktop() {
         </div>
       </main>
 
-      {/* 6. Screensaver Layer (Activates after 60s of inactivity) */}
+      {/* 4. Bottom Taskbar (38px, fixed) */}
+      <Taskbar />
+
+      {/* 5. Screensaver Layer (Activates after 60s of inactivity) */}
       <Screensaver />
 
-      {/* 7. System Alert Modal Layer */}
+      {/* 6. System Alert / Message Box Layer */}
       <SystemAlert />
+
+      {/* 7. Desktop Background Context Menu */}
+      {desktopContextMenu && (
+        <ContextMenu
+          x={desktopContextMenu.x}
+          y={desktopContextMenu.y}
+          items={desktopMenuItems}
+          onClose={() => setDesktopContextMenu(null)}
+        />
+      )}
 
       {/* 8. Shut Down Screen */}
       {isShutDown && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 bg-black z-[120] flex flex-col items-center justify-center p-6 text-center select-none text-white space-y-6 animate-in fade-in duration-300"
+          className="fixed inset-0 bg-black z-[140] flex flex-col items-center justify-center p-6 text-center select-none text-[#FFA500] space-y-6"
         >
-          <div className="border-4 border-white p-6 max-w-md bg-black space-y-4">
-            <div className="font-pixel text-xl font-bold tracking-widest uppercase">
-              RT-OS 1.0
+          <div className="border-4 border-[#FFA500] p-8 max-w-lg bg-black space-y-4 shadow-[8px_8px_0_#333]">
+            <div className="font-pixel text-2xl font-bold tracking-widest uppercase text-[#FFA500]">
+              RT-OS 95
             </div>
-            <p className="font-mono text-sm leading-relaxed text-neutral-300">
-              It is now safe to turn off your computer.
+            <p className="font-pixel text-sm leading-relaxed text-[#FFA500]">
+              It&apos;s now safe to turn off your computer.
             </p>
-            <div className="pt-2 flex justify-center">
-              <BevelButton
+            <p className="font-mono text-xs text-neutral-400">
+              Or click below to restart your session.
+            </p>
+            <div className="pt-4 flex justify-center">
+              <button
+                type="button"
                 onClick={() => {
                   setShutDown(false);
                   soundManager.playStartupChime(soundEnabled);
                 }}
-                variant="inverted"
-                size="md"
+                className="win95-btn px-6 py-2 font-pixel text-xs text-black"
               >
-                [ Power On ]
-              </BevelButton>
+                Restart Computer
+              </button>
             </div>
           </div>
         </div>
@@ -200,8 +310,8 @@ export default function Desktop() {
 
       {/* 9. Restart Screen */}
       {isRestarting && (
-        <div className="fixed inset-0 bg-black z-[120] flex items-center justify-center text-white font-pixel text-sm uppercase">
-          Restarting RT-OS...
+        <div className="fixed inset-0 bg-black z-[140] flex items-center justify-center text-white font-pixel text-sm uppercase">
+          Restarting RT-OS 95...
         </div>
       )}
     </div>

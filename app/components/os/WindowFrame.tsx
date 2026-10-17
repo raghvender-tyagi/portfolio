@@ -1,13 +1,40 @@
 "use client";
 
 import React, { useRef, useState, useCallback } from "react";
+import PixelSprite from "../PixelSprite";
+import ContextMenu, { ContextMenuItem } from "./ContextMenu";
 import { useWindowStore, WindowInstance } from "@/lib/os/windowStore";
 import { soundManager } from "@/lib/os/sound";
+import {
+  myComputer32,
+  winFolder32,
+  winDoc32,
+  msDos32,
+  controlPanel32,
+  acrobat32,
+  winPaint32,
+  winCalc32,
+  bugSmileySprites,
+} from "@/data/sprites";
 
 interface WindowFrameProps {
   window: WindowInstance;
   children: React.ReactNode;
   minSize?: { w: number; h: number };
+}
+
+function getAppTitleIcon(appId: string) {
+  if (appId === "terminal") return <PixelSprite sprite={msDos32} scale={0.45} />;
+  if (appId === "aboutMac") return <PixelSprite sprite={myComputer32} scale={0.45} />;
+  if (appId === "finder") return <PixelSprite sprite={winFolder32} scale={0.45} />;
+  if (appId === "simpleText") return <PixelSprite sprite={winDoc32} scale={0.45} />;
+  if (appId === "pdfViewer") return <PixelSprite sprite={acrobat32} scale={0.45} />;
+  if (appId === "controlPanel") return <PixelSprite sprite={controlPanel32} scale={0.45} />;
+  if (appId === "paint") return <PixelSprite sprite={winPaint32} scale={0.45} />;
+  if (appId === "calc") return <PixelSprite sprite={winCalc32} scale={0.45} />;
+  if (appId === "snake" || appId === "bugSweeper")
+    return <PixelSprite sprite={bugSmileySprites.normal} scale={0.8} />;
+  return <PixelSprite sprite={winDoc32} scale={0.45} />;
 }
 
 export default function WindowFrame({
@@ -20,27 +47,35 @@ export default function WindowFrame({
     focusWindow,
     moveWindow,
     resizeWindow,
-    closeWindow,
-    toggleCollapse,
+    minimizeWindow,
     maximizeWindow,
+    closeWindow,
     soundEnabled,
   } = useWindowStore();
 
   const isActive = activeWindowId === win.id;
+
   const isDraggingRef = useRef(false);
   const dragOffsetRef = useRef({ x: 0, y: 0 });
-  const isResizingRef = useRef(false);
-  const resizeStartRef = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
-  const [, setRerender] = useState({});
+  const isResizingRef = useRef(false);
+  const resizeDirRef = useRef<string>("");
+  const resizeStartRef = useRef({ x: 0, y: 0, winX: 0, winY: 0, w: 0, h: 0 });
+
+  const [titleContextMenu, setTitleContextMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   // 1. Dragging via title bar
   const handleTitlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      // Don't drag if clicked on button controls
+      if (e.button !== 0) return;
       if ((e.target as HTMLElement).closest("button")) return;
 
       focusWindow(win.id);
+      if (win.maximized) return; // Can't drag maximized window
+
       isDraggingRef.current = true;
       dragOffsetRef.current = {
         x: e.clientX - win.x,
@@ -49,7 +84,7 @@ export default function WindowFrame({
 
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     },
-    [focusWindow, win.id, win.x, win.y]
+    [focusWindow, win.id, win.maximized, win.x, win.y]
   );
 
   const handleTitlePointerMove = useCallback(
@@ -68,175 +103,298 @@ export default function WindowFrame({
       try {
         (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
       } catch {}
-      setRerender({});
     }
   }, []);
 
-  // 2. Resizing via bottom-right grip
-  const handleResizePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      e.stopPropagation();
-      focusWindow(win.id);
-      isResizingRef.current = true;
-      resizeStartRef.current = {
-        x: e.clientX,
-        y: e.clientY,
-        w: win.w,
-        h: win.h,
-      };
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    },
-    [focusWindow, win.id, win.w, win.h]
-  );
+  // 2. Resizing from all 8 directions
+  const handleResizePointerDown = (
+    e: React.PointerEvent,
+    direction: string
+  ) => {
+    e.stopPropagation();
+    focusWindow(win.id);
+    if (win.maximized) return;
 
-  const handleResizePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isResizingRef.current) return;
-      const deltaX = e.clientX - resizeStartRef.current.x;
-      const deltaY = e.clientY - resizeStartRef.current.y;
-      const newW = Math.max(minSize.w, resizeStartRef.current.w + deltaX);
-      const newH = Math.max(minSize.h, resizeStartRef.current.h + deltaY);
-      resizeWindow(win.id, newW, newH);
-    },
-    [minSize.h, minSize.w, resizeWindow, win.id]
-  );
+    isResizingRef.current = true;
+    resizeDirRef.current = direction;
+    resizeStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      winX: win.x,
+      winY: win.y,
+      w: win.w,
+      h: win.h,
+    };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
 
-  const handleResizePointerUp = useCallback((e: React.PointerEvent) => {
+  const handleResizePointerMove = (e: React.PointerEvent) => {
+    if (!isResizingRef.current) return;
+    const dx = e.clientX - resizeStartRef.current.x;
+    const dy = e.clientY - resizeStartRef.current.y;
+    const dir = resizeDirRef.current;
+
+    let newW = resizeStartRef.current.w;
+    let newH = resizeStartRef.current.h;
+    let newX = resizeStartRef.current.winX;
+    let newY = resizeStartRef.current.winY;
+
+    if (dir.includes("e")) {
+      newW = Math.max(minSize.w, resizeStartRef.current.w + dx);
+    }
+    if (dir.includes("s")) {
+      newH = Math.max(minSize.h, resizeStartRef.current.h + dy);
+    }
+    if (dir.includes("w")) {
+      const candidateW = resizeStartRef.current.w - dx;
+      if (candidateW >= minSize.w) {
+        newW = candidateW;
+        newX = resizeStartRef.current.winX + dx;
+      }
+    }
+    if (dir.includes("n")) {
+      const candidateH = resizeStartRef.current.h - dy;
+      if (candidateH >= minSize.h) {
+        newH = candidateH;
+        newY = resizeStartRef.current.winY + dy;
+      }
+    }
+
+    if (newX !== win.x || newY !== win.y) {
+      moveWindow(win.id, newX, newY);
+    }
+    resizeWindow(win.id, newW, newH);
+  };
+
+  const handleResizePointerUp = (e: React.PointerEvent) => {
     if (isResizingRef.current) {
       isResizingRef.current = false;
       try {
         (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
       } catch {}
-      setRerender({});
     }
-  }, []);
+  };
+
+  // 3. Title bar right-click context menu
+  const handleTitleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setTitleContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const titleContextMenuItems: ContextMenuItem[] = [
+    {
+      label: "Restore",
+      disabled: !win.maximized,
+      onClick: () => maximizeWindow(win.id),
+    },
+    {
+      label: "Move",
+      disabled: win.maximized,
+      onClick: () => {},
+    },
+    {
+      label: "Size",
+      disabled: win.maximized,
+      onClick: () => {},
+    },
+    {
+      label: "Minimize",
+      onClick: () => minimizeWindow(win.id),
+    },
+    {
+      label: "Maximize",
+      disabled: win.maximized,
+      onClick: () => maximizeWindow(win.id),
+    },
+    { isDivider: true },
+    {
+      label: "Close",
+      shortcut: "Alt+F4",
+      onClick: () => closeWindow(win.id),
+    },
+  ];
 
   if (win.minimized) return null;
 
   return (
-    <div
-      role="region"
-      aria-label={`Window: ${win.title}`}
-      onPointerDown={() => !isActive && focusWindow(win.id)}
-      className={`absolute border-2 border-black bg-[#D9D9D9] select-none ${
-        isActive ? "mac-shadow z-30" : "drop-shadow-[3px_3px_0_#000] z-20 opacity-95"
-      }`}
-      style={{
-        left: `${win.x}px`,
-        top: `${win.y}px`,
-        width: `${win.w}px`,
-        height: win.collapsed ? "32px" : `${win.h}px`,
-        zIndex: win.z,
-      }}
-    >
-      {/* Title Bar (28px) */}
+    <>
       <div
-        onPointerDown={handleTitlePointerDown}
-        onPointerMove={handleTitlePointerMove}
-        onPointerUp={handleTitlePointerUp}
-        className={`h-7 bg-[#BFBFBF] border-b-2 border-black flex items-center justify-between px-1.5 relative cursor-move overflow-hidden ${
-          isActive ? "" : "bg-[#CFCFCF]"
+        role="region"
+        aria-label={`Window: ${win.title}`}
+        onPointerDown={() => !isActive && focusWindow(win.id)}
+        className={`absolute bevel-window bg-[#C0C0C0] p-[3px] select-none ${
+          isActive
+            ? "z-30 shadow-[3px_3px_0_rgba(0,0,0,0.5)]"
+            : "z-20 opacity-95 shadow-[2px_2px_0_rgba(0,0,0,0.3)]"
         }`}
+        style={{
+          left: `${win.x}px`,
+          top: `${win.y}px`,
+          width: `${win.w}px`,
+          height: win.collapsed ? "28px" : `${win.h}px`,
+          zIndex: win.z,
+        }}
       >
-        {/* Horizontal lines texture (active window only) */}
-        {isActive && (
-          <div className="absolute inset-y-1.5 left-8 right-16 mac-titlebar-stripes pointer-events-none opacity-85" />
-        )}
-
-        {/* Left: Close Button (Circle in square) */}
-        <div className="z-10 flex items-center gap-1 bg-[#BFBFBF] pr-1.5">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              soundManager.playWindowClose(soundEnabled);
-              closeWindow(win.id);
-            }}
-            aria-label="Close window"
-            title="Close window (Cmd/Ctrl+W)"
-            className="w-3.5 h-3.5 border-2 border-black bg-white hover:bg-black hover:text-white flex items-center justify-center cursor-pointer active:scale-90"
-          >
-            <div className="w-1.5 h-1.5 bg-black" />
-          </button>
-        </div>
-
-        {/* Center: Title */}
-        <div className="z-10 bg-[#BFBFBF] px-2 text-center max-w-[65%] truncate">
-          <span
-            className={`font-pixel text-[11px] uppercase tracking-wider ${
-              isActive ? "font-bold text-black" : "text-black/70 font-semibold"
-            }`}
-          >
-            {win.title}
-          </span>
-        </div>
-
-        {/* Right: Window Controls (Windowshade collapse + Zoom box) */}
-        <div className="z-10 flex items-center gap-1.5 bg-[#BFBFBF] pl-1.5">
-          {/* Collapse (Windowshade) */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              soundManager.playClick(soundEnabled);
-              toggleCollapse(win.id);
-            }}
-            aria-label={win.collapsed ? "Expand window" : "Collapse window"}
-            title={win.collapsed ? "Expand windowshade" : "Collapse windowshade"}
-            className="w-3.5 h-3.5 border-2 border-black bg-white hover:bg-black hover:text-white flex items-center justify-center cursor-pointer"
-          >
-            <span className="font-pixel text-[8px] leading-none block -mt-[1px]">
-              {win.collapsed ? "▼" : "▲"}
-            </span>
-          </button>
-
-          {/* Zoom Box (Maximize/Restore) */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              soundManager.playClick(soundEnabled);
-              maximizeWindow(win.id);
-            }}
-            aria-label={win.maximized ? "Restore window" : "Zoom window"}
-            title={win.maximized ? "Restore window" : "Zoom window"}
-            className="w-3.5 h-3.5 border-2 border-black bg-white hover:bg-black hover:text-white flex items-center justify-center cursor-pointer"
-          >
-            <div className="w-2 h-2 border border-black" />
-          </button>
-        </div>
-      </div>
-
-      {/* Window Body Container */}
-      {!win.collapsed && (
+        {/* Title Bar (22px) */}
         <div
-          className="w-full bg-white text-black font-mono overflow-y-auto select-text relative"
-          style={{ height: `${win.h - 32}px` }}
+          onPointerDown={handleTitlePointerDown}
+          onPointerMove={handleTitlePointerMove}
+          onPointerUp={handleTitlePointerUp}
+          onDoubleClick={() => maximizeWindow(win.id)}
+          onContextMenu={handleTitleContextMenu}
+          className={`h-[22px] flex items-center justify-between px-1 select-none cursor-move ${
+            isActive ? "titlebar-active" : "titlebar-inactive"
+          }`}
         >
-          {children}
+          {/* Left: 16x16 App Icon + Title */}
+          <div className="flex items-center gap-1.5 overflow-hidden pr-2">
+            <div className="shrink-0 flex items-center">
+              {getAppTitleIcon(win.appId)}
+            </div>
+            <span className="font-pixel text-[11px] font-bold truncate text-shadow-[1px_1px_0_rgba(0,0,0,0.6)]">
+              {win.title}
+            </span>
+          </div>
 
-          {/* Bottom-right resize grip */}
-          <div
-            onPointerDown={handleResizePointerDown}
-            onPointerMove={handleResizePointerMove}
-            onPointerUp={handleResizePointerUp}
-            aria-label="Resize window"
-            title="Drag to resize"
-            className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-end justify-end p-0.5 z-20 bg-white/80 select-none"
-          >
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              className="text-black"
+          {/* Right: Window Controls (_, square, X) */}
+          <div className="flex items-center gap-1 shrink-0">
+            {/* Minimize */}
+            <button
+              type="button"
+              aria-label="Minimize"
+              title="Minimize"
+              onClick={(e) => {
+                e.stopPropagation();
+                soundManager.playClick(soundEnabled);
+                minimizeWindow(win.id);
+              }}
+              className="titlebar-btn font-pixel text-[9px] -mt-[1px]"
             >
-              <line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="9" y1="5" x2="5" y2="9" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="9" y1="8" x2="8" y2="9" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
+              _
+            </button>
+
+            {/* Maximize / Restore */}
+            <button
+              type="button"
+              aria-label={win.maximized ? "Restore" : "Maximize"}
+              title={win.maximized ? "Restore" : "Maximize"}
+              onClick={(e) => {
+                e.stopPropagation();
+                soundManager.playClick(soundEnabled);
+                maximizeWindow(win.id);
+              }}
+              className="titlebar-btn font-pixel text-[9px]"
+            >
+              {win.maximized ? "❐" : "□"}
+            </button>
+
+            {/* Close */}
+            <button
+              type="button"
+              aria-label="Close"
+              title="Close (Alt+F4)"
+              onClick={(e) => {
+                e.stopPropagation();
+                soundManager.playWindowClose(soundEnabled);
+                closeWindow(win.id);
+              }}
+              className="titlebar-btn font-pixel text-[9px]"
+            >
+              ✕
+            </button>
           </div>
         </div>
+
+        {/* Window Content */}
+        {!win.collapsed && (
+          <div
+            className="w-full bg-[#FFFFFF] text-black font-mono overflow-y-auto select-text relative bevel-in mt-[2px]"
+            style={{ height: `${win.h - 32}px` }}
+          >
+            {children}
+          </div>
+        )}
+
+        {/* 8 Resize Edge & Corner Hit Areas */}
+        {!win.maximized && !win.collapsed && (
+          <>
+            {/* Top */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "n")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              className="absolute top-0 left-2 right-2 h-1.5 cursor-n-resize z-40"
+            />
+            {/* Bottom */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "s")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              className="absolute bottom-0 left-2 right-2 h-1.5 cursor-s-resize z-40"
+            />
+            {/* Left */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "w")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              className="absolute top-2 bottom-2 left-0 w-1.5 cursor-w-resize z-40"
+            />
+            {/* Right */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "e")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              className="absolute top-2 bottom-2 right-0 w-1.5 cursor-e-resize z-40"
+            />
+
+            {/* Top-Left */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "nw")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              className="absolute top-0 left-0 w-2.5 h-2.5 cursor-nw-resize z-40"
+            />
+            {/* Top-Right */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "ne")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              className="absolute top-0 right-0 w-2.5 h-2.5 cursor-ne-resize z-40"
+            />
+            {/* Bottom-Left */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "sw")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              className="absolute bottom-0 left-0 w-2.5 h-2.5 cursor-sw-resize z-40"
+            />
+            {/* Bottom-Right with Grip */}
+            <div
+              onPointerDown={(e) => handleResizePointerDown(e, "se")}
+              onPointerMove={handleResizePointerMove}
+              onPointerUp={handleResizePointerUp}
+              title="Resize window"
+              className="absolute bottom-0 right-0 w-3.5 h-3.5 cursor-se-resize z-40 flex items-end justify-end p-0.5"
+            >
+              <svg width="8" height="8" viewBox="0 0 8 8" className="text-[#808080]">
+                <line x1="7" y1="1" x2="1" y2="7" stroke="currentColor" strokeWidth="1" />
+                <line x1="7" y1="4" x2="4" y2="7" stroke="currentColor" strokeWidth="1" />
+                <line x1="7" y1="7" x2="7" y2="7" stroke="currentColor" strokeWidth="1" />
+              </svg>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Title Bar Context Menu */}
+      {titleContextMenu && (
+        <ContextMenu
+          x={titleContextMenu.x}
+          y={titleContextMenu.y}
+          items={titleContextMenuItems}
+          onClose={() => setTitleContextMenu(null)}
+        />
       )}
-    </div>
+    </>
   );
 }

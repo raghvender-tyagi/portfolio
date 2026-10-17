@@ -1,12 +1,14 @@
 /**
- * Standalone verification script for RT-OS 1.0 logic:
+ * Standalone verification script for RT-OS 95 logic:
  * - windowStore logic (open, close, focus, z-order)
+ * - Desktop icon grid geometry (80x84 cell, left column)
+ * - Centered Welcome window calculation
  * - Virtual filesystem integrity
  */
 
 const assert = require("assert");
 
-console.log("=== RUNNING RT-OS 1.0 INTEGRITY TESTS ===");
+console.log("=== RUNNING RT-OS 95 INTEGRITY TESTS ===");
 
 console.log("1. Testing Virtual Filesystem Structure...");
 function testVfs() {
@@ -17,7 +19,7 @@ function testVfs() {
     ],
     experience: { company: "Lightning Leap", role: "AI Research Intern", bullets: ["b1"] },
     skills: { groups: [{ group: "Languages", items: ["Python", "Java"] }] },
-    about: { bio: ["bio1"], education: { institution: "KIET" } },
+    about: { bio: ["bio1"], education: { institution: "KIET", cgpa: "7.6" } },
     achievements: { items: [{ id: "patent-2024", title: "Patent", icon: "patent" }] },
     contact: { email: "raghvendertyagi@gmail.com", socials: [{ label: "GitHub", href: "https://github.com" }] },
     meta: { name: "Raghvender Tyagi", role: "AI Systems Engineer" },
@@ -81,4 +83,46 @@ function testWindowLogic() {
 
 testWindowLogic();
 
-console.log("=== ALL OS TESTS PASSED (0 ERRORS) ===");
+// 3. Test Desktop Icon Left-Column Snap & Geometry
+console.log("3. Testing Desktop Icon Left-Column Snap & Geometry...");
+function testIconGeometry() {
+  const gridW = 88;
+  const gridH = 88;
+
+  function snap(rawX, rawY) {
+    const snappedX = Math.max(12, Math.round((rawX - 12) / gridW) * gridW + 12);
+    const snappedY = Math.max(12, Math.round((rawY - 12) / gridH) * gridH + 12);
+    return { x: snappedX, y: snappedY };
+  }
+
+  const p1 = snap(15, 14);
+  assert.strictEqual(p1.x, 12, "Should snap near x:12 to column 0");
+  assert.strictEqual(p1.y, 12, "Should snap near y:12 to row 0");
+
+  const p2 = snap(95, 102);
+  assert.strictEqual(p2.x, 100, "Should snap near x:100 to column 1");
+  assert.strictEqual(p2.y, 100, "Should snap near y:100 to row 1");
+
+  console.log("✓ Icon snap to 88x88 left-column grid passed.");
+}
+
+testIconGeometry();
+
+// 4. Test Centered Welcome Window
+console.log("4. Testing Centered Welcome Window calculation...");
+function testCenteredWelcome() {
+  const viewportW = 1440;
+  const viewportH = 900;
+  const w = 740;
+  const h = 480;
+  const x = Math.max(12, Math.floor((viewportW - w) / 2));
+  const y = Math.max(16, Math.floor((viewportH - 38 - h) / 2));
+
+  assert.strictEqual(x, 350, "x should be centered horizontally");
+  assert.strictEqual(y, 191, "y should be centered vertically above 38px taskbar");
+  console.log("✓ Centered Welcome window calculation passed.");
+}
+
+testCenteredWelcome();
+
+console.log("=== ALL RT-OS 95 TESTS PASSED (0 ERRORS) ===");

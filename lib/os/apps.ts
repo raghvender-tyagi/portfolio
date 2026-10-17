@@ -14,8 +14,8 @@ export interface AppDefinition {
 export const appRegistry: Record<string, AppDefinition> = {
   welcome: {
     id: "welcome",
-    title: "welcome.app",
-    defaultSize: { w: 780, h: 520 },
+    title: "Welcome to RT-OS 95",
+    defaultSize: { w: 740, h: 480 },
     minSize: { w: 340, h: 320 },
     singleton: true,
     component: dynamic(() => import("@/app/components/apps/WelcomeApp"), {
@@ -24,8 +24,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   finder: {
     id: "finder",
-    title: "projects.finder",
-    defaultSize: { w: 680, h: 460 },
+    title: "Explorer",
+    defaultSize: { w: 700, h: 460 },
     minSize: { w: 320, h: 260 },
     component: dynamic(() => import("@/app/components/apps/FinderApp"), {
       ssr: false,
@@ -33,8 +33,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   terminal: {
     id: "terminal",
-    title: "terminal.sys",
-    defaultSize: { w: 620, h: 420 },
+    title: "MS-DOS Prompt",
+    defaultSize: { w: 640, h: 420 },
     minSize: { w: 320, h: 240 },
     singleton: true,
     component: dynamic(() => import("@/app/components/apps/TerminalApp"), {
@@ -43,8 +43,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   aboutMac: {
     id: "aboutMac",
-    title: "About This Mac",
-    defaultSize: { w: 580, h: 460 },
+    title: "System Properties",
+    defaultSize: { w: 560, h: 460 },
     minSize: { w: 320, h: 320 },
     singleton: true,
     component: dynamic(() => import("@/app/components/apps/AboutMacApp"), {
@@ -53,8 +53,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   simpleText: {
     id: "simpleText",
-    title: "SimpleText",
-    defaultSize: { w: 580, h: 460 },
+    title: "Notepad",
+    defaultSize: { w: 580, h: 440 },
     minSize: { w: 320, h: 240 },
     component: dynamic(() => import("@/app/components/apps/SimpleTextApp"), {
       ssr: false,
@@ -62,8 +62,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   mail: {
     id: "mail",
-    title: "mail.app",
-    defaultSize: { w: 540, h: 480 },
+    title: "Outlook Express",
+    defaultSize: { w: 560, h: 460 },
     minSize: { w: 320, h: 300 },
     component: dynamic(() => import("@/app/components/apps/MailApp"), {
       ssr: false,
@@ -71,8 +71,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   chooser: {
     id: "chooser",
-    title: "Chooser",
-    defaultSize: { w: 480, h: 360 },
+    title: "Network Neighborhood",
+    defaultSize: { w: 500, h: 360 },
     minSize: { w: 300, h: 240 },
     singleton: true,
     component: dynamic(() => import("@/app/components/apps/ChooserApp"), {
@@ -81,8 +81,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   pdfViewer: {
     id: "pdfViewer",
-    title: "Raghvender_Tyagi_Resume.pdf",
-    defaultSize: { w: 680, h: 560 },
+    title: "Acrobat Reader",
+    defaultSize: { w: 680, h: 540 },
     minSize: { w: 340, h: 320 },
     singleton: true,
     component: dynamic(() => import("@/app/components/apps/PdfViewerApp"), {
@@ -92,7 +92,7 @@ export const appRegistry: Record<string, AppDefinition> = {
   controlPanel: {
     id: "controlPanel",
     title: "Control Panel",
-    defaultSize: { w: 520, h: 440 },
+    defaultSize: { w: 520, h: 420 },
     minSize: { w: 320, h: 280 },
     singleton: true,
     component: dynamic(() => import("@/app/components/apps/ControlPanelApp"), {
@@ -101,8 +101,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   projectDetail: {
     id: "projectDetail",
-    title: "project.info",
-    defaultSize: { w: 660, h: 520 },
+    title: "Project Overview",
+    defaultSize: { w: 660, h: 500 },
     minSize: { w: 320, h: 260 },
     component: dynamic(() => import("@/app/components/apps/ProjectDetailApp"), {
       ssr: false,
@@ -110,7 +110,7 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   getInfo: {
     id: "getInfo",
-    title: "Get Info",
+    title: "Properties",
     defaultSize: { w: 420, h: 460 },
     minSize: { w: 280, h: 320 },
     component: dynamic(() => import("@/app/components/apps/GetInfoApp"), {
@@ -119,8 +119,8 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   paint: {
     id: "paint",
-    title: "MacPaint",
-    defaultSize: { w: 580, h: 440 },
+    title: "Paint",
+    defaultSize: { w: 600, h: 460 },
     minSize: { w: 340, h: 280 },
     component: dynamic(() => import("@/app/components/apps/PaintApp"), {
       ssr: false,
@@ -128,10 +128,70 @@ export const appRegistry: Record<string, AppDefinition> = {
   },
   snake: {
     id: "snake",
-    title: "Snake.game",
+    title: "Snake",
     defaultSize: { w: 460, h: 440 },
     minSize: { w: 320, h: 320 },
     component: dynamic(() => import("@/app/components/apps/SnakeApp"), {
+      ssr: false,
+    }),
+  },
+  calc: {
+    id: "calc",
+    title: "Calculator",
+    defaultSize: { w: 340, h: 360 },
+    minSize: { w: 260, h: 280 },
+    singleton: true,
+    component: dynamic(() => import("@/app/components/apps/CalcApp"), {
+      ssr: false,
+    }),
+  },
+  bugSweeper: {
+    id: "bugSweeper",
+    title: "Bug Sweeper",
+    defaultSize: { w: 340, h: 380 },
+    minSize: { w: 280, h: 320 },
+    singleton: true,
+    component: dynamic(() => import("@/app/components/apps/BugSweeperApp"), {
+      ssr: false,
+    }),
+  },
+  findFiles: {
+    id: "findFiles",
+    title: "Find: All Files",
+    defaultSize: { w: 520, h: 380 },
+    minSize: { w: 320, h: 280 },
+    singleton: true,
+    component: dynamic(() => import("@/app/components/apps/FindFilesApp"), {
+      ssr: false,
+    }),
+  },
+  runDialog: {
+    id: "runDialog",
+    title: "Run",
+    defaultSize: { w: 440, h: 220 },
+    minSize: { w: 300, h: 180 },
+    singleton: true,
+    component: dynamic(() => import("@/app/components/apps/RunDialogApp"), {
+      ssr: false,
+    }),
+  },
+  dateTimeProperties: {
+    id: "dateTimeProperties",
+    title: "Date/Time Properties",
+    defaultSize: { w: 440, h: 440 },
+    minSize: { w: 320, h: 320 },
+    singleton: true,
+    component: dynamic(() => import("@/app/components/apps/DateTimeApp"), {
+      ssr: false,
+    }),
+  },
+  help: {
+    id: "help",
+    title: "RT-OS 95 Help & Support",
+    defaultSize: { w: 580, h: 440 },
+    minSize: { w: 320, h: 280 },
+    singleton: true,
+    component: dynamic(() => import("@/app/components/apps/HelpApp"), {
       ssr: false,
     }),
   },

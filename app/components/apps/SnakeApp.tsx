@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import BevelButton from "../BevelButton";
+import PixelSprite from "../PixelSprite";
+import { bugSmileySprites } from "@/data/sprites";
 
 type Position = { x: number; y: number };
 
 const GRID_SIZE = 16;
-const SPEED_MS = 140;
+const SPEED_MS = 130;
 
 export default function SnakeApp() {
   const [snake, setSnake] = useState<Position[]>([
@@ -17,7 +18,6 @@ export default function SnakeApp() {
   const [direction, setDirection] = useState<"UP" | "DOWN" | "LEFT" | "RIGHT">("RIGHT");
   const [food, setFood] = useState<Position>({ x: 12, y: 8 });
   const [score, setScore] = useState<number>(0);
-  const [highScore, setHighScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
@@ -55,7 +55,6 @@ export default function SnakeApp() {
     setIsPaused(false);
   }, [spawnFood]);
 
-  // Handle Arrow Keys
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowUp" && directionRef.current !== "DOWN") {
@@ -80,7 +79,6 @@ export default function SnakeApp() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Stepped Game Loop
   useEffect(() => {
     if (gameOver || isPaused) return;
 
@@ -94,13 +92,11 @@ export default function SnakeApp() {
         if (dir === "LEFT") head.x -= 1;
         if (dir === "RIGHT") head.x += 1;
 
-        // Collision with walls
         if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
           setGameOver(true);
           return prev;
         }
 
-        // Collision with self
         if (prev.some((s) => s.x === head.x && s.y === head.y)) {
           setGameOver(true);
           return prev;
@@ -108,13 +104,8 @@ export default function SnakeApp() {
 
         const newSnake = [head, ...prev];
 
-        // Eat food
         if (head.x === food.x && head.y === food.y) {
-          setScore((s) => {
-            const nextScore = s + 10;
-            if (nextScore > highScore) setHighScore(nextScore);
-            return nextScore;
-          });
+          setScore((s) => s + 10);
           setFood(spawnFood(newSnake));
         } else {
           newSnake.pop();
@@ -125,22 +116,39 @@ export default function SnakeApp() {
     }, SPEED_MS);
 
     return () => clearInterval(timer);
-  }, [gameOver, isPaused, food, highScore, spawnFood]);
+  }, [gameOver, isPaused, food, spawnFood]);
+
+  let smileySprite = bugSmileySprites.normal;
+  if (gameOver) smileySprite = bugSmileySprites.dead;
+  else if (isPaused) smileySprite = bugSmileySprites.worried;
+  else if (score >= 50) smileySprite = bugSmileySprites.cool;
 
   return (
-    <div className="p-4 bg-white text-black font-mono text-xs flex flex-col items-center justify-between h-full select-none space-y-3">
-      {/* Score Header */}
-      <div className="w-full flex items-center justify-between border-b-2 border-black pb-2 text-xs">
-        <div className="font-pixel font-bold">
-          SCORE: {score.toString().padStart(4, "0")}
+    <div className="p-3 bg-[#C0C0C0] text-black font-mono text-xs flex flex-col items-center justify-between h-full select-none space-y-3">
+      {/* Minesweeper-style LCD Header */}
+      <div className="w-full bevel-in bg-[#C0C0C0] p-1.5 flex items-center justify-between">
+        {/* Score LCD */}
+        <div className="bg-black text-[#FF0000] font-pixel text-sm px-2 py-0.5 tracking-widest border border-[#808080]">
+          {score.toString().padStart(3, "0")}
         </div>
-        <div className="font-pixel text-black/70">
-          BEST: {highScore.toString().padStart(4, "0")}
+
+        {/* Smiley Face Reset Button */}
+        <button
+          type="button"
+          onClick={resetGame}
+          className="w-7 h-7 bevel-out bg-[#C0C0C0] active:bevel-in flex items-center justify-center p-0.5 cursor-pointer"
+        >
+          <PixelSprite sprite={smileySprite} scale={1} />
+        </button>
+
+        {/* Status indicator */}
+        <div className="bg-black text-[#FF0000] font-pixel text-sm px-2 py-0.5 tracking-widest border border-[#808080]">
+          {isPaused ? "PAUS" : "016"}
         </div>
       </div>
 
       {/* Grid Canvas */}
-      <div className="relative border-2 border-black bg-[#D9D9D9] p-1">
+      <div className="bevel-in bg-[#808080] p-1 relative">
         <div
           className="grid gap-[1px] bg-black"
           style={{
@@ -161,12 +169,12 @@ export default function SnakeApp() {
                 key={idx}
                 className={`w-[14px] h-[14px] ${
                   isHead
-                    ? "bg-black"
+                    ? "bg-[#008000]"
                     : isBody
-                    ? "bg-[#666666]"
+                    ? "bg-[#008080]"
                     : isFood
-                    ? "bg-white"
-                    : "bg-[#D9D9D9]"
+                    ? "bg-[#FF0000]"
+                    : "bg-[#C0C0C0]"
                 }`}
               />
             );
@@ -174,27 +182,31 @@ export default function SnakeApp() {
         </div>
 
         {gameOver && (
-          <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white space-y-2 p-2">
-            <span className="font-pixel text-sm font-bold uppercase">
+          <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center text-white space-y-2 p-2">
+            <span className="font-pixel text-xs font-bold uppercase text-[#FF0000]">
               GAME OVER
             </span>
-            <span className="font-mono text-xs">Final Score: {score}</span>
-            <BevelButton onClick={resetGame} variant="inverted" size="sm">
+            <span className="font-mono text-xs">Score: {score}</span>
+            <button
+              type="button"
+              onClick={resetGame}
+              className="win95-btn px-3 py-1 font-pixel text-[10px]"
+            >
               Play Again
-            </BevelButton>
+            </button>
           </div>
         )}
       </div>
 
-      {/* Footer controls instructions */}
-      <div className="w-full pt-1 border-t-2 border-black flex items-center justify-between text-[10px] text-black/70">
-        <span>ARROW KEYS TO TURN • SPACE TO PAUSE</span>
+      {/* Instructions */}
+      <div className="w-full pt-1 border-t border-[#808080] flex items-center justify-between text-[10px] text-neutral-700">
+        <span>Arrow Keys • Space to Pause</span>
         <button
           type="button"
           onClick={resetGame}
-          className="font-pixel uppercase text-[9px] underline cursor-pointer"
+          className="font-pixel text-[9px] underline"
         >
-          Reset Game
+          Reset
         </button>
       </div>
     </div>

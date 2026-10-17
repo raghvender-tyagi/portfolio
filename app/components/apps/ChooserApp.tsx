@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import BevelButton from "../BevelButton";
+import PixelSprite from "../PixelSprite";
 import { portfolioContent } from "@/data/content";
+import { networkNeighborhood32, myComputer32 } from "@/data/sprites";
 
 interface ServiceItem {
   id: string;
   name: string;
   url: string;
   type: string;
+  comment: string;
 }
 
 export default function ChooserApp() {
@@ -17,27 +19,31 @@ export default function ChooserApp() {
   const services: ServiceItem[] = [
     {
       id: "github",
-      name: "GitHub Repository Archives",
+      name: "\\\\GITHUB\\raghvender-tyagi",
       url: contact.socials.find((s) => s.label === "GitHub")?.href || "https://github.com/raghvender-tyagi",
-      type: "Code Repositories",
+      type: "Git Repository Server",
+      comment: "Open source AI agents & distributed compute repos",
     },
     {
       id: "linkedin",
-      name: "LinkedIn Professional Network",
+      name: "\\\\LINKEDIN\\raghvender-tyagi",
       url: contact.socials.find((s) => s.label === "LinkedIn")?.href || "https://linkedin.com/in/raghvender-tyagi-05a881247",
-      type: "Career Network",
+      type: "Professional Network Host",
+      comment: "Industry updates, patents, and engineering background",
     },
     {
       id: "leetcode",
-      name: "LeetCode Competitive Algorithms",
+      name: "\\\\LEETCODE\\RaghvenderTyagi450",
       url: contact.socials.find((s) => s.label === "LeetCode")?.href || "https://leetcode.com/u/RaghvenderTyagi450/",
-      type: "Algorithms & DSA",
+      type: "Algorithms Host",
+      comment: "450+ solved algorithmic problems in Java & Python",
     },
     {
       id: "email",
-      name: `Direct SMTP Dispatch (${contact.email})`,
+      name: "\\\\SMTP\\raghvendertyagi",
       url: `mailto:${contact.email}`,
-      type: "Electronic Mail",
+      type: "Mail Server",
+      comment: `Direct contact gateway (${contact.email})`,
     },
   ];
 
@@ -50,57 +56,73 @@ export default function ChooserApp() {
   };
 
   return (
-    <div className="p-4 bg-white text-black font-mono text-xs flex flex-col h-full justify-between select-none space-y-4">
-      <div className="space-y-3">
-        <div className="flex items-center justify-between border-b-2 border-black pb-2">
-          <span className="font-pixel text-[10px] font-bold uppercase text-black/70">
-            CONNECT TO EXTERNAL SYSTEMS
-          </span>
-          <span className="font-pixel text-[9px] bg-black text-white px-1.5 py-0.2">
-            CHOOSER 7.1
-          </span>
-        </div>
-
-        {/* Services List Table */}
-        <div className="border-2 border-black bg-white overflow-hidden">
-          {services.map((svc) => {
-            const isSelected = selectedService.id === svc.id;
-            return (
-              <div
-                key={svc.id}
-                tabIndex={0}
-                role="button"
-                onClick={() => setSelectedService(svc)}
-                onDoubleClick={handleConnect}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    handleConnect();
-                  }
-                }}
-                className={`p-2 flex items-center justify-between border-b border-black/15 cursor-pointer text-xs ${
-                  isSelected ? "bg-black text-white font-bold" : "hover:bg-neutral-100"
-                }`}
-              >
-                <span>{svc.name}</span>
-                <span className={`text-[10px] ${isSelected ? "text-neutral-300" : "text-black/60"}`}>
-                  {svc.type}
-                </span>
-              </div>
-            );
-          })}
+    <div className="p-3 bg-[#C0C0C0] text-black font-mono text-xs flex flex-col h-full justify-between select-none space-y-3">
+      {/* Header Info */}
+      <div className="flex items-center gap-3 p-2 bg-[#C0C0C0] border-b border-[#808080]">
+        <PixelSprite sprite={networkNeighborhood32} scale={1} />
+        <div>
+          <div className="font-pixel text-[11px] font-bold text-black">
+            Entire Network &amp; Remote Workstations
+          </div>
+          <div className="text-[11px] text-neutral-700 font-mono">
+            Double-click a server to connect via browser.
+          </div>
         </div>
       </div>
 
-      {/* Selected target preview and OK button */}
-      <div className="pt-2 border-t-2 border-black flex items-center justify-between">
-        <div className="truncate max-w-[260px] text-[10px] text-black/70">
+      {/* Network Server List */}
+      <div className="flex-1 bevel-in bg-white p-2 overflow-y-auto space-y-1">
+        {services.map((svc) => {
+          const isSelected = selectedService.id === svc.id;
+          return (
+            <div
+              key={svc.id}
+              tabIndex={0}
+              role="button"
+              onClick={() => setSelectedService(svc)}
+              onDoubleClick={handleConnect}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleConnect();
+                }
+              }}
+              className={`p-2 flex items-center justify-between cursor-pointer text-xs ${
+                isSelected
+                  ? "bg-[#000080] text-white dotted-focus"
+                  : "hover:bg-neutral-100 text-black"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <PixelSprite sprite={myComputer32} scale={0.5} />
+                <span className="font-bold font-pixel text-[10px]">{svc.name}</span>
+              </div>
+              <div className="text-right">
+                <span className={`text-[10px] block ${isSelected ? "text-neutral-200" : "text-neutral-600"}`}>
+                  {svc.type}
+                </span>
+                <span className={`text-[9px] block ${isSelected ? "text-neutral-300" : "text-neutral-500"}`}>
+                  {svc.comment}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Action Footer */}
+      <div className="pt-2 border-t border-[#808080] flex items-center justify-between">
+        <div className="text-[10px] text-neutral-700 truncate max-w-[240px]">
           Target: {selectedService.url}
         </div>
         <div className="flex items-center gap-2">
-          <BevelButton onClick={handleConnect} variant="inverted" size="sm">
-            [ Connect ↗ ]
-          </BevelButton>
+          <button
+            type="button"
+            onClick={handleConnect}
+            className="win95-btn px-4 py-1 font-bold font-pixel text-[10px]"
+          >
+            Connect ↗
+          </button>
         </div>
       </div>
     </div>

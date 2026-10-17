@@ -11,7 +11,6 @@ import BuildLogSection from "../components/BuildLogSection";
 import ContactSection from "../components/ContactSection";
 import PixelDivider from "../components/PixelDivider";
 
-import MenuBarOS from "../components/os/MenuBarOS";
 
 export const metadata: Metadata = {
   title: "Raghvender Tyagi | AI Systems & Distributed Backend Engineer (Classic View)",
@@ -21,24 +20,23 @@ export const metadata: Metadata = {
 
 export default function ClassicPage() {
   return (
-    <div className="min-h-screen bg-mac-dither text-black selection:bg-black selection:text-white pb-20 pt-12">
-      <MenuBarOS />
+    <div className="min-h-screen bg-mac-dither text-black selection:bg-black selection:text-white pb-20 pt-6">
       {/* Top Recruiter Banner */}
       <div className="max-w-[960px] mx-auto px-4 sm:px-6 md:px-8 mb-6">
-        <div className="border-2 border-black bg-[#D9D9D9] p-3 mac-shadow flex flex-col sm:flex-row items-center justify-between gap-3 select-none">
+        <div className="border-2 border-black bg-[#C0C0C0] bevel-out p-3 flex flex-col sm:flex-row items-center justify-between gap-3 select-none">
           <div className="text-xs font-mono">
-            <span className="font-pixel font-bold uppercase block text-black">
+            <span className="font-pixel font-bold uppercase block text-[#000080]">
               ★ RECRUITER &amp; ACCESSIBLE VIEW MODE
             </span>
-            <span className="text-black/70 text-[11px]">
+            <span className="text-black/80 text-[11px]">
               Fast single-page layout containing verified systems experience, projects &amp; academic profile.
             </span>
           </div>
           <Link
             href="/"
-            className="font-pixel text-xs font-bold uppercase tracking-wider px-3 py-1.5 border-2 border-black bg-black text-white hover:bg-neutral-800 mac-shadow-sm transition-transform active:translate-x-[2px] active:translate-y-[2px]"
+            className="win95-btn font-pixel text-xs font-bold uppercase tracking-wider px-4 py-2"
           >
-            ← Return to Interactive OS
+            ← Return to RT-OS 95 Desktop
           </Link>
         </div>
       </div>

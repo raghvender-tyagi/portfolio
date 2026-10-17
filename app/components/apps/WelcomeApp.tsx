@@ -2,77 +2,116 @@
 
 import React from "react";
 import Link from "next/link";
-import BevelButton from "../BevelButton";
-import RetroMacIllustration from "../RetroMacIllustration";
+import PixelSprite from "../PixelSprite";
 import { portfolioContent } from "@/data/content";
 import { useWindowStore } from "@/lib/os/windowStore";
+import {
+  myComputer32,
+  rtStartLogo16,
+  winFolder32,
+  acrobat32,
+  msDos32,
+} from "@/data/sprites";
 
 export default function WelcomeApp() {
   const { hero } = portfolioContent;
   const { openWindow } = useWindowStore();
 
   return (
-    <div className="p-4 md:p-6 text-black font-mono select-text space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-        {/* Left Column: Greeting & Actions */}
-        <div className="md:col-span-7 flex flex-col space-y-4">
-          <div className="inline-flex items-center gap-2 text-[10px] font-pixel uppercase tracking-widest text-black/70">
-            <span className="w-2 h-2 bg-black inline-block" />
-            <span>RT-OS 1.0 : SYSTEM FOLDER : WELCOME</span>
+    <div className="p-4 md:p-6 bg-[#C0C0C0] text-black font-mono select-text h-full flex flex-col justify-between">
+      {/* Top Banner: Welcome Header */}
+      <div className="space-y-4">
+        {/* Yellow/White Tip of the Day Banner */}
+        <div className="bg-[#FFFFE1] bevel-in p-3 border border-[#808080] flex items-start gap-3">
+          <div className="shrink-0 pt-0.5">
+            <PixelSprite sprite={myComputer32} scale={1} />
           </div>
-
-          <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-black leading-[1.08] tracking-tight">
-            {hero.greeting}
-          </h1>
-
-          <p className="font-mono text-xs sm:text-sm text-black/90 leading-relaxed">
-            {hero.subline}
-          </p>
-
-          {/* Quick App Launchers */}
-          <div className="flex flex-wrap items-center gap-2.5 pt-2">
-            <BevelButton
-              onClick={() => openWindow("finder", { folder: "projects" })}
-              variant="inverted"
-              size="sm"
-            >
-              [ Open Projects ↗ ]
-            </BevelButton>
-
-            <BevelButton
-              onClick={() => openWindow("pdfViewer")}
-              variant="default"
-              size="sm"
-            >
-              [ View Resume ↓ ]
-            </BevelButton>
-
-            <BevelButton
-              onClick={() => openWindow("terminal")}
-              variant="default"
-              size="sm"
-            >
-              [ Terminal CLI &gt;_ ]
-            </BevelButton>
-
-            <Link
-              href="/classic"
-              className="inline-flex items-center justify-center font-pixel text-xs font-bold uppercase tracking-wider border-2 border-black bg-[#D9D9D9] hover:bg-black hover:text-white px-2.5 py-1 mac-shadow-sm transition-transform active:translate-x-[2px] active:translate-y-[2px]"
-            >
-              Classic View ↗
-            </Link>
-          </div>
-
-          {/* Verified Status Banner */}
-          <div className="pt-2 border-t-2 border-black/15 flex items-center gap-2 text-xs font-mono text-black/80">
-            <span className="w-2 h-2 bg-black animate-pulse" />
-            <span>{hero.statusLine}</span>
+          <div className="space-y-1">
+            <div className="font-pixel text-[11px] font-bold text-[#000080] uppercase tracking-wide flex items-center gap-1.5">
+              <PixelSprite sprite={rtStartLogo16} scale={0.8} />
+              <span>Welcome to RT-OS 95</span>
+            </div>
+            <p className="text-xs text-black/90 font-mono leading-relaxed">
+              {hero.subline}
+            </p>
           </div>
         </div>
 
-        {/* Right Column: Interactive Mac Illustration */}
-        <div className="md:col-span-5 flex items-center justify-center pt-2 md:pt-0">
-          <RetroMacIllustration className="w-full max-w-[260px] sm:max-w-[290px]" />
+        {/* Headline & Role */}
+        <div className="space-y-2 pt-2">
+          <h1 className="font-pixel font-bold text-xl sm:text-2xl text-[#000080] leading-tight">
+            {hero.greeting}
+          </h1>
+          <p className="font-mono text-xs text-black/80 leading-relaxed max-w-xl">
+            Distributed backend and agentic AI systems engineer building multi-agent
+            architectures with LangGraph, Docker sandboxes, and secure Text-to-SQL.
+          </p>
+        </div>
+
+        {/* Quick App Launchers */}
+        <div className="pt-2">
+          <div className="font-pixel text-[10px] font-bold uppercase text-[#000080] mb-2 tracking-wide">
+            What would you like to do?
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg">
+            <button
+              type="button"
+              onClick={() => openWindow("finder", { folder: "projects" })}
+              className="win95-btn flex items-center gap-2 px-3 py-2 text-left"
+            >
+              <PixelSprite sprite={winFolder32} scale={0.6} />
+              <div className="truncate">
+                <span className="font-bold block">Browse Projects</span>
+                <span className="text-[9px] text-neutral-600 font-mono block">TakeMyCompute, Paperly AI...</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openWindow("pdfViewer")}
+              className="win95-btn flex items-center gap-2 px-3 py-2 text-left"
+            >
+              <PixelSprite sprite={acrobat32} scale={0.6} />
+              <div className="truncate">
+                <span className="font-bold block">View Resume (PDF)</span>
+                <span className="text-[9px] text-neutral-600 font-mono block">Experience & Education</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openWindow("terminal")}
+              className="win95-btn flex items-center gap-2 px-3 py-2 text-left"
+            >
+              <PixelSprite sprite={msDos32} scale={0.6} />
+              <div className="truncate">
+                <span className="font-bold block">MS-DOS Prompt</span>
+                <span className="text-[9px] text-neutral-600 font-mono block">CLI commands & tools</span>
+              </div>
+            </button>
+
+            <Link
+              href="/classic"
+              className="win95-btn flex items-center gap-2 px-3 py-2 text-left"
+            >
+              <PixelSprite sprite={myComputer32} scale={0.6} />
+              <div className="truncate">
+                <span className="font-bold block">Classic Recruiter Mode</span>
+                <span className="text-[9px] text-neutral-600 font-mono block">Single-page accessible view</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Status Panel */}
+      <div className="pt-4 mt-4 border-t border-[#808080]">
+        <div className="bevel-in bg-[#DFDFDF] px-3 py-1.5 flex items-center justify-between text-[11px] font-mono text-black/80">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-[#008000] inline-block" />
+            <span>{hero.statusLine}</span>
+          </div>
+          <span className="font-pixel text-[9px] text-neutral-500">RT-OS 95 4.00.950</span>
         </div>
       </div>
     </div>
