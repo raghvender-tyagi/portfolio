@@ -73,7 +73,10 @@ export default function WalkingSidekick() {
     const intervalTime = 160; // stepped cadence
 
     const walkTimer = setInterval(() => {
-      const maxRight = Math.max(200, (typeof window !== "undefined" ? window.innerWidth : 1000) - 80);
+      const maxRight = Math.max(
+        200,
+        (typeof window !== "undefined" ? window.innerWidth : 1000) - 120
+      );
       const minLeft = 40;
 
       setPosX((prev) => {

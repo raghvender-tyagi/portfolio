@@ -21,3 +21,4 @@ function getServerSnapshot() {
 export function usePrefersReducedMotion() {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
+

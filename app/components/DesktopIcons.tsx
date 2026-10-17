@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import PixelSprite from "./PixelSprite";
 import BevelButton from "./BevelButton";
 import Window from "./Window";
@@ -11,11 +12,13 @@ import {
   trashSprites,
 } from "@/data/sprites";
 
-interface DesktopIconItem {
+interface DesktopItem {
   id: string;
   label: string;
   sprite: React.ReactNode;
-  onAction: () => void;
+  href?: string;
+  download?: string;
+  isAction?: boolean;
 }
 
 export default function DesktopIcons() {
@@ -23,34 +26,49 @@ export default function DesktopIcons() {
   const [trashAlertOpen, setTrashAlertOpen] = useState<boolean>(false);
   const [trashShaking, setTrashShaking] = useState<boolean>(false);
 
-  const icons: DesktopIconItem[] = [
+  const items: DesktopItem[] = [
     {
       id: "mac-hd",
       label: "Macintosh HD",
       sprite: <PixelSprite sprite={floppyDiskSprite} scale={2} />,
-      onAction: () => {
-        document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
-      },
+      href: "/about",
     },
     {
       id: "projects",
       label: "Projects",
       sprite: <PixelSprite sprite={folderSprite} scale={2} />,
-      onAction: () => {
-        document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
-      },
+      href: "/projects",
+    },
+    {
+      id: "experience",
+      label: "Experience",
+      sprite: <PixelSprite sprite={folderSprite} scale={2} />,
+      href: "/experience",
+    },
+    {
+      id: "about",
+      label: "About",
+      sprite: <PixelSprite sprite={folderSprite} scale={2} />,
+      href: "/about",
+    },
+    {
+      id: "skills",
+      label: "Skills",
+      sprite: <PixelSprite sprite={folderSprite} scale={2} />,
+      href: "/skills",
+    },
+    {
+      id: "contact",
+      label: "Contact",
+      sprite: <PixelSprite sprite={folderSprite} scale={2} />,
+      href: "/contact",
     },
     {
       id: "resume",
       label: "Resume.pdf",
       sprite: <PixelSprite sprite={documentSprite} scale={2} />,
-      onAction: () => {
-        const link = document.createElement("a");
-        link.href = "/resume.pdf";
-        link.download = "Raghvender_Tyagi_Resume.pdf";
-        link.target = "_blank";
-        link.click();
-      },
+      href: "/resume.pdf",
+      download: "Raghvender_Tyagi_Resume.pdf",
     },
     {
       id: "trash",
@@ -61,15 +79,18 @@ export default function DesktopIcons() {
           scale={2}
         />
       ),
-      onAction: () => {
-        setTrashShaking(true);
-        setTimeout(() => {
-          setTrashShaking(false);
-          setTrashAlertOpen(true);
-        }, 300);
-      },
+      isAction: true,
     },
   ];
+
+  const handleTrashClick = () => {
+    setSelectedId("trash");
+    setTrashShaking(true);
+    setTimeout(() => {
+      setTrashShaking(false);
+      setTrashAlertOpen(true);
+    }, 200);
+  };
 
   return (
     <>
@@ -88,46 +109,66 @@ export default function DesktopIcons() {
       {/* Desktop Column on Right Margin (>=1200px screens) */}
       <aside
         aria-label="System 7 Desktop Shortcuts"
-        className="hidden min-[1200px]:flex fixed right-6 top-14 flex-col items-center gap-6 z-30 select-none"
+        className="hidden min-[1200px]:flex fixed right-4 top-12 flex-col items-center gap-3.5 z-30 select-none max-h-[calc(100vh-3.5rem)] overflow-y-auto py-2"
       >
-        {icons.map((item) => {
+        {items.map((item) => {
           const isSelected = selectedId === item.id;
           const isShaking = item.id === "trash" && trashShaking;
 
+          if (item.isAction) {
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={handleTrashClick}
+                onFocus={() => setSelectedId(item.id)}
+                aria-label={`${item.label} desktop shortcut`}
+                className={`flex flex-col items-center gap-1 p-1 rounded cursor-pointer group focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-black bg-transparent border-none ${
+                  isShaking ? "animate-trash-shake" : ""
+                }`}
+              >
+                <div className="p-0.5 border border-transparent group-hover:border-black/30">
+                  {item.sprite}
+                </div>
+                <span
+                  className={`font-pixel text-[10px] tracking-wider text-center max-w-[80px] leading-tight select-none uppercase transition-colors duration-75 ${
+                    isSelected
+                      ? "bg-black text-white px-1.5 py-0.5"
+                      : "text-black bg-[#D9D9D9]/90 px-1 py-0.2 group-hover:bg-black group-hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          }
+
           return (
-            <div
+            <Link
               key={item.id}
-              tabIndex={0}
-              role="button"
-              aria-label={`${item.label} desktop shortcut`}
+              href={item.href || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={item.download}
               onClick={() => setSelectedId(item.id)}
-              onDoubleClick={item.onAction}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  item.onAction();
-                }
-              }}
-              className={`flex flex-col items-center gap-1.5 p-2 rounded cursor-pointer group focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-black ${
-                isShaking ? "animate-trash-shake" : ""
-              }`}
+              onFocus={() => setSelectedId(item.id)}
+              aria-label={`${item.label} folder - opens in new page`}
+              title={`Click to open ${item.label} in new page`}
+              className="flex flex-col items-center gap-1 p-1 rounded cursor-pointer group focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-black"
             >
-              {/* Pixel Sprite Icon */}
-              <div className="p-1 border border-transparent group-hover:border-black/20">
+              <div className="p-0.5 border border-transparent group-hover:border-black/30">
                 {item.sprite}
               </div>
-
-              {/* Label Plate (inverted when selected) */}
               <span
-                className={`font-pixel text-[11px] tracking-wider text-center max-w-[84px] leading-tight select-none transition-colors duration-75 ${
+                className={`font-pixel text-[10px] tracking-wider text-center max-w-[80px] leading-tight select-none uppercase transition-colors duration-75 ${
                   isSelected
                     ? "bg-black text-white px-1.5 py-0.5"
-                    : "text-black bg-[#D9D9D9]/80 px-1 py-0.2"
+                    : "text-black bg-[#D9D9D9]/90 px-1 py-0.2 group-hover:bg-black group-hover:text-white"
                 }`}
               >
                 {item.label}
               </span>
-            </div>
+            </Link>
           );
         })}
       </aside>

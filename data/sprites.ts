@@ -653,3 +653,4 @@ export const projectSpritesMap: Record<string, SpriteData> = {
   "netra-mitra": projectIconNetraMitra,
   "smart-pesticide": projectIconSmartPesticide,
 };
+
