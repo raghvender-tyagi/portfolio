@@ -5,6 +5,8 @@ import BevelButton from "../components/BevelButton";
 import PixelSprite from "../components/PixelSprite";
 import { folderSprite } from "@/data/sprites";
 
+import MenuBarOS from "../components/os/MenuBarOS";
+
 export const metadata: Metadata = {
   title: "Projects | Raghvender Tyagi - System 7",
   description:
@@ -13,7 +15,9 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <main className="min-h-screen bg-mac-dither text-black selection:bg-black selection:text-white pb-16 pt-8 md:pt-12 relative z-20">
+    <>
+      <MenuBarOS />
+      <main className="min-h-screen bg-mac-dither text-black selection:bg-black selection:text-white pb-16 pt-12 relative z-20">
       <div className="max-w-[960px] mx-auto px-4 sm:px-6 md:px-8 space-y-6">
         {/* Finder Folder Header Window */}
         <Window
@@ -50,6 +54,8 @@ export default function ProjectsPage() {
         {/* Full Projects Section */}
         <ProjectsSection />
       </div>
-    </main>
+      </main>
+    </>
   );
 }
+

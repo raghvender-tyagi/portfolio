@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Baloo_2, Silkscreen, Space_Mono } from "next/font/google";
 import "./globals.css";
-import MenuBar from "./components/MenuBar";
 import { portfolioContent } from "@/data/content";
 
 const baloo2 = Baloo_2({
@@ -111,8 +110,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-mac-dither text-black font-mono antialiased selection:bg-black selection:text-white pt-8 min-h-screen">
-        <MenuBar />
+      <body className="bg-mac-dither text-black font-mono antialiased selection:bg-black selection:text-white min-h-screen">
         {children}
       </body>
     </html>
