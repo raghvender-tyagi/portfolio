@@ -1,93 +1,82 @@
+import React from "react";
+import Window from "./Window";
 import { portfolioContent } from "@/data/content";
 
 export default function ExperienceSection() {
+  const { experience } = portfolioContent;
+
   return (
-    <section
-      id="experience"
-      className="w-full bg-[#E4E4E4] text-[#161616] py-24 md:py-32 px-6 md:px-12 lg:px-16"
-      style={{ backgroundColor: "#E4E4E4", color: "#161616" }}
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="pb-12 border-b border-[#161616]/20 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <section id="experience" className="w-full">
+      <Window
+        title={experience.filename}
+        status="LINES: 32 • ENCODING: US-ASCII • 100% READ-ONLY"
+        collapsible={true}
+      >
+        <div className="space-y-6">
+          {/* Document Header Metadata Block */}
+          <div className="border-2 border-black bg-[#D9D9D9] p-3 sm:p-4 font-mono text-xs sm:text-sm space-y-1.5 select-none">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-black pb-2 mb-2 gap-1">
+              <div>
+                <span className="font-pixel text-xs font-bold uppercase tracking-widest text-black/60 block">
+                  ORGANIZATION
+                </span>
+                <span className="font-heading font-extrabold text-xl sm:text-2xl text-black">
+                  {experience.company}
+                </span>
+              </div>
+              <div className="sm:text-right font-pixel text-xs text-black/80 font-bold uppercase">
+                <span>{experience.period}</span>
+                <span className="block text-[10px] text-black/60">{experience.type}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="font-bold text-black">ROLE: </span>
+                <span>{experience.role}</span>
+              </div>
+              <div>
+                <span className="font-bold text-black">PLATFORM: </span>
+                <span>{experience.platform}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Section Heading */}
           <div>
-            <div className="font-mono text-xs uppercase tracking-[0.08em] text-[#555555] mb-3 flex items-center gap-2">
-              <span className="text-[#3B4BFF] font-bold">02 / EXPERIENCE</span>
-              <span>—</span>
-              <span>INDUSTRY CONTRIBUTIONS</span>
-            </div>
-            <h2 className="font-headline font-light text-4xl md:text-6xl tracking-tight text-[#161616]">
-              Where I&apos;ve contributed.
-            </h2>
-          </div>
-          <div className="font-mono text-xs text-[#555555] uppercase tracking-wider">
-            [ ROLE HISTORY // 2026 ]
-          </div>
-        </div>
+            <h4 className="font-pixel text-xs font-bold uppercase tracking-wider text-black mb-3">
+              === KEY DELIVERABLES & ARCHITECTURAL CONTRIBUTIONS ===
+            </h4>
 
-        {/* Timeline Items */}
-        <div className="mt-12 space-y-12">
-          {portfolioContent.experience.map((exp, idx) => (
-            <div
-              key={idx}
-              className="p-8 md:p-10 border border-[#161616]/20 bg-[#DEDEDE]/60 relative hover:border-[#3B4BFF]/60 transition-colors"
-            >
-              {/* Top metadata row */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-6 border-b border-[#161616]/15">
-                <div>
-                  <span className="font-mono text-[10px] text-[#3B4BFF] uppercase tracking-widest font-semibold">
-                    TENURE // {exp.period}
+            {/* Deliverables List */}
+            <div className="space-y-4">
+              {experience.bullets.map((bullet, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start gap-3 border-l-2 border-black pl-3 py-0.5"
+                >
+                  <span className="font-pixel text-xs font-bold text-black bg-[#BFBFBF] px-1.5 py-0.5 border border-black select-none">
+                    0{idx + 1}
                   </span>
-                  <h3 className="font-headline text-2xl md:text-3xl text-[#161616] font-normal mt-1">
-                    {exp.company}
-                  </h3>
-                  <div className="font-mono text-xs uppercase text-[#555555] mt-1">
-                    {exp.role} <span className="text-[#777777]">({exp.type})</span>
-                  </div>
+                  <p className="font-mono text-xs sm:text-sm text-black/90 leading-relaxed">
+                    {bullet}
+                  </p>
                 </div>
-
-                <div className="font-mono text-xs px-3 py-1.5 bg-[#E4E4E4] border border-[#CCCCCC] text-[#161616] self-start md:self-auto font-medium">
-                  {exp.platform}
-                </div>
-              </div>
-
-              {/* Technical Bullet Points */}
-              <div className="mt-6 space-y-4">
-                <div className="font-mono text-[11px] uppercase tracking-wider text-[#666666]">
-                  CORE SYSTEM DELIVERABLES:
-                </div>
-                <ul className="space-y-3 font-headline text-sm md:text-base text-[#2A2A2A] list-none">
-                  {exp.bullets.map((bullet, bIdx) => (
-                    <li key={bIdx} className="flex items-start gap-3">
-                      <span className="font-mono text-[#3B4BFF] font-bold select-none mt-0.5">
-                        [0{bIdx + 1}]
-                      </span>
-                      <span className="leading-relaxed">{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Architecture Tags */}
-              <div className="mt-8 pt-6 border-t border-[#161616]/10 flex flex-wrap items-center gap-2 font-mono text-[11px] text-[#666666]">
-                <span className="text-[#555555] uppercase font-semibold">ENGINEERING DOMAIN:</span>
-                <span className="px-2 py-0.5 border border-[#161616]/25 bg-[#E4E4E4] text-[#161616]">
-                  LangGraph Sub-Agents
-                </span>
-                <span className="px-2 py-0.5 border border-[#161616]/25 bg-[#E4E4E4] text-[#161616]">
-                  pgvector Semantic Search
-                </span>
-                <span className="px-2 py-0.5 border border-[#161616]/25 bg-[#E4E4E4] text-[#161616]">
-                  AST Query Hardening
-                </span>
-                <span className="px-2 py-0.5 border border-[#161616]/25 bg-[#E4E4E4] text-[#161616]">
-                  RBAC SQL Sandboxing
-                </span>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* System 7 Seal / Verification Stamp */}
+          <div className="pt-2 flex items-center justify-between border-t-2 border-black text-xs font-mono text-black/70">
+            <span className="font-pixel text-[10px] uppercase">
+              CONFIDENTIAL / RESEARCH ARCHIVES
+            </span>
+            <span className="font-bold text-black">
+              VERIFIED WORKLOAD RECORD
+            </span>
+          </div>
         </div>
-      </div>
+      </Window>
     </section>
   );
 }

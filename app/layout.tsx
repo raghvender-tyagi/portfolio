@@ -1,24 +1,32 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, JetBrains_Mono } from "next/font/google";
+import { Baloo_2, Silkscreen, Space_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import CustomCursor from "./components/CustomCursor";
+import MenuBar from "./components/MenuBar";
 import { portfolioContent } from "@/data/content";
 
-const geist = Geist({
+const baloo2 = Baloo_2({
   subsets: ["latin"],
-  variable: "--font-geist",
+  variable: "--font-heading",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const silkscreen = Silkscreen({
+  subsets: ["latin"],
+  variable: "--font-pixel",
+  display: "swap",
+  weight: ["400", "700"],
+});
+
+const spaceMono = Space_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
+  weight: ["400", "700"],
 });
 
 export const viewport: Viewport = {
-  themeColor: "#161616",
+  themeColor: "#D9D9D9",
   width: "device-width",
   initialScale: 1,
 };
@@ -26,7 +34,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Raghvender Tyagi | AI Systems & Distributed Backend Engineer",
   description:
-    "AI systems & distributed backend engineer specializing in LangGraph multi-agent architectures, sandboxed Docker compute, and secure Text-to-SQL pipelines. B.Tech CSE (AI), KIET '27.",
+    "System 7 Retro Portfolio of Raghvender Tyagi. AI systems & distributed backend engineer specializing in LangGraph multi-agent architectures, sandboxed Docker compute, and secure Text-to-SQL pipelines. B.Tech CSE (AI), KIET '27.",
   keywords: [
     "Raghvender Tyagi",
     "AI Systems Engineer",
@@ -38,6 +46,8 @@ export const metadata: Metadata = {
     "Django",
     "KIET",
     "Machine Learning",
+    "System 7",
+    "Retro Portfolio",
   ],
   authors: [{ name: "Raghvender Tyagi", url: "https://raghvender.vercel.app" }],
   creator: "Raghvender Tyagi",
@@ -48,14 +58,14 @@ export const metadata: Metadata = {
     url: "https://raghvender.vercel.app",
     title: "Raghvender Tyagi | AI Systems & Distributed Backend Engineer",
     description:
-      "I build agents that ship. Systems that don't fall over. LangGraph agents, sandboxed compute, secure Text-to-SQL.",
+      "I build agents that ship, and systems that don't fall over. LangGraph agents, sandboxed compute, secure Text-to-SQL.",
     siteName: "Raghvender Tyagi",
   },
   twitter: {
     card: "summary_large_image",
     title: "Raghvender Tyagi | AI Systems & Distributed Backend Engineer",
     description:
-      "I build agents that ship. Systems that don't fall over. LangGraph agents, sandboxed compute, secure Text-to-SQL.",
+      "I build agents that ship, and systems that don't fall over. LangGraph agents, sandboxed compute, secure Text-to-SQL.",
   },
   icons: {
     icon: "/favicon.ico",
@@ -73,14 +83,10 @@ export default function RootLayout({
     name: portfolioContent.meta.name,
     jobTitle: portfolioContent.meta.role,
     url: portfolioContent.meta.siteUrl,
-    sameAs: [
-      portfolioContent.contact.socials.find((s) => s.code === "GH")?.href,
-      portfolioContent.contact.socials.find((s) => s.code === "IN")?.href,
-      portfolioContent.contact.socials.find((s) => s.code === "LC")?.href,
-    ],
+    sameAs: portfolioContent.contact.socials.map((s) => s.href),
     alumniOf: {
       "@type": "CollegeOrUniversity",
-      name: portfolioContent.education.institution,
+      name: portfolioContent.about.education.institution,
     },
     knowsAbout: [
       "LangGraph",
@@ -95,16 +101,18 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${geist.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="en"
+      className={`${baloo2.variable} ${silkscreen.variable} ${spaceMono.variable}`}
+    >
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-[#161616] text-[#E4E4E4] font-headline antialiased selection:bg-[#3B4BFF] selection:text-white">
-        <CustomCursor />
-        <Navbar />
+      <body className="bg-mac-dither text-black font-mono antialiased selection:bg-black selection:text-white pt-8 min-h-screen">
+        <MenuBar />
         {children}
       </body>
     </html>

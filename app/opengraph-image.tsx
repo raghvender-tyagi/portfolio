@@ -15,143 +15,238 @@ export default function OpenGraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          backgroundColor: "#161616",
-          padding: "60px 80px",
-          color: "#E4E4E4",
-          border: "12px solid #262626",
-          fontFamily: "sans-serif",
-          position: "relative",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#D9D9D9",
+          padding: "40px",
+          fontFamily: "monospace",
         }}
       >
-        {/* Top Header */}
+        {/* Outer System 7 Window */}
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                backgroundColor: "#E4E4E4",
-                color: "#161616",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "monospace",
-                fontWeight: 900,
-                fontSize: 22,
-                border: "2px solid #3B4BFF",
-              }}
-            >
-              RT
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                fontFamily: "monospace",
-              }}
-            >
-              <span style={{ fontSize: 18, fontWeight: 700, color: "#E4E4E4" }}>
-                RAGHVENDER TYAGI
-              </span>
-              <span style={{ fontSize: 14, color: "#8E8E8E" }}>
-                AI SYSTEMS & DISTRIBUTED BACKEND ENGINEER
-              </span>
-            </div>
-          </div>
-
-          <div
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#202020",
-              border: "1px solid #333333",
-              fontFamily: "monospace",
-              fontSize: 14,
-              color: "#3B4BFF",
-            }}
-          >
-            STATUS: OPEN TO WORK
-          </div>
-        </div>
-
-        {/* Main Headline */}
-        <div
-          style={{
+            width: "100%",
+            height: "100%",
             display: "flex",
             flexDirection: "column",
-            margin: "40px 0",
+            backgroundColor: "#FFFFFF",
+            border: "4px solid #000000",
+            boxShadow: "10px 10px 0px #000000",
           }}
         >
-          <span
-            style={{
-              fontSize: 64,
-              fontWeight: 300,
-              lineHeight: 1.05,
-              color: "#FFFFFF",
-              letterSpacing: "-2px",
-            }}
-          >
-            I build agents that ship.
-          </span>
-          <span
-            style={{
-              fontSize: 64,
-              fontWeight: 600,
-              lineHeight: 1.05,
-              color: "#FFFFFF",
-              letterSpacing: "-2px",
-            }}
-          >
-            Systems that don&apos;t fall over.
-          </span>
-        </div>
-
-        {/* Bottom Tagline & Specs */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            paddingTop: 30,
-            borderTop: "1px solid #2E2E2E",
-          }}
-        >
+          {/* Title Bar */}
           <div
             style={{
+              height: "48px",
+              backgroundColor: "#BFBFBF",
+              borderBottom: "4px solid #000000",
               display: "flex",
-              flexDirection: "column",
-              fontFamily: "monospace",
-              fontSize: 15,
-              color: "#A0A0A0",
-              gap: 4,
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0 16px",
             }}
           >
-            <span>• LangGraph Multi-Agent Orchestration & State Graphs</span>
-            <span>• Sandboxed Compute in Docker (cgroups, network namespaces)</span>
-            <span>• Hardened Text-to-SQL AST Verification Pipelines</span>
+            {/* Left buttons */}
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <div
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  borderRadius: "50%",
+                  border: "3px solid #000000",
+                  backgroundColor: "#FFFFFF",
+                }}
+              />
+              <div
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  borderRadius: "50%",
+                  border: "3px solid #000000",
+                  backgroundColor: "#FFFFFF",
+                }}
+              />
+            </div>
+
+            {/* Title */}
+            <div
+              style={{
+                fontSize: "18px",
+                fontWeight: 900,
+                color: "#000000",
+                letterSpacing: "2px",
+                backgroundColor: "#BFBFBF",
+                padding: "0 16px",
+              }}
+            >
+              WELCOME.APP • RAGHVENDER TYAGI
+            </div>
+
+            {/* Right box */}
+            <div
+              style={{
+                width: "16px",
+                height: "16px",
+                border: "3px solid #000000",
+                backgroundColor: "#FFFFFF",
+              }}
+            />
           </div>
 
+          {/* Window Body */}
           <div
             style={{
-              fontFamily: "monospace",
-              fontSize: 16,
-              color: "#3B4BFF",
-              fontWeight: 700,
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              padding: "40px 48px",
             }}
           >
-            raghvender.vercel.app ↗
+            {/* Top row */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  color: "#000000",
+                  letterSpacing: "1px",
+                }}
+              >
+                <div
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                    backgroundColor: "#000000",
+                    color: "#FFFFFF",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "13px",
+                    fontWeight: 900,
+                  }}
+                >
+                  RT
+                </div>
+                <span>MACINTOSH HD : SYSTEM FOLDER : RAGHVENDER</span>
+              </div>
+
+              <div
+                style={{
+                  padding: "4px 12px",
+                  backgroundColor: "#000000",
+                  color: "#FFFFFF",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  letterSpacing: "1px",
+                }}
+              >
+                SYSTEM 7 RETRO EDITION
+              </div>
+            </div>
+
+            {/* Main Title */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div
+                style={{
+                  fontSize: "58px",
+                  fontWeight: 900,
+                  color: "#000000",
+                  lineHeight: 1.1,
+                  letterSpacing: "-1px",
+                }}
+              >
+                Hello. I&apos;m Raghvender.
+              </div>
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#000000",
+                  lineHeight: 1.4,
+                  maxWidth: "900px",
+                }}
+              >
+                I build agents that ship, and systems that don&apos;t fall over. AI systems &amp; distributed backend engineer. B.Tech CSE (AI), KIET &apos;27.
+              </div>
+            </div>
+
+            {/* Bottom Row / Badges */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderTop: "3px solid #000000",
+                paddingTop: "24px",
+              }}
+            >
+              <div style={{ display: "flex", gap: "12px" }}>
+                <div
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: "#000000",
+                    color: "#FFFFFF",
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    border: "2px solid #000000",
+                    boxShadow: "3px 3px 0px #000000",
+                  }}
+                >
+                  [ View Portfolio ↗ ]
+                </div>
+                <div
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: "#D9D9D9",
+                    color: "#000000",
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    border: "2px solid #000000",
+                    boxShadow: "3px 3px 0px #000000",
+                  }}
+                >
+                  [ Download Resume ↓ ]
+                </div>
+              </div>
+
+              <div
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 700,
+                  color: "#000000",
+                }}
+              >
+                raghvender.vercel.app
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Status Line */}
+          <div
+            style={{
+              height: "32px",
+              backgroundColor: "#D9D9D9",
+              borderTop: "3px solid #000000",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0 16px",
+              fontSize: "13px",
+              fontWeight: 700,
+              color: "#000000",
+            }}
+          >
+            <span>SYS7 • 68030 33MHz • MEMORY: 16MB • READY</span>
+            <span>FINDER 7.1</span>
           </div>
         </div>
       </div>
@@ -161,4 +256,3 @@ export default function OpenGraphImage() {
     }
   );
 }
-
